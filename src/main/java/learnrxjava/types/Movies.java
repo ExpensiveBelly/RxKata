@@ -17,7 +17,7 @@ public class Movies {
 
     public Movies(String name, List<Movie> videos) {
         this.name = name;
-        this.videos = Observable.from(videos);
+        this.videos = Observable.fromIterable(videos);
         this._v = videos;
     }
 }
