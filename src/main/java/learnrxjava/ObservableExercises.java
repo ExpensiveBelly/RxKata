@@ -1,9 +1,10 @@
 package learnrxjava;
 
 
+import io.reactivex.Maybe;
+import io.reactivex.Observable;
 import learnrxjava.types.JSON;
 import learnrxjava.types.Movies;
-import io.reactivex.Observable;
 
 public class ObservableExercises {
 
@@ -68,8 +69,8 @@ public class ObservableExercises {
      * 
      * Use reduce to select the maximum value in a list of numbers.
      */
-    public Observable<Integer> exerciseReduce(Observable<Integer> nums) {
-        return Observable.error(new RuntimeException("Not Implemented"));
+    public Maybe<Integer> exerciseReduce(Observable<Integer> nums) {
+        return Maybe.error(new RuntimeException("Not Implemented"));
     }
 
     /**
@@ -115,7 +116,7 @@ public class ObservableExercises {
     }
 
     // This function can be used to build JSON objects within an expression
-    private static JSON json(Object... keyOrValue) {
+    public static JSON json(Object... keyOrValue) {
         JSON json = new JSON();
 
         for (int counter = 0; counter < keyOrValue.length; counter += 2) {
