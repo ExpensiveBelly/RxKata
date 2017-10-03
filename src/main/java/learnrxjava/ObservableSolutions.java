@@ -1,10 +1,9 @@
 package learnrxjava;
 
+import io.reactivex.Maybe;
 import io.reactivex.Observable;
 import io.reactivex.ObservableSource;
-import io.reactivex.functions.BiFunction;
 import io.reactivex.functions.Function;
-import learnrxjava.types.BoxArt;
 import learnrxjava.types.JSON;
 import learnrxjava.types.Movie;
 import learnrxjava.types.Movies;
@@ -47,9 +46,7 @@ public class ObservableSolutions extends ObservableExercises {
      * @return Observable of Integers of Movies.videos.id
      */
     public Observable<Integer> exerciseConcatMap(Observable<Movies> movies) {
-        return movies.<Integer> concatMap(ml -> {
-            return ml.videos.map(v -> v.id);
-        });
+        return movies.concatMap(ml -> ml.videos.map(v -> v.id));
     }
 
     /**
@@ -66,9 +63,7 @@ public class ObservableSolutions extends ObservableExercises {
      * @return Observable of Integers of Movies.videos.id
      */
     public Observable<Integer> exerciseFlatMap(Observable<Movies> movies) {
-        return movies.<Integer> flatMap(ml -> {
-            return ml.videos.map(v -> v.id);
-        });
+        return movies.flatMap(ml -> ml.videos.map(v -> v.id));
     }
 
     /**
@@ -76,8 +71,8 @@ public class ObservableSolutions extends ObservableExercises {
      * 
      * Use reduce to select the maximum value in a list of numbers.
      */
-    public Observable<Integer> exerciseReduce(Observable<Integer> nums) {
-        return nums.scan((max, item) -> {
+    public Maybe<Integer> exerciseReduce(Observable<Integer> nums) {
+        return nums.reduce((max, item) -> {
             if (item > max) {
                 return item;
             } else {
@@ -98,19 +93,15 @@ public class ObservableSolutions extends ObservableExercises {
      * See Exercise 19 of ComposableListExercises
      */
     public Observable<JSON> exerciseMovie(Observable<Movies> movies) {
-        return movies.flatMap(ml -> ml.videos.<JSON> flatMap(v -> {
-            return v.boxarts.scan((max, box) -> {
-                int maxSize = max.height * max.width;
-                int boxSize = box.height * box.width;
-                if (boxSize < maxSize) {
-                    return box;
-                } else {
-                    return max;
-                }
-            }).map(maxBoxart -> {
-                return json("id", v.id, "title", v.title, "boxart", maxBoxart.url);
-            });
-        }));
+        return movies.flatMap((Function<Movies, ObservableSource<JSON>>) movies1 -> movies1.videos.flatMap((Function<Movie, ObservableSource<JSON>>) movie -> movie.boxarts.reduce((max, box) -> {
+            int maxSize = max.height * max.width;
+            int boxSize = box.height * box.width;
+            if (boxSize < maxSize) {
+                return box;
+            } else {
+                return max;
+            }
+        }).flatMapObservable(maxBoxart -> Observable.just(json("id", movie.id, "title", movie.title, "boxart", maxBoxart.url)))));
     }
 
     /**
@@ -141,7 +132,7 @@ public class ObservableSolutions extends ObservableExercises {
     }
 
     // This function can be used to build JSON objects within an expression
-    private static JSON json(Object... keyOrValue) {
+    public static JSON json(Object... keyOrValue) {
         JSON json = new JSON();
 
         for (int counter = 0; counter < keyOrValue.length; counter += 2) {
