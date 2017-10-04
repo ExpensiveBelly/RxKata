@@ -3,6 +3,7 @@ package learnrxjava;
 
 import io.reactivex.Maybe;
 import io.reactivex.Observable;
+import learnrxjava.types.BoxArt;
 import learnrxjava.types.JSON;
 import learnrxjava.types.Movies;
 
@@ -14,7 +15,7 @@ public class ObservableExercises {
      * @return "Hello World!"
      */
     public Observable<String> exerciseHello() {
-        return Observable.error(new RuntimeException("Not Implemented"));
+        return Observable.just("Hello World!");
     }
 
     /**
@@ -23,7 +24,7 @@ public class ObservableExercises {
      * @param "Hello Name!"
      */
     public Observable<String> exerciseMap(Observable<String> hello) {
-        return Observable.error(new RuntimeException("Not Implemented"));
+        return hello.map(input -> input + " Steffen");
     }
 
     /**
@@ -34,7 +35,9 @@ public class ObservableExercises {
      * 6-Even
      */
     public Observable<String> exerciseFilterMap(Observable<Integer> nums) {
-        return Observable.error(new RuntimeException("Not Implemented"));
+        return nums
+            .filter(num -> num % 2 == 0)
+            .map(even -> even + "-Even");
     }
 
     /**
@@ -44,7 +47,9 @@ public class ObservableExercises {
      * @return Observable of Integers of Movies.videos.id
      */
     public Observable<Integer> exerciseConcatMap(Observable<Movies> movies) {
-        return Observable.error(new RuntimeException("Not Implemented"));
+        return movies
+            .concatMap(movie -> movie.videos)
+            .map(video -> video.id);
     }
 
     /**
@@ -61,7 +66,9 @@ public class ObservableExercises {
      * @return Observable of Integers of Movies.videos.id
      */
     public Observable<Integer> exerciseFlatMap(Observable<Movies> movies) {
-        return Observable.error(new RuntimeException("Not Implemented"));
+        return movies
+            .flatMap(movie -> movie.videos)
+            .map(video -> video.id);
     }
 
     /**
@@ -70,7 +77,7 @@ public class ObservableExercises {
      * Use reduce to select the maximum value in a list of numbers.
      */
     public Maybe<Integer> exerciseReduce(Observable<Integer> nums) {
-        return Maybe.error(new RuntimeException("Not Implemented"));
+        return nums.reduce(Math::max);
     }
 
     /**
@@ -85,7 +92,13 @@ public class ObservableExercises {
      * See Exercise 19 of ComposableListExercises
      */
     public Observable<JSON> exerciseMovie(Observable<Movies> movies) {
-        return Observable.error(new RuntimeException("Not Implemented"));
+        return movies.flatMap(source ->
+            source.videos.flatMap(movie ->
+                smallest(movie.boxarts).map(smallestBoxArt ->
+                    json("id", movie.id, "title", movie.title, "url", smallestBoxArt.url)
+                )
+            )
+        );
     }
 
     /**
@@ -125,4 +138,13 @@ public class ObservableExercises {
 
         return json;
     }
+
+    private static int size(BoxArt boxArt) {
+        return boxArt.height * boxArt.width;
+    }
+
+    private static Observable<BoxArt> smallest(Observable<BoxArt> boxArts) {
+        return boxArts.reduce((b1, b2) -> size(b1) < size(b2) ? b1 : b2).toObservable();
+    }
+
 }
