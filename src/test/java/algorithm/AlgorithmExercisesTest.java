@@ -3,8 +3,6 @@ package algorithm;
 import org.junit.Before;
 import org.junit.Test;
 
-import static org.junit.Assert.*;
-
 public class AlgorithmExercisesTest {
 
 	private AlgorithmExercises exercises;
@@ -12,6 +10,11 @@ public class AlgorithmExercisesTest {
 	@Before
 	public void setUp() throws Exception {
 		exercises = new AlgorithmExercises();
+	}
+
+	@Test
+	public void sumOfAllMultiplesTest() throws Exception {
+		exercises.sumOfAllMultiples().test().assertResult(233168);
 	}
 
 	@Test
