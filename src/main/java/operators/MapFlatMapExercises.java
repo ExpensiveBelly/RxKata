@@ -1,8 +1,7 @@
 package operators;
 
-import com.pacoworks.rxsealedunions.Union3;
-import com.pacoworks.rxsealedunions.generic.GenericUnions;
 import io.reactivex.Observable;
+import org.javatuples.Triplet;
 
 import java.time.DayOfWeek;
 import java.util.Optional;
@@ -27,20 +26,12 @@ public class MapFlatMapExercises {
 	 * [ 1,2,3,4,5,6,7,8,9 ]
 	 */
 	public Observable<Integer> exerciseFlatten() {
-		Observable<Union3.Factory> pairObservable = Observable
-				.just(union3(1, 2, 3),
-						union3(4, 5, 6),
-						union3(7, 8, 9));
+		Observable<Triplet<Integer, Integer, Integer>> pairObservable = Observable
+				.just(new Triplet<>(1, 2, 3),
+						new Triplet<>(4, 5, 6),
+						new Triplet<>(7, 8, 9));
 
 		return null;
-	}
-
-	private Union3.Factory<Integer, Integer, Integer> union3(int first, int second, int third) {
-		Union3.Factory<Integer, Integer, Integer> union3 = GenericUnions.tripletFactory();
-		union3.first(first);
-		union3.second(second);
-		union3.third(third);
-		return union3;
 	}
 
 	/**
