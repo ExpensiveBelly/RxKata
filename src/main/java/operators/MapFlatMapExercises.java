@@ -99,4 +99,21 @@ public class MapFlatMapExercises {
 		}
 		return null;
 	}
+
+	/**
+	 * We take an arbitrary text in String and split it to words, removing punctuation using a
+	 * regular expression. Now, for each word we calculate how much it takes to say that word,
+	 * simply by multiplying the word length by millisPerChar.
+	 * Then, we would like to spread words over time, so that each word appears in the resulting stream after the delay calculated
+	 * @param quote
+	 * @param millisPerChar
+	 * @return
+	 */
+
+	public Observable<String> speak(String quote, long millisPerChar) {
+		//FOR THE BRAVE: INSERT CODE HERE
+
+		//FOR THE NON-BRAVE: Use this and just fix the test. Speak.speak(quote, millisPerChar);
+		return null;
+	}
 }
