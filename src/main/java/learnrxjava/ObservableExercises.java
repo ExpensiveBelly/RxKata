@@ -3,8 +3,12 @@ package learnrxjava;
 
 import io.reactivex.Maybe;
 import io.reactivex.Observable;
+import io.reactivex.ObservableSource;
 import io.reactivex.Single;
+import io.reactivex.functions.Function;
+import learnrxjava.types.BoxArt;
 import learnrxjava.types.JSON;
+import learnrxjava.types.Movie;
 import learnrxjava.types.Movies;
 
 public class ObservableExercises {
@@ -35,7 +39,7 @@ public class ObservableExercises {
      * @param "Hello Name!"
      */
     public Observable<String> exerciseMap(Observable<String> hello) {
-        return hello.map(greeting -> greeting + " Jack");
+        return hello.map(greeting -> greeting + " Daniel!");
     }
 
     /**
@@ -46,7 +50,7 @@ public class ObservableExercises {
      * 6-Even
      */
     public Observable<String> exerciseFilterMap(Observable<Integer> nums) {
-        return nums.filter(num -> (num % 2) == 0).map(num -> num + "-even");
+        return nums.filter(num -> (num % 2) == 0).map(num -> num + "-Even");
     }
 
     /**
@@ -97,9 +101,28 @@ public class ObservableExercises {
      * See Exercise 19 of ComposableListExercises
      */
     public Observable<JSON> exerciseMovie(Observable<Movies> movies) {
-        throw new UnsupportedOperationException("WAA");
-//        return movies.flatMap(movies -> movie).flatMap(movie -> json("id", movie.id));
+        return movies.flatMap(movielist -> movielist.videos)
+                .flatMap(movie -> movie.boxarts
+                        .reduce(this::maxBoxArt)
+                        .flatMapObservable(movieJsonObservable(movie)));
     }
+
+    private Function<BoxArt, ObservableSource<? extends JSON>> movieJsonObservable(Movie movie) {
+        return boxArt -> Observable.just(movieJson(movie, boxArt));
+    }
+
+    private JSON movieJson(Movie movie, BoxArt boxArt) {
+        return json("id", movie.id, "title", movie.title, "smallestBoxArt", boxArt.url);
+    }
+
+    private BoxArt maxBoxArt(BoxArt boxArt, BoxArt boxArt2) {
+        return boxArtSize(boxArt) <= boxArtSize(boxArt2) ? boxArt : boxArt2;
+    }
+
+    private int boxArtSize(BoxArt boxArt) {
+        return boxArt.height * boxArt.width;
+    }
+
     /**
      * Combine 2 streams into pairs using zip.
      * <p>
@@ -107,8 +130,8 @@ public class ObservableExercises {
      * b -> "fish", "fish", "fish", "fish"
      * output -> "one fish", "two fish", "red fish", "blue fish"
      */
-    public Observable<String> exerciseZip(Observable<String> a, Observable<String> b) {
-        return Observable.error(new RuntimeException("Not Implemented"));
+    public Observable<String> exerciseZip(Observable<String> verbs, Observable<String> nouns) {
+        return Observable.zip(verbs, nouns, (verb, noun) -> verb + " " + noun);
     }
 
     /**
@@ -116,7 +139,7 @@ public class ObservableExercises {
      * and replace it with "default-value".
      */
     public Observable<String> handleError(Observable<String> data) {
-        return Observable.error(new RuntimeException("Not Implemented"));
+        return data.onErrorReturn(e -> "default-value");
     }
 
     /**

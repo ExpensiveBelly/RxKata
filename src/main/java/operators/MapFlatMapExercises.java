@@ -4,6 +4,7 @@ import io.reactivex.Observable;
 import org.javatuples.Triplet;
 
 import java.time.DayOfWeek;
+import java.util.List;
 import java.util.Optional;
 
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
@@ -26,12 +27,11 @@ public class MapFlatMapExercises {
 	 * [ 1,2,3,4,5,6,7,8,9 ]
 	 */
 	public Observable<Integer> exerciseFlatten() {
-		Observable<Triplet<Integer, Integer, Integer>> pairObservable = Observable
+		return Observable
 				.just(new Triplet<>(1, 2, 3),
 						new Triplet<>(4, 5, 6),
-						new Triplet<>(7, 8, 9));
-
-		return null;
+						new Triplet<>(7, 8, 9))
+				.flatMap(triplet -> Observable.fromIterable(triplet.toList()).cast(Integer.class));
 	}
 
 	/**
@@ -43,8 +43,12 @@ public class MapFlatMapExercises {
 
 	public Observable<String> exerciseEmail() {
 		Booking booking = new Booking(new Booking.User("myemail@gmail.com"));
-
-		return null;
+		return Observable.just(booking.getUser())
+				.filter(Optional::isPresent)
+				.map(Optional::get)
+				.map(Booking.User::getEmail)
+				.filter(Optional::isPresent)
+				.map(Optional::get);
 	}
 
 	static class Booking {
@@ -76,10 +80,9 @@ public class MapFlatMapExercises {
 	 */
 
 	public Observable<String> loadRecordsExercise() {
-		/*return*/ Observable
+		 Observable
 				.just(DayOfWeek.SUNDAY, DayOfWeek.MONDAY);
-				/* INSERT CODE HERE */
-
+//				.map(dayOfWeek -> loadRecordsFor(dayOfWeek));
 		return null;
 	}
 
