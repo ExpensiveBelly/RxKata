@@ -4,10 +4,10 @@
 Find the solution for ObservableExercises
 
 ### Exercise 2
-Read data from different sources
+MapFlatMap exercises
 
 ### Exercise 3
-Find the solution for ComposableListExercises
+Algorithm exercises
 
-### Exercise 4
-Find the solution for a production Upload diagram.
+### Exercise 4 (WIP)
+Load data from multiple sources
