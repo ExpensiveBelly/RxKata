@@ -31,7 +31,11 @@ public class MapFlatMapExercises {
 						new Triplet<>(4, 5, 6),
 						new Triplet<>(7, 8, 9));
 
-		return null;
+		return pairObservable.flatMap(triplet -> Observable.fromArray(
+				triplet.getValue0(),
+				triplet.getValue1(),
+				triplet.getValue2()
+		));
 	}
 
 	/**
@@ -44,7 +48,9 @@ public class MapFlatMapExercises {
 	public Observable<String> exerciseEmail() {
 		Booking booking = new Booking(new Booking.User("myemail@gmail.com"));
 
-		return null;
+		return booking.getUser()
+				.flatMap(Booking.User::getEmail)
+				.map(email -> Observable.just(email)).orElse(Observable.empty());
 	}
 
 	static class Booking {
@@ -76,11 +82,11 @@ public class MapFlatMapExercises {
 	 */
 
 	public Observable<String> loadRecordsExercise() {
-		/*return*/ Observable
-				.just(DayOfWeek.SUNDAY, DayOfWeek.MONDAY);
-				/* INSERT CODE HERE */
-
-		return null;
+		Observable<Integer> sequence = Observable.just(0, 1, 2, 3, 4);
+		
+		return Observable
+				.just(DayOfWeek.SUNDAY, DayOfWeek.MONDAY)
+				.concatMap(dow -> loadRecordsFor(dow));
 	}
 
 

@@ -24,7 +24,7 @@ public class ObservableExercises {
      * @param "Hello Name!"
      */
     public Observable<String> exerciseMap(Observable<String> hello) {
-        return hello.map(input -> input + " Steffen");
+        return hello.map(input -> input + " Daniel!");
     }
 
     /**
@@ -95,7 +95,7 @@ public class ObservableExercises {
         return movies.flatMap(source ->
             source.videos.flatMap(movie ->
                 smallest(movie.boxarts).map(smallestBoxArt ->
-                    json("id", movie.id, "title", movie.title, "url", smallestBoxArt.url)
+                    json("id", movie.id, "title", movie.title, "smallestBoxArt", smallestBoxArt.url)
                 )
             )
         );
@@ -109,7 +109,7 @@ public class ObservableExercises {
      * output -> "one fish", "two fish", "red fish", "blue fish"
      */
     public Observable<String> exerciseZip(Observable<String> a, Observable<String> b) {
-        return Observable.error(new RuntimeException("Not Implemented"));
+        return a.zipWith(b, (s1, s2) -> s1 + " " + s2);
     }
 
     /**
@@ -117,7 +117,7 @@ public class ObservableExercises {
      * and replace it with "default-value".
      */
     public Observable<String> handleError(Observable<String> data) {
-        return Observable.error(new RuntimeException("Not Implemented"));
+        return data.onErrorReturnItem("default-value");
     }
 
     /**
