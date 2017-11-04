@@ -9,11 +9,11 @@ import java.util.concurrent.TimeUnit;
 
 public class MapFlatMapExercisesTest {
 
-    private MapFlatMapExercises exercises;
+    private MapFlatMapSolutions exercises;
 
     @Before
     public void setUp() throws Exception {
-        exercises = new MapFlatMapExercises();
+        exercises = new MapFlatMapSolutions();
     }
 
     @Test
