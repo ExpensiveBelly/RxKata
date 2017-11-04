@@ -2,10 +2,8 @@ package learnrxjava;
 
 import io.reactivex.Maybe;
 import io.reactivex.Observable;
-import io.reactivex.ObservableSource;
-import io.reactivex.functions.Function;
+import learnrxjava.types.BoxArt;
 import learnrxjava.types.JSON;
-import learnrxjava.types.Movie;
 import learnrxjava.types.Movies;
 
 public class ObservableSolutions extends ObservableExercises {
@@ -90,18 +88,23 @@ public class ObservableSolutions extends ObservableExercises {
      * width of 150px. This time we'll use reduce() instead of filter() to retrieve the _smallest_ box art in
      * the boxarts list.
      * 
-     * See Exercise 19 of ComposableListExercises
      */
     public Observable<JSON> exerciseMovie(Observable<Movies> movies) {
-        return movies.flatMap((Function<Movies, ObservableSource<JSON>>) movies1 -> movies1.videos.flatMap((Function<Movie, ObservableSource<JSON>>) movie -> movie.boxarts.reduce((max, box) -> {
-            int maxSize = max.height * max.width;
-            int boxSize = box.height * box.width;
-            if (boxSize < maxSize) {
-                return box;
-            } else {
-                return max;
-            }
-        }).flatMapObservable(maxBoxart -> Observable.just(json("id", movie.id, "title", movie.title, "boxart", maxBoxart.url)))));
+        return movies.flatMap(source ->
+                source.videos.flatMap(movie ->
+                        smallest(movie.boxarts).map(smallestBoxArt ->
+                                json("id", movie.id, "title", movie.title, "smallestBoxArt", smallestBoxArt.url)
+                        )
+                )
+        );
+    }
+
+    private static Observable<BoxArt> smallest(Observable<BoxArt> boxArts) {
+        return boxArts.reduce((b1, b2) -> size(b1) < size(b2) ? b1 : b2).toObservable();
+    }
+
+    private static int size(BoxArt boxArt) {
+        return boxArt.height * boxArt.width;
     }
 
     /**
