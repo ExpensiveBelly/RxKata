@@ -14,7 +14,9 @@ class BasicExercisesTest {
 
     @Test
     fun basic() {
-        basicExercises.basicExercise()
+        val basicSolutions = BasicSolutions()
+
+        basicSolutions.basicExercise()
                 .test()
                 .assertResult(
                         "Integer : 0",
