@@ -15,7 +15,7 @@ import static learnrxjava.ObservableExercises.json;
 
 public class ObservableExercisesTest {
 
-    private ObservableExercises exercises;
+    private ObservableSolutions exercises;
 
     private static final Movie MEMENTO = new Movie(1, "Memento", 5, emptyList(),
             asList(new BoxArt(1, 20, "mementoSmall.jpg"), new BoxArt(1, 30, "mementoBig.jpg")));
@@ -31,7 +31,7 @@ public class ObservableExercisesTest {
 
     @Before
     public void setUp() throws Exception {
-        exercises = new ObservableExercises();
+        exercises = new ObservableSolutions();
     }
 
     @Test
