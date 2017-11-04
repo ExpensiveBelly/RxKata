@@ -72,17 +72,17 @@ public class MapFlatMapExercises {
 	}
 
 	/**
-	 * Return an Observable that shows the records as specified in the test using `loadRecordsFor`
+	 * Return an Observable that shows the records as specified in the test using `loadRecordsFor` method as the source of
+	 * the data
 	 */
 
 	public Observable<String> loadRecordsExercise() {
 		/*return*/ Observable
 				.just(DayOfWeek.SUNDAY, DayOfWeek.MONDAY);
-				/* INSERT CODE HERE */
+				/* loadRecordsFor() */
 
 		return null;
 	}
-
 
 	Observable<String> loadRecordsFor(DayOfWeek dow) {
 		switch (dow) {
@@ -101,19 +101,18 @@ public class MapFlatMapExercises {
 	}
 
 	/**
-	 * We take an arbitrary text in String and split it to words, removing punctuation using a
+	 * Take an arbitrary text in String and split it to words, removing punctuation using a
 	 * regular expression. Now, for each word we calculate how much it takes to say that word,
-	 * simply by multiplying the word length by millisPerChar.
+	 * simply by multiplying the word length by millisPerChar (Check 'Speak' class)
 	 * Then, we would like to spread words over time, so that each word appears in the resulting stream after the delay calculated
 	 * @param quote
 	 * @param millisPerChar
+	 * @see Speak
 	 * @return
 	 */
 
 	public Observable<String> speak(String quote, long millisPerChar) {
-		//FOR THE BRAVE: INSERT CODE HERE
-
-		//FOR THE NON-BRAVE: Use this and just fix the test. Speak.speak(quote, millisPerChar);
+		/*Speak.speak(quote, millisPerChar);*/
 		return null;
 	}
 }
