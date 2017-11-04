@@ -1,105 +1,99 @@
 package learnrxjava;
 
-import io.reactivex.observers.TestObserver;
+import io.reactivex.Observable;
 import learnrxjava.types.BoxArt;
 import learnrxjava.types.Movie;
 import learnrxjava.types.Movies;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-
 import static io.reactivex.Observable.error;
 import static io.reactivex.Observable.just;
+import static java.util.Arrays.asList;
+import static java.util.Collections.emptyList;
 import static learnrxjava.ObservableExercises.json;
 
 public class ObservableExercisesTest {
 
-	private ObservableSolutions solutions;
+    private ObservableExercises exercises;
 
-	@Before
-	public void setUp() throws Exception {
-		solutions = new ObservableSolutions();
-	}
+    private static final Movie MEMENTO = new Movie(1, "Memento", 5, emptyList(),
+            asList(new BoxArt(1, 20, "mementoSmall.jpg"), new BoxArt(1, 30, "mementoBig.jpg")));
+    private static final Movie INCEPTION = new Movie(3, "Inception", 5, emptyList(),
+            asList(new BoxArt(2, 20, "inceptionSmall.jpg"), new BoxArt(2, 30, "mementoBig.jpg")));
+    private static final Movie HALF_BLOOD_PRINCE = new Movie(5, "Harry Potter and the Half-Blood Prince", 5, emptyList(),
+            asList(new BoxArt(4, 20, "halfBloodSmall.jpg"), new BoxArt(4, 30, "mementoBig.jpg")));
+    private static final Movie DEATHLY_HALLOWS_PART_1 = new Movie(7, "Harry Potter and the Deathly Hallows: Part 1", 5, emptyList(),
+            asList(new BoxArt(5, 20, "hallowsSmall.jpg"), new BoxArt(5, 30, "hallowsBig.jpg")));
 
-	@Test
-	public void exerciseHello() throws Exception {
-		TestObserver<String> testObserver = new TestObserver<>();
-		solutions.exerciseHello().subscribe(testObserver);
+    private static final Movies NOLAN_MOVIES = new Movies("Christopher Nolan Movies", asList(MEMENTO, INCEPTION));
+    private static final Movies HARRY_POTTERS_MOVIES = new Movies("Harry Potter Movies", asList(HALF_BLOOD_PRINCE, DEATHLY_HALLOWS_PART_1));
 
-		testObserver.assertComplete();
-		testObserver.assertValue("Hello World!");
-	}
+    @Before
+    public void setUp() throws Exception {
+        exercises = new ObservableExercises();
+    }
 
-	@Test
-	public void exerciseMap() throws Exception {
-		TestObserver<String> testObserver = new TestObserver<>();
-		solutions.exerciseMap(just("Hello")).subscribe(testObserver);
+    @Test
+    public void exerciseHello() throws Exception {
+        exercises.exerciseHello().test().assertResult("Hello World!");
+    }
 
-		testObserver.assertValue("Hello Ben!");
-	}
+    @Test
+    public void exerciseMap() throws Exception {
+        exercises.exerciseMap(just("Hello"))
+                .test().assertValue("Hello Daniel!");
+    }
 
-	@Test
-	public void exerciseFilterMap() throws Exception {
-		TestObserver<String> testObserver = new TestObserver<>();
-		solutions.exerciseFilterMap(just(2, 4, 6)).subscribe(testObserver);
+    @Test
+    public void exerciseFilterMap() throws Exception {
+        exercises.exerciseFilterMap(Observable.fromArray(1, 2, 3, 4, 5, 6))
+                .test().assertValues("2-Even", "4-Even", "6-Even");
+    }
 
-		testObserver.assertValueAt(0, "2-Even");
-		testObserver.assertValueAt(1, "4-Even");
-		testObserver.assertValueAt(2, "6-Even");
+    @Test
+    public void exerciseConcatMap() throws Exception {
+        exercises.exerciseConcatMap(just(NOLAN_MOVIES, HARRY_POTTERS_MOVIES))
+                .test().assertValues(1, 3, 5, 7);
+    }
 
-		testObserver.assertResult("2-Even", "4-Even", "6-Even");
-	}
+    @Test
+    public void exerciseFlatMap() throws Exception {
+        exercises.exerciseFlatMap(just(NOLAN_MOVIES, HARRY_POTTERS_MOVIES))
+                .test().assertValues(1, 3, 5, 7);
+    }
 
-	@Test
-	public void exerciseConcatMap() throws Exception {
-		TestObserver<Integer> testObserver = new TestObserver<>();
-		solutions.exerciseConcatMap(just(new Movies("my name", Arrays.asList(new Movie(1, "title1", 2.5), new Movie(2, "title2", 8)))))
-				.subscribe(testObserver);
+    @Test
+    public void exerciseReduce() throws Exception {
+        exercises.exerciseReduce(just(1, 2, 200, 4, 5)).test().assertValue(200);
+    }
 
-		testObserver.assertResult(1, 2);
-	}
+    @Test
+    public void exerciseMovie() throws Exception {
+        exercises.exerciseMovie(just(NOLAN_MOVIES, HARRY_POTTERS_MOVIES))
+                .test().assertResult(
+                json("id", 1, "title", "Memento", "smallestBoxArt", "mementoSmall.jpg"),
+                json("id", 3, "title", "Inception", "smallestBoxArt", "inceptionSmall.jpg"),
+                json("id", 5, "title", "Harry Potter and the Half-Blood Prince", "smallestBoxArt", "halfBloodSmall.jpg"),
+                json("id", 7, "title", "Harry Potter and the Deathly Hallows: Part 1", "smallestBoxArt", "hallowsSmall.jpg")
+        );
+    }
 
-	@Test
-	public void exerciseFlatMap() throws Exception {
-		TestObserver<Integer> testObserver = new TestObserver<>();
-		solutions.exerciseFlatMap(just(new Movies("my name",
-				Arrays.asList(new Movie(1, "title1", 2.5, new ArrayList<>(), new ArrayList<>())))))
-				.subscribe(testObserver);
+    @Test
+    public void exerciseZip() throws Exception {
+        exercises.exerciseZip(just("one", "two", "red", "blue"),
+                just("fish", "fish", "fish", "fish"))
+                .test()
+                .assertResult("one fish", "two fish", "red fish", "blue fish");
+    }
 
-		testObserver.assertNoErrors();
-		testObserver.assertComplete();
-		testObserver.assertValue(1);
-	}
+    @Test
+    public void handleError() throws Exception {
+        exercises.handleError(error(new Throwable()))
+                .test().assertValue("default-value");
+    }
 
-	@Test
-	public void exerciseReduce() throws Exception {
-		solutions.exerciseReduce(just(2, 5, 1, 3, 9)).test().assertValue(9);
-	}
-
-	@Test
-	public void exerciseMovie() throws Exception {
-		String url = "https://url1";
-		String title = "title1";
-		int id = 1;
-		solutions.exerciseMovie(just(new Movies("name", Arrays.asList(new Movie(id, title, 1,
-				new ArrayList<>(), Arrays.asList(new BoxArt(20, 30, url)))))))
-				.test().assertValue(json("id", id, "title", title, "boxart", url));
-	}
-
-	@Test
-	public void exerciseZip() throws Exception {
-		solutions.exerciseZip(just("one", "two", "red", "blue"), just("fish", "fish", "fish", "fish")).test().assertResult("one fish", "two fish", "red fish", "blue fish");
-	}
-
-	@Test
-	public void handleError() throws Exception {
-		solutions.handleError(error(new Throwable())).test().assertValue("default-value");
-	}
-
-	@Test
-	public void retry() throws Exception {
-	}
-
+    @Test
+    public void retry() throws Exception {
+    }
 }
