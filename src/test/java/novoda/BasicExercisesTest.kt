@@ -5,11 +5,11 @@ import org.junit.Test
 
 class BasicExercisesTest {
 
-    private lateinit var basicExercises: BasicExercises
+    private lateinit var basicExercises: BasicSolutions
 
     @Before
     fun setUp() {
-        basicExercises = BasicExercises()
+        basicExercises = BasicSolutions()
     }
 
     @Test

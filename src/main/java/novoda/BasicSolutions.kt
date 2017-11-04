@@ -1,6 +1,7 @@
 package novoda
 
 import io.reactivex.Observable
+import io.reactivex.functions.BiFunction
 import io.reactivex.functions.Function
 import java.util.*
 
@@ -63,5 +64,27 @@ class BasicSolutions {
 
     private fun isEven(integer: Int): Boolean {
         return integer % 2 == 0
+    }
+
+    private val SENTENCES = Arrays.asList("This is the first sentence", "I want those to be enumerated", "How would you ask?", "That is yours to find out!")
+
+    private val INFINITE_ITERABLE = object : Iterable<Int> {
+        override fun iterator(): Iterator<Int> {
+            return IntegerOperator()
+        }
+    }
+
+    /**
+    - Get the 20 first integers from INFINITE_ITERABLE
+    - Enumerate the SENTENCES by adding their index in front of it.
+    - Concatenate the sequences into one line.
+     */
+
+    fun infiniteExercise(): Observable<String> {
+        return Observable.fromIterable(INFINITE_ITERABLE)
+                .take(20)
+                .zipWith(Observable.fromIterable(SENTENCES), BiFunction { t1: Int, t2: String -> "" + t1 + ":" + t2 }, false)
+                .reduce { t1: String, t2: String -> t1 + " " + t2 }
+                .toObservable()
     }
 }
