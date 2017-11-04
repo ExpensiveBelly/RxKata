@@ -41,4 +41,11 @@ class BasicExercisesTest {
                         "Integer : 12",
                         "Integer : 12")
     }
+
+    @Test
+    fun infinite() {
+        basicExercises.infiniteExercise()
+                .test()
+                .assertResult("0:This is the first sentence 1:I want those to be enumerated 2:How would you ask? 3:That is yours to find out!")
+    }
 }
