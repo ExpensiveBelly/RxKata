@@ -26,3 +26,5 @@ Load data from multiple sources
 [Loading Data from multiple sources - Dan Lew](http://blog.danlew.net/2015/06/22/loading-data-from-multiple-sources-with-rxjava/)
 
 [Reactive Programming with RxJava](http://shop.oreilly.com/product/0636920042228.do)
+
+[Novoda Rx Dojos](https://github.com/novoda/dojos/tree/master/workshops/RxJava)
