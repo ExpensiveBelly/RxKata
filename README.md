@@ -14,6 +14,9 @@ Observable exercises (ObservableExercisesTest, ObservableExercises)
 MapFlatMap exercises (MapFlatMapExercisesTest, MapFlatMapExercises)
 
 ### Exercise 3
+Novoda exercises (BasicExercisesTest, BasicExercises)
+
+### Exercise 4
 Algorithm exercises (AlgorithmExercisesTest, AlgorithmExercises)
 
 ---
