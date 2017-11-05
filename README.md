@@ -16,9 +16,10 @@ MapFlatMap exercises (MapFlatMapExercisesTest, MapFlatMapExercises)
 ### Exercise 3
 Algorithm exercises (AlgorithmExercisesTest, AlgorithmExercises)
 
-### Exercise 4 (WIP)
-Load data from multiple sources
+---
+##### Feeling stuck?
 
+`solutions` branch got all the tests passing.
 
 ###### References:
 [LearnRxJava](https://github.com/jhusain/learnrxjava)
