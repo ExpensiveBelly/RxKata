@@ -5,44 +5,33 @@ import org.junit.Test
 
 class BasicExercisesTest {
 
-    private lateinit var basicExercises: BasicExercises
+    private lateinit var exercises: BasicExercises
 
     @Before
     fun setUp() {
-        basicExercises = BasicExercises()
+        exercises = BasicExercises()
     }
 
     @Test
     fun basic() {
-        basicExercises.basicExercise()
+        exercises.basicExercise()
                 .test()
                 .assertResult(
                         "Integer : 0",
                         "Integer : 0",
                         "Integer : 0",
-                        "Integer : 2",
-                        "Integer : 2",
+                        "Integer : 0",
                         "Integer : 2",
                         "Integer : 4",
-                        "Integer : 4",
-                        "Integer : 4",
-                        "Integer : 6",
-                        "Integer : 6",
                         "Integer : 6",
                         "Integer : 8",
-                        "Integer : 8",
-                        "Integer : 8",
                         "Integer : 10",
-                        "Integer : 10",
-                        "Integer : 10",
-                        "Integer : 12",
-                        "Integer : 12",
                         "Integer : 12")
     }
 
     @Test
     fun infinite() {
-        basicExercises.infiniteExercise()
+        exercises.infiniteExercise()
                 .test()
                 .assertResult("0:This is the first sentence 1:I want those to be enumerated 2:How would you ask? 3:That is yours to find out!")
     }
