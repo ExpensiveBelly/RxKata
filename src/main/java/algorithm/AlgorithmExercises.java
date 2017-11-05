@@ -11,13 +11,7 @@ public class AlgorithmExercises {
      */
 
     public Single<Integer> sumOfAllMultiples() {
-        return Observable.range(1,999).filter(it -> !((it % 3 != 0) && (it % 5 != 0))).reduce(0, (a, b) -> a + b);
-
-//        Observable<Integer> threes = range(1, 999).map(it -> it * 3).takeWhile(it -> it < 1000);
-//        Observable<Integer> fives = range(1, 999).map(it -> it * 5).takeWhile(it -> it < 1000);
-//
-//        Observable<Integer> threesAndFives = merge(threes, fives).distinct();
-//        return threesAndFives.reduce(0, (a, b) -> a + b);
+        return null;
     }
 
     /**

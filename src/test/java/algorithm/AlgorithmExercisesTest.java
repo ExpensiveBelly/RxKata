@@ -5,11 +5,11 @@ import org.junit.Test;
 
 public class AlgorithmExercisesTest {
 
-	private AlgorithmExercises exercises;
+	private AlgorithmSolutions exercises;
 
 	@Before
 	public void setUp() throws Exception {
-		exercises = new AlgorithmExercises();
+		exercises = new AlgorithmSolutions();
 	}
 
 	@Test

@@ -6,6 +6,7 @@ import org.javatuples.Triplet;
 import java.time.DayOfWeek;
 import java.util.Optional;
 
+import static io.reactivex.Observable.just;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 
 public class MapFlatMapSolutions {
@@ -15,12 +16,16 @@ public class MapFlatMapSolutions {
 	 * [ 1,2,3,4,5,6,7,8,9 ]
 	 */
 	public Observable<Integer> exerciseFlatten() {
-		Observable<Triplet<Integer, Integer, Integer>> pairObservable = Observable
-				.just(new Triplet<>(1, 2, 3),
+		Observable<Triplet<Integer, Integer, Integer>> pairObservable =
+				just(new Triplet<>(1, 2, 3),
 						new Triplet<>(4, 5, 6),
 						new Triplet<>(7, 8, 9));
 
-		return null;
+		return pairObservable.flatMap(triplet -> Observable.fromArray(
+				triplet.getValue0(),
+				triplet.getValue1(),
+				triplet.getValue2()
+		));
 	}
 
 	/**
@@ -33,7 +38,9 @@ public class MapFlatMapSolutions {
 	public Observable<String> exerciseEmail() {
 		MapFlatMapSolutions.Booking booking = new MapFlatMapSolutions.Booking(new MapFlatMapSolutions.Booking.User("myemail@gmail.com"));
 
-		return null;
+		return booking.getUser()
+				.flatMap(Booking.User::getEmail)
+				.map(email -> just(email)).orElse(Observable.empty());
 	}
 
 	static class Booking {
@@ -66,11 +73,9 @@ public class MapFlatMapSolutions {
 	 */
 
 	public Observable<String> loadRecordsExercise() {
-		/*return*/ Observable
-				.just(DayOfWeek.SUNDAY, DayOfWeek.MONDAY);
-				/* loadRecordsFor() */
-
-		return null;
+		return
+				just(DayOfWeek.SUNDAY, DayOfWeek.MONDAY)
+				.concatMap(dow -> loadRecordsFor(dow));
 	}
 
 	Observable<String> loadRecordsFor(DayOfWeek dow) {
@@ -101,7 +106,6 @@ public class MapFlatMapSolutions {
 	 */
 
 	public Observable<String> speak(String quote, long millisPerChar) {
-		/*Speak.speak(quote, millisPerChar);*/
-		return null;
+		return Speak.speak(quote, millisPerChar);
 	}
 }
