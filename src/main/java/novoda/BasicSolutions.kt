@@ -11,7 +11,6 @@ class BasicSolutions {
     private val INTEGERS = Arrays.asList(0, 1, 2, 3, 4, 5, 6)
 
     /**
-    - Multiply all INTEGERS elements by 2
     - Repeat 3 times every even element and emit once every odd element
     - Send elements until you encounter an odd element then fail, restart and multiply by 2 the entire sequence
     - Prepend the string "Integer : " in front of every element
@@ -19,14 +18,11 @@ class BasicSolutions {
 
     fun basicExercise(): Observable<String> {
         return Observable.fromIterable(INTEGERS)
-                .map<Int>(Functions.multiplyBy2())
-                .flatMap(Functions.threeTimesIfEven())
-                .flatMap(Functions.failIfNotEven())
-                .onErrorResumeNext(Functions.doubleEverything())
+                .flatMap(threeTimesIfEven())
+                .flatMap(failIfNotEven())
+                .onErrorResumeNext(doubleEverything())
                 .map<String>(format())
     }
-
-    //FIXME: Kotlin functions produce a different result at the moment
 
     private fun doubleEverything(): Function<Throwable, Observable<Int>> {
         return Function { Observable.fromIterable(INTEGERS).map(multiplyBy2()) }
@@ -36,17 +32,19 @@ class BasicSolutions {
         return Function { integer ->
             if (isEven(integer)) {
                 Observable.just<Int>(integer)
+            } else {
+                Observable.error<Int>(IllegalArgumentException())
             }
-            Observable.error<Int>(IllegalArgumentException())
         }
     }
 
     private fun threeTimesIfEven(): Function<Int, Observable<Int>> {
         return Function { integer ->
             if (isEven(integer)) {
-                repeat(integer, 3)
+                Observable.just(integer).repeat(3)
+            } else {
+                Observable.just<Int>(integer)
             }
-            Observable.just<Int>(integer)
         }
     }
 
@@ -56,10 +54,6 @@ class BasicSolutions {
 
     private fun format(): Function<Int, String> {
         return Function { integer -> "Integer : " + integer }
-    }
-
-    private fun <T> repeat(value: T, count: Int): Observable<T> {
-        return Observable.just(value).repeat(count.toLong())
     }
 
     private fun isEven(integer: Int): Boolean {
