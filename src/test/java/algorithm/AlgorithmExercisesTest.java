@@ -21,4 +21,10 @@ public class AlgorithmExercisesTest {
 	public void fibonacciTest() throws Exception {
 		exercises.fibonacci(10).test().assertResult(0, 1, 1, 2, 3, 5, 8, 13, 21, 34);
 	}
+
+	@Test
+	public void factorialTest() throws Exception {
+		exercises.factorial(4).test().assertResult(24L);
+		exercises.factorial(5).test().assertResult(120L);
+	}
 }
