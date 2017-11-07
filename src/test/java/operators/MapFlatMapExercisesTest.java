@@ -61,6 +61,5 @@ public class MapFlatMapExercisesTest {
                 "Jane:  B",
                 "Jane:  C"
         ).awaitTerminalEvent();
-
     }
 }

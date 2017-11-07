@@ -112,7 +112,7 @@ public class MapFlatMapExercises {
 	 */
 
 	public Observable<String> speak(String quote, long millisPerChar) {
-		/*Speak.speak(quote, millisPerChar);*/
-		return null;
+		//TODO: Fix the test
+		return Speak.speak(quote, millisPerChar);
 	}
 }
