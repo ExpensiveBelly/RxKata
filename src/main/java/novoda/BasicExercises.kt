@@ -1,6 +1,7 @@
 package novoda
 
 import io.reactivex.Observable
+import io.reactivex.schedulers.TestScheduler
 import java.util.*
 
 
@@ -34,5 +35,13 @@ class BasicExercises {
 
     fun infiniteExercise(): Observable<String> {
         return Observable.error<String>(RuntimeException("Not Implemented"))
+    }
+
+    /**
+     * Implement a timer that emits items from 1 to 6 every second
+     */
+
+    fun timer(scheduler: TestScheduler): Observable<Long> {
+        return Observable.error(RuntimeException("Not implemented"))
     }
 }

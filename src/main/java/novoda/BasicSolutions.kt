@@ -3,7 +3,9 @@ package novoda
 import io.reactivex.Observable
 import io.reactivex.functions.BiFunction
 import io.reactivex.functions.Function
+import io.reactivex.schedulers.TestScheduler
 import java.util.*
+import java.util.concurrent.TimeUnit
 
 
 class BasicSolutions {
@@ -80,5 +82,14 @@ class BasicSolutions {
                 .zipWith(Observable.fromIterable(SENTENCES), BiFunction { t1: Int, t2: String -> "" + t1 + ":" + t2 }, false)
                 .reduce { t1: String, t2: String -> t1 + " " + t2 }
                 .toObservable()
+    }
+
+    /**
+     * Implement a timer that emits items from 1 to 6 every second
+     */
+
+    fun timer(scheduler: TestScheduler): Observable<Long> {
+        return Observable.interval(1, TimeUnit.SECONDS, scheduler)
+                .take(10).map { it + 1 }
     }
 }
