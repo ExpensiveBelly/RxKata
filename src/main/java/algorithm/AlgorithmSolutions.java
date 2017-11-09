@@ -3,6 +3,8 @@ package algorithm;
 import io.reactivex.Observable;
 import io.reactivex.Single;
 
+import java.math.BigInteger;
+
 public class AlgorithmSolutions {
 
 	/**
@@ -38,5 +40,20 @@ public class AlgorithmSolutions {
 			this.n1 = n1;
 			this.n2 = n2;
 		}
+	}
+
+	/**
+	 * Factorial of n is the product of all positive descending integers
+	 * <p>
+	 * 4! = 4 * 3 * 2 * 1 = 24
+	 * 5! = 5 * 4 * 3 * 2 * 1 = 120
+	 */
+
+	Observable<Integer> factorial(int n) {
+		return Observable
+				.range(2, n-1)
+				.scan(BigInteger.ONE, (big, cur) ->
+						big.multiply(BigInteger.valueOf(cur)))
+				.map(bigInteger -> bigInteger.intValue());
 	}
 }

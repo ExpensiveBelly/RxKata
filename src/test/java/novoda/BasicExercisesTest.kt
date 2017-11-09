@@ -5,16 +5,16 @@ import org.junit.Test
 
 class BasicExercisesTest {
 
-    private lateinit var basicExercises: BasicSolutions
+    private lateinit var exercises: BasicSolutions
 
     @Before
     fun setUp() {
-        basicExercises = BasicSolutions()
+        exercises = BasicSolutions()
     }
 
     @Test
     fun basic() {
-        basicExercises.basicExercise()
+        exercises.basicExercise()
                 .test()
                 .assertResult(
                         "Integer : 0",
@@ -31,7 +31,7 @@ class BasicExercisesTest {
 
     @Test
     fun infinite() {
-        basicExercises.infiniteExercise()
+        exercises.infiniteExercise()
                 .test()
                 .assertResult("0:This is the first sentence 1:I want those to be enumerated 2:How would you ask? 3:That is yours to find out!")
     }
