@@ -34,7 +34,7 @@ public class AlgorithmExercises {
 	 * 5! = 5 * 4 * 3 * 2 * 1 = 120
 	 */
 
-	Observable<Long> factorial(int n) {
+	Observable<Integer> factorial(int n) {
 		return Observable.error(new NotImplementedException());
 	}
 }

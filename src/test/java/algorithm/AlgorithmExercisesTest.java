@@ -24,7 +24,8 @@ public class AlgorithmExercisesTest {
 
 	@Test
 	public void factorialTest() throws Exception {
-		exercises.factorial(4).test().assertResult(24L);
-		exercises.factorial(5).test().assertResult(120L);
+		exercises.factorial(4).test().assertResult(1, 2, 6, 24);
+		exercises.factorial(5).test().assertResult(1, 2, 6, 24, 120);
+		exercises.factorial(10).test().assertResult(1, 2, 6, 24, 120, 720, 5040, 40320, 362880, 3628800);
 	}
 }
