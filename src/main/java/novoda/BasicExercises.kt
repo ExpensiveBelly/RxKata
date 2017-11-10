@@ -38,7 +38,7 @@ class BasicExercises {
     }
 
     /**
-     * Implement a timer that emits items from 1 to 6 every second
+     * Implement a timer that emits an item every second. Numbers to be emitted: 1 to 6
      */
 
     fun timer(scheduler: TestScheduler): Observable<Long> {
