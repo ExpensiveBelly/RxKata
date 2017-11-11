@@ -1,6 +1,7 @@
 package novoda
 
 import io.reactivex.Observable
+import io.reactivex.Single
 import io.reactivex.schedulers.TestScheduler
 import java.util.*
 
@@ -43,5 +44,14 @@ class BasicExercises {
 
     fun timer(scheduler: TestScheduler): Observable<Long> {
         return Observable.error(RuntimeException("Not implemented"))
+    }
+
+    /**
+     * Implement count() operator (counts the amount of items in an observable)
+     * Hint: You can use reduce() operator
+     */
+
+    fun count(observable: Observable<Char>): Single<Int> {
+        return Single.error(RuntimeException("Not implemented"))
     }
 }

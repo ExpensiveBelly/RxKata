@@ -1,5 +1,6 @@
 package novoda
 
+import io.reactivex.Observable
 import io.reactivex.schedulers.TestScheduler
 import org.junit.Before
 import org.junit.Test
@@ -57,5 +58,13 @@ class BasicExercisesTest {
         test.assertValueAt(4, 5L)
         testScheduler.advanceTimeBy(1, TimeUnit.SECONDS)
         test.assertValueAt(5, 6L)
+    }
+
+    @Test
+    fun count() {
+        exercises.count(Observable.empty<Char>()).test().assertResult(0)
+
+        exercises.count(Observable
+                .just('A', 'B', 'C', 'D', 'E', 'F')).test().assertResult(6)
     }
 }
