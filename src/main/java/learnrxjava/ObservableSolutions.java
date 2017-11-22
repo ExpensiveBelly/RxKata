@@ -6,7 +6,7 @@ import learnrxjava.types.BoxArt;
 import learnrxjava.types.JSON;
 import learnrxjava.types.Movies;
 
-public class ObservableSolutions extends ObservableExercises {
+public class ObservableSolutions {
 
     /**
      * Return an Observable that emits a single value "Hello World"

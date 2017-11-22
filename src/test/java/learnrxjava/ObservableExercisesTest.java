@@ -11,7 +11,7 @@ import static io.reactivex.Observable.error;
 import static io.reactivex.Observable.just;
 import static java.util.Arrays.asList;
 import static java.util.Collections.emptyList;
-import static learnrxjava.ObservableExercises.json;
+import static learnrxjava.ObservableSolutions.json;
 
 public class ObservableExercisesTest {
 
