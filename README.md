@@ -32,3 +32,5 @@ Algorithm exercises (AlgorithmExercisesTest, AlgorithmExercises)
 [Reactive Programming with RxJava](http://shop.oreilly.com/product/0636920042228.do)
 
 [Novoda Rx Dojos](https://github.com/novoda/dojos/tree/master/workshops/RxJava)
+
+[Hannes Dorfmann Rx workshop](https://github.com/sockeqwe/rxworkshop)
