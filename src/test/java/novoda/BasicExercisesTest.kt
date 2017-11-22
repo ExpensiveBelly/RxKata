@@ -1,6 +1,7 @@
 package novoda
 
 import io.reactivex.Observable
+import io.reactivex.observers.TestObserver
 import io.reactivex.schedulers.TestScheduler
 import org.junit.Before
 import org.junit.Test
@@ -9,12 +10,12 @@ import java.util.concurrent.TimeUnit
 
 class BasicExercisesTest {
 
-    private lateinit var exercises: BasicExercises
+    private lateinit var exercises: BasicSolutions
     private lateinit var testScheduler: TestScheduler
 
     @Before
     fun setUp() {
-        exercises = BasicExercises()
+        exercises = BasicSolutions()
         testScheduler = TestScheduler()
     }
 
@@ -46,18 +47,20 @@ class BasicExercisesTest {
     @Test
     fun timer() {
         val test = exercises.timer(testScheduler).test()
+        test.assertNoValues()
+        advanceTimeAndAssert(test, 1)
+        advanceTimeAndAssert(test, 2)
+        advanceTimeAndAssert(test, 3)
+        advanceTimeAndAssert(test, 4)
+        advanceTimeAndAssert(test, 5)
+        advanceTimeAndAssert(test, 6)
+    }
+
+    private fun advanceTimeAndAssert(test: TestObserver<Long>, valueCount: Int) {
         testScheduler.advanceTimeBy(1, TimeUnit.SECONDS)
-        test.assertValueAt(0, 1L)
-        testScheduler.advanceTimeBy(1, TimeUnit.SECONDS)
-        test.assertValueAt(1, 2L)
-        testScheduler.advanceTimeBy(1, TimeUnit.SECONDS)
-        test.assertValueAt(2, 3L)
-        testScheduler.advanceTimeBy(1, TimeUnit.SECONDS)
-        test.assertValueAt(3, 4L)
-        testScheduler.advanceTimeBy(1, TimeUnit.SECONDS)
-        test.assertValueAt(4, 5L)
-        testScheduler.advanceTimeBy(1, TimeUnit.SECONDS)
-        test.assertValueAt(5, 6L)
+
+        test.assertValueCount(valueCount)
+        test.assertValueAt(valueCount - 1, valueCount.toLong())
     }
 
     @Test

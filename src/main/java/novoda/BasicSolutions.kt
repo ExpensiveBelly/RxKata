@@ -1,6 +1,7 @@
 package novoda
 
 import io.reactivex.Observable
+import io.reactivex.Single
 import io.reactivex.functions.BiFunction
 import io.reactivex.functions.Function
 import io.reactivex.schedulers.TestScheduler
@@ -84,12 +85,22 @@ class BasicSolutions {
                 .toObservable()
     }
 
+
     /**
-     * Implement a timer that emits items from 1 to 6 every second
+     * Implement a timer that emits an item every second. Numbers to be emitted: 1 to 6
      */
 
     fun timer(scheduler: TestScheduler): Observable<Long> {
         return Observable.interval(1, TimeUnit.SECONDS, scheduler)
                 .take(10).map { it + 1 }
+    }
+
+    /**
+     * Implement count() operator (counts the amount of items in an observable)
+     * Hint: You can use reduce() operator
+     */
+
+    fun count(observable: Observable<Char>): Single<Int> {
+        return observable.reduce(0) { sizeSoFar, _ -> sizeSoFar + 1 }
     }
 }

@@ -54,6 +54,6 @@ public class AlgorithmSolutions {
 				.range(2, n-1)
 				.scan(BigInteger.ONE, (big, cur) ->
 						big.multiply(BigInteger.valueOf(cur)))
-				.map(bigInteger -> bigInteger.intValue());
+				.map(BigInteger::intValue);
 	}
 }
