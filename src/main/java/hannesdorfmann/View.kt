@@ -2,7 +2,11 @@ package hannesdorfmann
 
 import io.reactivex.Observable
 
-interface View {
+internal interface View {
 
-    fun buttonClicked(): Observable<Boolean>
+    /**
+     * Emittes the id of the person
+     */
+    fun onPersonClicked(): Observable<Int>
+
 }
