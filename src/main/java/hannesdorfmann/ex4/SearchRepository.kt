@@ -2,6 +2,7 @@ package hannesdorfmann.ex4
 
 import hannesdorfmann.Person
 import io.reactivex.Observable
+import io.reactivex.schedulers.Schedulers
 import java.util.concurrent.TimeUnit
 
 class SearchRepository(private val viewEx4: ViewEx4, private val backendEx4: BackendEx4) {
@@ -20,6 +21,9 @@ class SearchRepository(private val viewEx4: ViewEx4, private val backendEx4: Bac
                 .filter { s -> s.length > 2 }
                 .debounce(300, TimeUnit.MILLISECONDS)
                 .distinctUntilChanged()
-                .switchMap { s -> backendEx4.searchfor(s) }
+                .switchMap { s ->
+                    backendEx4.searchfor(s)
+                            .subscribeOn(Schedulers.io())
+                }
     }
 }
