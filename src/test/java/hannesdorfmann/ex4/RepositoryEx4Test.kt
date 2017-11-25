@@ -53,7 +53,7 @@ class RepositoryEx4Test {
         subscriber.assertComplete()
         subscriber.assertNoErrors()
 
-        Assert.assertEquals(listOf("Franz", "Franz", "Franzis", "Thom"), backend.queries)
+        Assert.assertEquals(listOf("Franz", "Franzis", "Thom"), backend.queries)
 
         val msg = "Expected searchresults: [" + backend.search("Franz").niceString() + "] and [" + backend.search("Thom").niceString() + "] but got the following search results: " + subscriber.values().niceStringList()
         Assert.assertEquals(
