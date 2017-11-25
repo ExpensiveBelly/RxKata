@@ -1,6 +1,7 @@
 package operators;
 
 import io.reactivex.Observable;
+import org.javatuples.Pair;
 import org.javatuples.Triplet;
 
 import java.time.DayOfWeek;
@@ -101,18 +102,26 @@ public class MapFlatMapExercises {
 	}
 
 	/**
+	 * TODO: Exercise is finished, just make the test pass
 	 * Take an arbitrary text in String and split it to words, removing punctuation using a
 	 * regular expression. Now, for each word we calculate how much it takes to say that word,
 	 * simply by multiplying the word length by millisPerChar (Check 'Speak' class)
 	 * Then, we would like to spread words over time, so that each word appears in the resulting stream after the delay calculated
 	 * @param quote
 	 * @param millisPerChar
-	 * @see Speak
 	 * @return
 	 */
 
-	public Observable<String> speak(String quote, long millisPerChar) {
-		//TODO: Fix the test
-		return Speak.speak(quote, millisPerChar);
+	Observable<String> speak(String quote, long millisPerChar) {
+		String[] tokens = quote.replaceAll("[:,]", "").split(" ");
+		Observable<String> words = Observable.fromArray(tokens);
+		Observable<Long> absoluteDelay = words
+				.map(String::length)
+				.map(len -> len * millisPerChar)
+				.scan((total, current) -> total + current);
+		return words
+				.zipWith(absoluteDelay.startWith(0L), Pair::new)
+				.flatMap(pair -> Observable.just(pair.getValue0())
+						.delay(pair.getValue1(), MILLISECONDS));
 	}
 }
