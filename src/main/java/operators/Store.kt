@@ -1,7 +1,6 @@
 package operators
 
 import io.reactivex.Observable
-
 import java.math.BigDecimal
 import java.util.*
 
@@ -16,11 +15,15 @@ internal class Store {
      */
 
     fun purchase(productName: String, quantity: Int): Observable<BigDecimal> {
-        println("Purchasing " + productName + ", Quantity: " + quantity + " thread: " + Thread.currentThread().name)
-        if (productsCache.contains(productName)) {
-            return Observable.error(Throwable("Products should be grouped"))
-        }
-        productsCache.add(productName)
-        return Observable.just(pricesMap[productName]?.times(quantity)?.let { BigDecimal(it) })
+        return Observable.fromCallable({
+            Thread.sleep(1000)
+            if (productsCache.contains(productName)) {
+                throw Throwable("Products should be grouped")
+            }
+            println("Purchasing " + productName + ", Quantity: " + quantity + " thread: " + Thread.currentThread().name)
+            productsCache.add(productName)
+            return@fromCallable pricesMap[productName]?.times(quantity)?.let { BigDecimal(it) }
+        })
+
     }
 }
