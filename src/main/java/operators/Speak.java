@@ -5,9 +5,9 @@ import org.javatuples.Pair;
 
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 
-public class Speak {
+class Speak {
 
-    public static Observable<String> speak(String quote, long millisPerChar) {
+    static Observable<String> speak(String quote, long millisPerChar) {
         String[] tokens = quote.replaceAll("[:,]", "").split(" ");
         Observable<String> words = Observable.fromArray(tokens);
         Observable<Long> absoluteDelay = words
@@ -15,7 +15,7 @@ public class Speak {
                 .map(len -> len * millisPerChar)
                 .scan((total, current) -> total + current);
         return words
-                .zipWith(absoluteDelay.startWith(0L), (s, l) -> new Pair<>(s, l))
+                .zipWith(absoluteDelay.startWith(0L), Pair::new)
                 .flatMap(pair -> Observable.just(pair.getValue0())
                         .delay(pair.getValue1(), MILLISECONDS));
     }
