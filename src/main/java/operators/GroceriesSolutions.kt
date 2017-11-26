@@ -5,7 +5,7 @@ import io.reactivex.schedulers.Schedulers
 import org.javatuples.Pair
 import java.math.BigDecimal
 
-class Groceries {
+class GroceriesSolutions {
 
     private val store = Store()
 
