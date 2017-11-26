@@ -16,6 +16,13 @@ class Groceries {
      */
 
     fun exercisePurchaseGroceries(groceries: Observable<String>): Observable<BigDecimal> {
+//        return groceries
+//                .flatMap { product ->
+//                    store.purchase(product, 1)
+//                }
+//                .reduce({ obj, augend -> obj.add(augend) })
+//                .toObservable()
+
         return groceries
                 .groupBy { s -> s }
                 .flatMap { grouped ->
