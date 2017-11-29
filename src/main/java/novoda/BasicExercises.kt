@@ -3,6 +3,7 @@ package novoda
 import io.reactivex.Observable
 import io.reactivex.Single
 import io.reactivex.schedulers.TestScheduler
+import novoda.types.IntegerOperator
 import java.util.*
 
 

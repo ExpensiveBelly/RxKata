@@ -1,6 +1,6 @@
 package hannesdorfmann.ex4
 
-import hannesdorfmann.Person
+import hannesdorfmann.types.Person
 import io.reactivex.Observable
 
 interface BackendEx4 {

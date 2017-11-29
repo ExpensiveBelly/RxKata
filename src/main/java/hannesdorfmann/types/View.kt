@@ -1,4 +1,4 @@
-package hannesdorfmann
+package hannesdorfmann.types
 
 import io.reactivex.Observable
 

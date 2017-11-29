@@ -1,7 +1,7 @@
 package hannesdorfmann.ex2
 
-import hannesdorfmann.PersonWithAddress
-import hannesdorfmann.View
+import hannesdorfmann.types.PersonWithAddress
+import hannesdorfmann.types.View
 import io.reactivex.Observable
 import io.reactivex.observers.TestObserver
 import io.reactivex.subjects.PublishSubject

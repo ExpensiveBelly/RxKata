@@ -1,7 +1,7 @@
 package hannesdorfmann.ex2
 
-import hannesdorfmann.Person
-import hannesdorfmann.Address
+import hannesdorfmann.types.Address
+import hannesdorfmann.types.Person
 import io.reactivex.Observable
 
 internal interface BackendEx2 {

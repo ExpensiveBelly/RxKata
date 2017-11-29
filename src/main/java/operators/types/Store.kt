@@ -1,4 +1,4 @@
-package operators
+package operators.types
 
 import io.reactivex.Observable
 import java.math.BigDecimal

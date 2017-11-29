@@ -1,4 +1,4 @@
-package hannesdorfmann
+package hannesdorfmann.types
 
 data class PersonWithAddress(
         val person: Person,

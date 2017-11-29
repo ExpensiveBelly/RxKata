@@ -1,10 +1,11 @@
 package operators
 
 import io.reactivex.Observable
+import operators.types.Store
 import sun.reflect.generics.reflectiveObjects.NotImplementedException
 import java.math.BigDecimal
 
-class GroceriesExercises {
+class GroceriesExercise {
 
     private val store = Store()
 

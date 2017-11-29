@@ -7,14 +7,14 @@ import org.junit.Test
 import java.math.BigDecimal
 import kotlin.system.measureTimeMillis
 
-class GroceriesExercisesTest {
+class GroceriesExerciseTest {
 
-    private lateinit var exercises: GroceriesExercises
+    private lateinit var exercises: GroceriesExercise
 
     @Before
     @Throws(Exception::class)
     fun setUp() {
-        exercises = GroceriesExercises()
+        exercises = GroceriesExercise()
     }
 
     @Test

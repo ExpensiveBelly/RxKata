@@ -8,25 +8,25 @@ Learn Rx by making tests PASS!
 3. Make them GREEN!
 
 ### Exercise 1
-Observable exercises (ObservableExercisesTest, ObservableExercises)
+Observable exercises (ObservableExercisesTest)
 
 ### Exercise 2
-MapFlatMap exercises (MapFlatMapExercisesTest, MapFlatMapExercises)
+MapFlatMap exercises (MapFlatMapExercisesTest)
 
 ### Exercise 3
-Novoda exercises (BasicExercisesTest, BasicExercises)
+Novoda exercises (BasicExercisesTest)
 
 ### Exercise 4
-Algorithm exercises (AlgorithmExercisesTest, AlgorithmExercises)
+Algorithm exercises (AlgorithmExercisesTest)
 
 ### Exercise 5
-Hannes Dorfmann exercises
+Hannes Dorfmann exercises (RepositoryEx2Test, RepositoryEx3Test, RepositoryEx4Test)
 
 ### Exercise 5
-Groceries Exercise
+Groceries Exercise (GroceriesExerciseTest)
 
 ### Exercise 6
-Trading Platform Exercise
+Trading Platform Exercise (TradingExercisesTest)
 
 ---
 ##### Feeling stuck?

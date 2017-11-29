@@ -1,8 +1,8 @@
-package novoda;
+package novoda.types;
 
 import java.util.Iterator;
 
-class IntegerOperator implements Iterator<Integer> {
+public class IntegerOperator implements Iterator<Integer> {
 
 	private Integer counter = 0;
 
