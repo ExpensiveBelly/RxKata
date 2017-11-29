@@ -2,6 +2,7 @@ package operators
 
 import io.reactivex.Observable
 import io.reactivex.schedulers.Schedulers
+import operators.types.Store
 import org.javatuples.Pair
 import java.math.BigDecimal
 
