@@ -4,6 +4,10 @@ import io.reactivex.Observable
 import java.math.BigDecimal
 import java.util.*
 
+/**
+ * Read-only class, please don't modify
+ */
+
 internal class Store {
 
     private val productsCache: MutableSet<String> = Collections.synchronizedSet(HashSet())

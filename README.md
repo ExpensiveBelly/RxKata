@@ -22,6 +22,12 @@ Algorithm exercises (AlgorithmExercisesTest, AlgorithmExercises)
 ### Exercise 5
 Hannes Dorfmann exercises
 
+### Exercise 5
+Groceries Exercise
+
+### Exercise 6
+Trading Platform Exercise
+
 ---
 ##### Feeling stuck?
 

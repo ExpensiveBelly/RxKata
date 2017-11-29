@@ -7,20 +7,20 @@ import org.junit.Test
 import java.math.BigDecimal
 import kotlin.system.measureTimeMillis
 
-class GroceriesTest {
+class GroceriesExercisesTest {
 
-    private lateinit var groceries: Groceries
+    private lateinit var exercises: GroceriesExercises
 
     @Before
     @Throws(Exception::class)
     fun setUp() {
-        groceries = Groceries()
+        exercises = GroceriesExercises()
     }
 
     @Test
     fun groceriesExercise() {
         val duration = measureTimeMillis {
-            val test = groceries.exercisePurchaseGroceries(Observable
+            val test = exercises.exercisePurchaseGroceries(Observable
                     .just("bread", "butter", "egg", "milk", "tomato",
                             "cheese", "tomato", "egg", "egg"))
                     .test()

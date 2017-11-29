@@ -4,7 +4,7 @@ import io.reactivex.Observable
 import sun.reflect.generics.reflectiveObjects.NotImplementedException
 import java.math.BigDecimal
 
-class Groceries {
+class GroceriesExercises {
 
     private val store = Store()
 
