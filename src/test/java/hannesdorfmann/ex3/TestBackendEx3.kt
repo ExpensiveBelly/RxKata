@@ -1,8 +1,8 @@
 package hannesdorfmann.ex3
 
-import hannesdorfmann.Address
-import hannesdorfmann.Person
-import hannesdorfmann.PersonWithAddress
+import hannesdorfmann.types.Address
+import hannesdorfmann.types.Person
+import hannesdorfmann.types.PersonWithAddress
 import io.reactivex.Observable
 
 class TestBackendEx3 : BackendEx3 {

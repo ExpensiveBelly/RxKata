@@ -1,6 +1,7 @@
 package operators;
 
 import io.reactivex.Observable;
+import org.javatuples.Pair;
 import org.javatuples.Triplet;
 
 import java.time.DayOfWeek;
@@ -8,6 +9,17 @@ import java.util.Optional;
 
 import static io.reactivex.Observable.just;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
+
+/**
+ * As a rule of thumb, you use flatMap() for the following situations:
+ * <p>
+ * The result of transformation in map() must be an Observable.
+ * For example, performing long-running, asynchronous operation on each element of the stream without blocking.
+ * <p>
+ * You need a one-to-many transformation, a single event is expanded into multiple sub-events.
+ * For example, a stream of customers is translated into streams of their orders, for which each customer
+ * can have an arbitrary number of orders.
+ */
 
 public class MapFlatMapSolutions {
 
@@ -95,6 +107,7 @@ public class MapFlatMapSolutions {
 	}
 
 	/**
+	 * TODO: Exercise is finished, just make the test pass
 	 * Take an arbitrary text in String and split it to words, removing punctuation using a
 	 * regular expression. Now, for each word we calculate how much it takes to say that word,
 	 * simply by multiplying the word length by millisPerChar (Check 'Speak' class)
@@ -106,6 +119,16 @@ public class MapFlatMapSolutions {
 	 */
 
 	public Observable<String> speak(String quote, long millisPerChar) {
-		return Speak.speak(quote, millisPerChar);
+		String[] tokens = quote.replaceAll("[:,]", "").split(" ");
+		Observable<String> words = Observable.fromArray(tokens);
+		Observable<Long> absoluteDelay = words
+				.map(String::length)
+				.map(len -> len * millisPerChar)
+				.scan((total, current) -> total + current);
+		return words
+				.zipWith(absoluteDelay.startWith(0L), Pair::new)
+				.flatMap(pair -> Observable.just(pair.getValue0())
+						.delay(pair.getValue1(), MILLISECONDS));
+	}
 	}
 }

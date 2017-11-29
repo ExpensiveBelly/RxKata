@@ -1,6 +1,6 @@
 package hannesdorfmann.ex3
 
-import hannesdorfmann.PersonWithAddress
+import hannesdorfmann.types.PersonWithAddress
 import io.reactivex.observers.TestObserver
 import io.reactivex.subjects.PublishSubject
 import org.junit.Assert

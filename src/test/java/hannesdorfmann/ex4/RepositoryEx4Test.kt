@@ -1,6 +1,6 @@
 package hannesdorfmann.ex4
 
-import hannesdorfmann.Person
+import hannesdorfmann.types.Person
 import io.reactivex.Observable
 import io.reactivex.observers.TestObserver
 import io.reactivex.subjects.PublishSubject
@@ -21,7 +21,7 @@ class RepositoryEx4Test {
         val backend = TestBackendEx4()
         val subscriber = TestObserver<List<Person>>()
 
-        val repo = SearchRepository(view, backend)
+        val repo = RepositoryEx4(view, backend)
         repo.search().subscribeWith(subscriber)
 
         search.onNext("H")
