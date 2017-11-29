@@ -87,7 +87,7 @@ public class MapFlatMapSolutions {
 	public Observable<String> loadRecordsExercise() {
 		return
 				just(DayOfWeek.SUNDAY, DayOfWeek.MONDAY)
-				.concatMap(dow -> loadRecordsFor(dow));
+						.concatMap(dow -> loadRecordsFor(dow));
 	}
 
 	Observable<String> loadRecordsFor(DayOfWeek dow) {
@@ -112,9 +112,9 @@ public class MapFlatMapSolutions {
 	 * regular expression. Now, for each word we calculate how much it takes to say that word,
 	 * simply by multiplying the word length by millisPerChar (Check 'Speak' class)
 	 * Then, we would like to spread words over time, so that each word appears in the resulting stream after the delay calculated
+	 *
 	 * @param quote
 	 * @param millisPerChar
-	 * @see Speak
 	 * @return
 	 */
 
@@ -130,5 +130,5 @@ public class MapFlatMapSolutions {
 				.flatMap(pair -> Observable.just(pair.getValue0())
 						.delay(pair.getValue1(), MILLISECONDS));
 	}
-	}
 }
+

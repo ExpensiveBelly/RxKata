@@ -7,12 +7,12 @@ import java.util.concurrent.TimeUnit
 
 class TradingExercisesTest {
 
-    private lateinit var exercises: TradingExercises
+    private lateinit var exercises: TradingSolutions
     private lateinit var testScheduler: TestScheduler
 
     @Before
     fun setUp() {
-        exercises = TradingExercises()
+        exercises = TradingSolutions()
         testScheduler = TestScheduler()
     }
 

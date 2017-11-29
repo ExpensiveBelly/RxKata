@@ -1,10 +1,10 @@
 package hannesdorfmann.ex2
 
+import hannesdorfmann.types.Address
+import hannesdorfmann.types.Person
 import hannesdorfmann.types.PersonWithAddress
 import hannesdorfmann.types.View
 import io.reactivex.Observable
-import hannesdorfmann.Address
-import hannesdorfmann.Person
 import io.reactivex.functions.BiFunction
 import io.reactivex.schedulers.Schedulers
 

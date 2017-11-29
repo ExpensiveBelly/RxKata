@@ -9,12 +9,12 @@ import kotlin.system.measureTimeMillis
 
 class GroceriesExerciseTest {
 
-    private lateinit var exercises: GroceriesExercise
+    private lateinit var exercises: GroceriesSolutions
 
     @Before
     @Throws(Exception::class)
     fun setUp() {
-        exercises = GroceriesExercise()
+        exercises = GroceriesSolutions()
     }
 
     @Test
