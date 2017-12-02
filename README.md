@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/ExpensiveBelly/RxKata.svg?branch=solutions)](https://travis-ci.org/ExpensiveBelly/RxKata)
+
 # Rx Java exercises / Katas
 
 Learn Rx by making tests PASS!
