@@ -3,6 +3,7 @@ package rxbasicsjava;
 import io.reactivex.Observable;
 import io.reactivex.Single;
 import io.reactivex.schedulers.Schedulers;
+import rxbasicsjava.types.Country;
 
 import java.util.List;
 import java.util.Locale;
