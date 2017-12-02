@@ -43,3 +43,5 @@ Trading Platform Exercise (TradingExercisesTest)
 [Novoda Rx Dojos](https://github.com/novoda/dojos/tree/master/workshops/RxJava)
 
 [Hannes Dorfmann Rx workshop](https://github.com/sockeqwe/rxworkshop)
+
+[RxBasicsKata](https://github.com/sergiiz/RxBasicsKata)
