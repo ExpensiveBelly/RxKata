@@ -28,6 +28,9 @@ Groceries Exercise (GroceriesExerciseTest)
 ### Exercise 6
 Trading Platform Exercise (TradingExercisesTest)
 
+### Exercise 7
+Countries Exercises (CountriesExercises)
+
 ---
 ##### Feeling stuck?
 
