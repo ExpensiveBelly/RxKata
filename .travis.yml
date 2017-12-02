@@ -2,7 +2,7 @@ language: java
 jdk: oraclejdk8
 sudo: false
 script:
-    - ./gradlew check
+    - gradle check
 # whitelist
 branches:
   only:
