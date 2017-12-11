@@ -85,11 +85,9 @@ public class MapFlatMapExercises {
      */
 
 	public Observable<String> loadRecordsExercise() {
-		/*return*/ Observable
-				.just(DayOfWeek.SUNDAY, DayOfWeek.MONDAY);
-				/* loadRecordsFor() */
-
-		return null;
+		return Observable
+				.just(DayOfWeek.SUNDAY, DayOfWeek.MONDAY)
+				.concatMap(day -> loadRecordsFor(day));
 	}
 
 	Observable<String> loadRecordsFor(DayOfWeek dow) {

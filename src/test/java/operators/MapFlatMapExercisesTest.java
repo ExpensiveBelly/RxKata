@@ -44,7 +44,7 @@ public class MapFlatMapExercisesTest {
                 "A B C", 100);
 
         TestObserver<String> test = Observable
-                .merge(
+                .concat(
                         alice.map(w -> "Alice: " + w),
                         bob.map(w -> "Bob:   " + w),
                         jane.map(w -> "Jane:  " + w)

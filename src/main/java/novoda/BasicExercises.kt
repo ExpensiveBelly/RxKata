@@ -1,7 +1,10 @@
 package novoda
 
 import io.reactivex.Observable
+import io.reactivex.Observable.just
+import io.reactivex.ObservableSource
 import io.reactivex.Single
+import io.reactivex.functions.Function
 import io.reactivex.schedulers.TestScheduler
 import novoda.types.IntegerOperator
 import java.util.*
@@ -18,7 +21,19 @@ class BasicExercises {
      */
 
     fun basicExercise(): Observable<String> {
-        return Observable.error<String>(RuntimeException("Not Implemented"))
+        return Observable.fromIterable(INTEGERS)
+                .flatMap {
+                    if (it % 2 == 0) {
+                        just(it, it, it)
+                    } else {
+                        throw IllegalArgumentException()
+                    }
+                }
+                .onErrorResumeNext(Function<Throwable, ObservableSource<Int>> {
+                    Observable.fromIterable(INTEGERS)
+                            .map { it * 2 }
+                })
+                .map { "Integer : " + it }
     }
 
     private val SENTENCES = Arrays.asList("This is the first sentence", "I want those to be enumerated", "How would you ask?", "That is yours to find out!")
@@ -36,7 +51,12 @@ class BasicExercises {
      */
 
     fun infiniteExercise(): Observable<String> {
-        return Observable.error<String>(RuntimeException("Not Implemented"))
+        return Observable.fromIterable(INFINITE_ITERABLE)
+                .take(4)
+                .map { it.toString() + ":" + SENTENCES.get(it) }
+                .toList()
+                .map { it.joinToString(separator = " ") }
+                .toObservable()
     }
 
     /**
