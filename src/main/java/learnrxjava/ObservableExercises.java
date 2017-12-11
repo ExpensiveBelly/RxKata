@@ -6,6 +6,8 @@ import io.reactivex.Observable;
 import learnrxjava.types.JSON;
 import learnrxjava.types.Movies;
 
+import java.util.Arrays;
+
 public class ObservableExercises {
 
     /**
@@ -23,7 +25,7 @@ public class ObservableExercises {
      * @param "Hello Name!"
      */
     public Observable<String> exerciseMap(Observable<String> hello) {
-        return hello.map(s -> s + " Todd");
+        return hello.map(s -> s + " Todd!");
     }
 
     /**
@@ -89,8 +91,8 @@ public class ObservableExercises {
         return movies.flatMap(movies1 -> movies1.videos
                 .flatMap(movie ->
                         movie.boxarts.reduce((boxArt, boxArt2) ->
-                                boxArt.height * boxArt.width > boxArt2.height * boxArt2.width ? boxArt : boxArt2)
-                                .flatMapObservable(boxArt -> Observable.just(json("id", movie.id, "title", movie.title, "url", boxArt.url))));
+                                boxArt.height * boxArt.width <= boxArt2.height * boxArt2.width ? boxArt : boxArt2)
+                                .flatMapObservable(boxArt -> Observable.just(json("smallestBoxArt", boxArt.url, "id", movie.id, "title", movie.title)))));
     }
 
     /**
@@ -101,7 +103,7 @@ public class ObservableExercises {
      * output -> "one fish", "two fish", "red fish", "blue fish"
      */
     public Observable<String> exerciseZip(Observable<String> a, Observable<String> b) {
-        return Observable.error(new RuntimeException("Not Implemented"));
+        return a.zipWith(b, (s, s2) -> s + " " + s2);
     }
 
     /**
@@ -109,7 +111,7 @@ public class ObservableExercises {
      * and replace it with "default-value".
      */
     public Observable<String> handleError(Observable<String> data) {
-        return Observable.error(new RuntimeException("Not Implemented"));
+        return data.onErrorReturn(throwable -> "default-value");
     }
 
     // This function can be used to build JSON objects within an expression

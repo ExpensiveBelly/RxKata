@@ -42,7 +42,7 @@ public class ObservableExercisesTest {
     @Test
     public void exerciseMap() throws Exception {
         exercises.exerciseMap(just("Hello"))
-                .test().assertValue("Hello Daniel!");
+                .test().assertValue("Hello Todd!");
     }
 
     @Test

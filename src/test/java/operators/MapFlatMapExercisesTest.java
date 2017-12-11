@@ -1,10 +1,14 @@
 package operators;
 
+import io.reactivex.Completable;
+import io.reactivex.CompletableSource;
 import io.reactivex.Observable;
 import io.reactivex.observers.TestObserver;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 public class MapFlatMapExercisesTest {

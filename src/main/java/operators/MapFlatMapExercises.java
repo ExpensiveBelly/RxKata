@@ -27,12 +27,12 @@ public class MapFlatMapExercises {
 	 * [ 1,2,3,4,5,6,7,8,9 ]
 	 */
 	public Observable<Integer> exerciseFlatten() {
-		Observable<Triplet<Integer, Integer, Integer>> pairObservable = Observable
+		Observable<Triplet<Integer, Integer, Integer>> tripletObservable = Observable
 				.just(new Triplet<>(1, 2, 3),
 						new Triplet<>(4, 5, 6),
 						new Triplet<>(7, 8, 9));
 
-		return null;
+		return tripletObservable.flatMap(objects -> Observable.just(objects.getValue0(), objects.getValue1(), objects.getValue2()));
 	}
 
 	/**
@@ -43,9 +43,17 @@ public class MapFlatMapExercises {
 	 */
 
 	public Observable<String> exerciseEmail() {
-		Booking booking = new Booking(new Booking.User("myemail@gmail.com"));
+		Booking aBooking = new Booking(new Booking.User("myemail@gmail.com"));
 
-		return null;
+		return Observable.just(aBooking)
+				.flatMap(booking -> {
+					Optional<Booking.User> user = booking.getUser();
+					return user.isPresent() ? Observable.just(user.get()) : Observable.empty();
+				})
+				.flatMap(user -> {
+					Optional<String> email = user.getEmail();
+					return email.isPresent() ? Observable.just(email.get()) : Observable.empty();
+				});
 	}
 
 	static class Booking {
@@ -78,11 +86,8 @@ public class MapFlatMapExercises {
 	 */
 
 	public Observable<String> loadRecordsExercise() {
-		/*return*/ Observable
-				.just(DayOfWeek.SUNDAY, DayOfWeek.MONDAY);
-				/* loadRecordsFor() */
-
-		return null;
+		return Observable.just(loadRecordsFor(DayOfWeek.SUNDAY), loadRecordsFor(DayOfWeek.MONDAY))
+				.concatMap(stringObservable -> stringObservable);
 	}
 
 	Observable<String> loadRecordsFor(DayOfWeek dow) {
