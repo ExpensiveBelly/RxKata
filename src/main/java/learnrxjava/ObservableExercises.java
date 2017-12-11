@@ -3,6 +3,8 @@ package learnrxjava;
 
 import io.reactivex.Maybe;
 import io.reactivex.Observable;
+import io.reactivex.functions.BiFunction;
+import io.reactivex.functions.Function;
 import learnrxjava.types.JSON;
 import learnrxjava.types.Movies;
 
@@ -14,7 +16,7 @@ public class ObservableExercises {
      * @return "Hello World!"
      */
     public Observable<String> exerciseHello() {
-        return Observable.error(new RuntimeException("Not Implemented"));
+        return Observable.just("Hello World!");
     }
 
     /**
@@ -44,7 +46,7 @@ public class ObservableExercises {
      * @return Observable of Integers of Movies.videos.id
      */
     public Observable<Integer> exerciseConcatMap(Observable<Movies> movies) {
-        return Observable.error(new RuntimeException("Not Implemented"));
+        return movies.concatMap(movies1 -> movies1.videos.map(video -> video.id));
     }
 
     /**
@@ -96,7 +98,7 @@ public class ObservableExercises {
      * output -> "one fish", "two fish", "red fish", "blue fish"
      */
     public Observable<String> exerciseZip(Observable<String> a, Observable<String> b) {
-        return Observable.error(new RuntimeException("Not Implemented"));
+        return a.zipWith(b, (stringA, stringB) -> stringA + " " + stringB);
     }
 
     /**
@@ -104,7 +106,7 @@ public class ObservableExercises {
      * and replace it with "default-value".
      */
     public Observable<String> handleError(Observable<String> data) {
-        return Observable.error(new RuntimeException("Not Implemented"));
+        return data.onErrorReturn(throwable-> "default-value");
     }
 
     // This function can be used to build JSON objects within an expression
