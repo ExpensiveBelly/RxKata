@@ -104,6 +104,19 @@ public class ObservableExercises {
 
     }
 
+    public Observable<JSON> exerciseMovieAlternative(Observable<Movies> movies) {
+        return movies.
+                flatMap(it -> it.videos
+                        .flatMap(movie -> movie.boxarts
+                                .reduce((boxArt1, boxArt2) -> area(boxArt1) <= area(boxArt2) ? boxArt1 : boxArt2)
+                                .map(boxArt -> boxArt.url).toObservable()
+                                .map(boxArtUrl -> json(
+                                        "id", movie.id,
+                                        "title", movie.title,
+                                        "smallestBoxArt", boxArtUrl))));
+
+    }
+
     private String smallestBoxArtUrl(Movie movie) {
         return movie.boxarts
                 .reduce((boxArt1, boxArt2) -> area(boxArt1) <= area(boxArt2) ? boxArt1 : boxArt2)
@@ -123,7 +136,7 @@ public class ObservableExercises {
      * output -> "one fish", "two fish", "red fish", "blue fish"
      */
     public Observable<String> exerciseZip(Observable<String> a, Observable<String> b) {
-        return Observable.error(new RuntimeException("Not Implemented"));
+        return a.zipWith(b, (s, s2) -> s + " " + s2);
     }
 
     /**
@@ -131,7 +144,7 @@ public class ObservableExercises {
      * and replace it with "default-value".
      */
     public Observable<String> handleError(Observable<String> data) {
-        return Observable.error(new RuntimeException("Not Implemented"));
+        return data.onErrorReturn(it -> "default-value");
     }
 
     // This function can be used to build JSON objects within an expression
