@@ -43,6 +43,10 @@ public class MapFlatMapExercisesTest {
         Observable<String> jane = exercises.speak(
                 "A B C", 100);
 
+        /**
+         * This Observable is incorrect and it's causing the test to fail
+         */
+
         TestObserver<String> test = Observable
                 .merge(
                         alice.map(w -> "Alice: " + w),
