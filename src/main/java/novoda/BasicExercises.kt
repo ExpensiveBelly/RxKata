@@ -2,9 +2,11 @@ package novoda
 
 import io.reactivex.Observable
 import io.reactivex.Single
+import io.reactivex.functions.BiFunction
 import io.reactivex.schedulers.TestScheduler
 import novoda.types.IntegerOperator
 import java.util.*
+import java.util.concurrent.TimeUnit
 
 
 class BasicExercises {
@@ -17,9 +19,14 @@ class BasicExercises {
     - Prepend the string "Integer : " in front of every element
      */
 
-    fun basicExercise(): Observable<String> {
-        return Observable.error<String>(RuntimeException("Not Implemented"))
-    }
+    fun basicExercise(): Observable<String> =
+            Observable.fromIterable(INTEGERS)
+                    .switchMap {
+                        Observable.just(it)
+                                .repeat(if (it % 2 == 0) 2 else 0)
+                    }
+                    .map { "Integer : $it" }
+
 
     private val SENTENCES = Arrays.asList("This is the first sentence", "I want those to be enumerated", "How would you ask?", "That is yours to find out!")
 
@@ -35,24 +42,33 @@ class BasicExercises {
     - Concatenate the sequences into one line.
      */
 
-    fun infiniteExercise(): Observable<String> {
-        return Observable.error<String>(RuntimeException("Not Implemented"))
-    }
+    fun infiniteExercise(): Observable<String> =
+            Observable.zip(
+                    Observable.fromIterable(INFINITE_ITERABLE)
+                            .take(20),
+                    Observable.fromIterable(SENTENCES),
+                    BiFunction<Int, String, String> { num, sentence -> "$num:$sentence" })
+                    .collectInto(StringBuilder(), { buffer, string -> buffer.append(' ').append(string) })
+                    .map { it.deleteCharAt(0) }
+                    .map { it.toString() }
+                    .toObservable()
+
 
     /**
      * Implement a timer that emits an item every second. Numbers to be emitted: 1 to 6
      */
 
-    fun timer(scheduler: TestScheduler): Observable<Long> {
-        return Observable.error(RuntimeException("Not implemented"))
-    }
+    fun timer(scheduler: TestScheduler): Observable<Long> =
+            Observable.interval(1, TimeUnit.SECONDS, scheduler)
+                    .take(6)
+                    .map { it + 1 }
 
     /**
      * Implement count() operator (counts the amount of items in an observable)
      * Hint: You can use reduce() operator
      */
 
-    fun count(observable: Observable<Char>): Single<Int> {
-        return Single.error(RuntimeException("Not implemented"))
-    }
+    fun count(observable: Observable<Char>): Single<Int> =
+            observable
+                    .reduce(0, {acc, char -> acc + 1})
 }

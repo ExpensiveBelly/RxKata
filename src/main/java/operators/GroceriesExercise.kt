@@ -1,6 +1,7 @@
 package operators
 
 import io.reactivex.Observable
+import io.reactivex.schedulers.Schedulers
 import operators.types.Store
 import sun.reflect.generics.reflectiveObjects.NotImplementedException
 import java.math.BigDecimal
@@ -15,7 +16,21 @@ class GroceriesExercise {
      * list using the `purchase` method in `Store` class.
      */
 
-    fun exercisePurchaseGroceries(groceries: Observable<String>): Observable<BigDecimal> {
-        throw NotImplementedException()
-    }
+    fun exercisePurchaseGroceries(groceries: Observable<String>): Observable<BigDecimal> =
+            groceries
+                    .groupBy { it }
+                    .flatMap { key ->
+                        key.count()
+                                .toObservable()
+                                .flatMap {
+                                    store.purchase(key.key!!, it.toInt())
+                                            .subscribeOn(Schedulers.io())
+                                }
+                    }
+                    .reduce(BigDecimal.ZERO, { acc, num -> acc + num })
+                    .toObservable()
 }
+
+
+
+
