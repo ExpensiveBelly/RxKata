@@ -21,11 +21,17 @@ class BasicExercises {
 
     fun basicExercise(): Observable<String> =
             Observable.fromIterable(INTEGERS)
-                    .switchMap {
-                        Observable.just(it)
-                                .repeat(if (it % 2 == 0) 2 else 0)
+                    .let { obvs ->
+                        obvs.concatMap {
+                            if (it % 2 == 0)
+                                Observable.just(it)
+                                        .repeat(3)
+                            else
+                                Observable.error(IllegalArgumentException("That's odd..."))
+                        }
+                                .onErrorResumeNext(obvs.map { it * 2 })
+                                .map { "Integer : $it" }
                     }
-                    .map { "Integer : $it" }
 
 
     private val SENTENCES = Arrays.asList("This is the first sentence", "I want those to be enumerated", "How would you ask?", "That is yours to find out!")
@@ -70,5 +76,5 @@ class BasicExercises {
 
     fun count(observable: Observable<Char>): Single<Int> =
             observable
-                    .reduce(0, {acc, char -> acc + 1})
+                    .reduce(0, { acc, char -> acc + 1 })
 }
