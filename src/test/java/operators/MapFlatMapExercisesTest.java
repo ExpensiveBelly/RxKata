@@ -54,16 +54,18 @@ public class MapFlatMapExercisesTest {
                         jane.map(w -> "Jane:  " + w)
                 ).test();
         test.awaitTerminalEvent();
+        //bit of a crappy test - should use test scheduler & go forward in time
+        //that way the test is not slow - also can verify that each word is spoken after that amount of time exactly
         test.assertResult(
                 "Alice: A",
-                "Alice: B",
-                "Alice: C",
                 "Bob:   A",
-                "Bob:   B",
-                "Bob:   C",
                 "Jane:  A",
+                "Bob:   B",
                 "Jane:  B",
-                "Jane:  C"
+                "Alice: B",
+                "Bob:   C",
+                "Jane:  C",
+                "Alice: C"
         ).awaitTerminalEvent();
     }
 }
