@@ -45,11 +45,11 @@ public class MapFlatMapExercises {
 
 	public Observable<String> exerciseEmail() {
 		Booking booking = new Booking(new Booking.User("myemail@gmail.com"));
-
-		return Observable.never();
-//		return booking.getUser().flatMap(user -> user.getEmail().map(o -> Observable.just(o)).orElse(Observable.empty())).orElse(Observable.empty());
-
-//		return booking.getUser().flatMap(user -> user.getEmail());
+		return Observable.create(emitter -> {
+			final Optional<String> optionalEmail = booking.getUser().flatMap(Booking.User::getEmail);
+			optionalEmail.ifPresent(emitter::onNext);
+			emitter.onComplete();
+		});
 	}
 
 	static class Booking {

@@ -1,17 +1,15 @@
 package rxbasicsjava;
 
-import io.reactivex.Observable;
-import io.reactivex.ObservableSource;
-import io.reactivex.ObservableTransformer;
-import io.reactivex.Single;
-import rxbasicsjava.types.Country;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
-
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.FutureTask;
 import java.util.concurrent.TimeUnit;
+
+import io.reactivex.Observable;
+import io.reactivex.ObservableTransformer;
+import io.reactivex.Single;
+import rxbasicsjava.types.Country;
 
 class CountriesExercises {
 
