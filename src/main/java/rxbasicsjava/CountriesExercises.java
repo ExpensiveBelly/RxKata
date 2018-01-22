@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.concurrent.FutureTask;
 import java.util.concurrent.TimeUnit;
 
+import io.reactivex.Notification;
 import io.reactivex.Observable;
 import io.reactivex.ObservableTransformer;
 import io.reactivex.Single;
@@ -90,6 +91,15 @@ class CountriesExercises {
     }
 
     public Single<Boolean> areEmittingSameSequences(Observable<Country> countryObservable1,
+                                                    Observable<Country> countryObservable2) {
+        return Observable.zip(
+                countryObservable1.materialize(),
+                countryObservable2.materialize(), Notification::equals)
+                .filter(isEqual -> !isEqual)
+                .first(true);
+    }
+
+    public Single<Boolean> areEmittingSameSequencesOld(Observable<Country> countryObservable1,
                                                     Observable<Country> countryObservable2) {
         final Country terminator = new Country("end", "USD", 0L);
         return Observable.zip(
