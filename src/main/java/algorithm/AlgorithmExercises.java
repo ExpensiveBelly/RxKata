@@ -1,10 +1,9 @@
 package algorithm;
 
+import java.util.Iterator;
+
 import io.reactivex.Observable;
-import io.reactivex.ObservableEmitter;
-import io.reactivex.ObservableOnSubscribe;
 import io.reactivex.Single;
-import io.reactivex.internal.operators.observable.ObservableEmpty;
 
 public class AlgorithmExercises {
 
@@ -28,24 +27,35 @@ public class AlgorithmExercises {
      */
 
     public Observable<Integer> fibonacci(int n) {
-        return ObservableEmpty.create(new ObservableOnSubscribe<Integer>() {
+        return Observable.fromIterable(fibonacciIterable())
+                .take(n);
+    }
+
+    private Iterable<Integer> fibonacciIterable() {
+        return () -> new Iterator<Integer>() {
+            int first = -1;
+            int second = -1;
             @Override
-            public void subscribe(ObservableEmitter<Integer> e) throws Exception {
-                int last = 0;
-                int next = 1;
+            public boolean hasNext() {
+                return true; //infinite
+            }
 
-                e.onNext(last);
-                e.onNext(next);
-
-                while (!e.isDisposed()) {
-                    int calc = last + next;
-                    e.onNext(calc);
-                    last = next;
-                    next = calc;
+            @Override
+            public Integer next() {
+                if (first == -1) {
+                    first = 0;
+                    return 0;
+                } else if (second == -1) {
+                    second = 1;
+                    return 1;
+                } else {
+                    int fib = first + second;
+                    first = second;
+                    second = fib;
+                    return fib;
                 }
             }
-        })
-                .take(n);
+        };
     }
 
     /**
