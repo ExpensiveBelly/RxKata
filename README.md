@@ -31,6 +31,9 @@ Trading Platform Exercise (TradingExercisesTest)
 ### Exercise 7
 Countries Exercises (CountriesExercises)
 
+### Exercise 7
+Kotlin Collections Exercises (KotlinCollectionsExercises)
+
 ---
 ##### Feeling stuck?
 
@@ -48,3 +51,5 @@ Countries Exercises (CountriesExercises)
 [Hannes Dorfmann Rx workshop](https://github.com/sockeqwe/rxworkshop)
 
 [RxBasicsKata](https://github.com/sergiiz/RxBasicsKata)
+
+[KotlinNotesForProfessionals](http://books.goalkicker.com/KotlinBook/)
