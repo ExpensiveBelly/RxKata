@@ -30,6 +30,12 @@ Groceries Exercise (GroceriesExerciseTest)
 ### Exercise 6
 Trading Platform Exercise (TradingExercisesTest)
 
+### Exercise 7
+Countries Exercises (CountriesExercises)
+
+### Exercise 8
+Kotlin Collections Exercises (KotlinCollectionsExercises)
+
 ---
 ##### Feeling stuck?
 
@@ -45,3 +51,7 @@ Trading Platform Exercise (TradingExercisesTest)
 [Novoda Rx Dojos](https://github.com/novoda/dojos/tree/master/workshops/RxJava)
 
 [Hannes Dorfmann Rx workshop](https://github.com/sockeqwe/rxworkshop)
+
+[RxBasicsKata](https://github.com/sergiiz/RxBasicsKata)
+
+[KotlinNotesForProfessionals](http://books.goalkicker.com/KotlinBook/)
