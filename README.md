@@ -31,7 +31,7 @@ Trading Platform Exercise (TradingExercisesTest)
 ### Exercise 7
 Countries Exercises (CountriesExercises)
 
-### Exercise 7
+### Exercise 8
 Kotlin Collections Exercises (KotlinCollectionsExercises)
 
 ---
