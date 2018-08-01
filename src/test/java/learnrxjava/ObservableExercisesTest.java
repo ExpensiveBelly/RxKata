@@ -92,8 +92,4 @@ public class ObservableExercisesTest {
         exercises.handleError(error(new Throwable()))
                 .test().assertValue("default-value");
     }
-
-    @Test
-    public void retry() throws Exception {
-    }
 }
