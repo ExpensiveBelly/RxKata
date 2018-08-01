@@ -29,3 +29,5 @@ BONUS: Kotlin collection exercises as well.
 [KotlinNotesForProfessionals](http://books.goalkicker.com/KotlinBook/)
 
 [RxRiddles](https://github.com/vanniktech/RxRiddles)
+
+[Kotlin Koans Solutions](https://github.com/efung/kotlin-koans-solutions)
