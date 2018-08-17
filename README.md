@@ -5,9 +5,10 @@
 Learn Rx by making tests PASS!
 
 ## Steps
-1. Right click on the 'test' folder
-2. Run 'All Tests'
-4. Make them GREEN!
+1. Run the tests in `master` branch. They all fail (RED)
+2. Make them GREEN!
+
+BONUS: Kotlin collection exercises as well.
 
 ---
 ##### Feeling stuck?
@@ -30,3 +31,5 @@ Learn Rx by making tests PASS!
 [KotlinNotesForProfessionals](http://books.goalkicker.com/KotlinBook/)
 
 [RxRiddles](https://github.com/vanniktech/RxRiddles)
+
+[Kotlin Koans Solutions](https://github.com/efung/kotlin-koans-solutions)
