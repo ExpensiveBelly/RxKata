@@ -107,6 +107,14 @@ public class ObservableExercises {
         return Observable.error(new RuntimeException("Not Implemented"));
     }
 
+    /**
+     * The data stream fails intermittently so return the stream
+     * with retry capability.
+     */
+    public Observable<String> retry(Observable<String> data) {
+        return Observable.error(new RuntimeException("Not Implemented"));
+    }
+
     // This function can be used to build JSON objects within an expression
     public static JSON json(Object... keyOrValue) {
         JSON json = new JSON();
