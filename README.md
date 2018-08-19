@@ -31,3 +31,22 @@ BONUS: Kotlin collection exercises as well.
 [RxRiddles](https://github.com/vanniktech/RxRiddles)
 
 [Kotlin Koans Solutions](https://github.com/efung/kotlin-koans-solutions)
+
+---
+
+##### Interview questions
+
+* What's reactive programming?
+* Compare `flatmap`, `concatMap` and `switchMap`
+* Difference between `map` and `flatmap`
+* Difference between `throttle` and `debounce`
+* Difference between `subscribeOn` and `observeOn`
+* Difference between `repeat` and `retry`
+* Can you `publish()` and `retry()` in a ConnectableObservable?
+* What’s the difference between `Observable.empty()` and `Observable.never()`?
+* Is there a `Single.empty()`?
+* How do you achieve paralellism in Rx?
+* What's backpressure? How would you deal with it?
+* What's the difference between an Observable and a Stream?
+* How would you handle errors in Rx?
+* Can you abuse Rx? If yes, how?
