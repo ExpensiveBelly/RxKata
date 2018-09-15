@@ -13,7 +13,7 @@ class FlatmapResultSelector {
 
     class UpdateUserName {
         fun execute(name: String): Observable<Result<String, Throwable>> =
-                Observable.just(Result.Success("Expensive"))
+                Observable.just(Result.Success(name))
     }
 
     fun `flatmap with result selector`(): Observable<Pair<String, Result<String, Throwable>>> {

@@ -13,8 +13,9 @@ class FlatmapResultSelectorTest {
 
     @Test
     fun should_return_result() {
+        val name = "Will"
         flatmapResultSelector.`flatmap with result selector`()
                 .test()
-                .assertValue(Pair("Will", Result.Success("Expensive")))
+                .assertValue(Pair(name, Result.Success(name)))
     }
 }
