@@ -21,7 +21,7 @@ class BasketRepository(private val sessionRepository: SessionRepository,
                                             .subscribeOn(Schedulers.io())
                                             .observeOn(Schedulers.computation())
                                             .doOnError { reportIfSessionInvalid() }
-                                            .map { it.toPresentation() }
+                                            .map { it.toProduct() }
                                 }) { list -> list.map { it as Product } }.map { BasketItem(basketTO.id, basketTO.name, it) }
                             }) { list -> list.map { it as BasketItem } }
                         }
@@ -31,7 +31,7 @@ class BasketRepository(private val sessionRepository: SessionRepository,
             { if (it is ConnectionError && it.errorType == ConnectionErrorType.SESSION_INVALID) sessionRepository.reportSessionInvalid() }
 }
 
-fun ProductTO.toPresentation() = Product(this.id, this.name,
+fun ProductTO.toProduct() = Product(this.id, this.name,
         when (type) {
             "FRUIT" -> ProductType.FRUIT
             "MEAT" -> ProductType.MEAT

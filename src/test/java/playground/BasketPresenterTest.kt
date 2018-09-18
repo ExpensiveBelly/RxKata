@@ -4,7 +4,7 @@ import com.nhaarman.mockito_kotlin.any
 import com.nhaarman.mockito_kotlin.doReturn
 import com.nhaarman.mockito_kotlin.mock
 import com.nhaarman.mockito_kotlin.verify
-import io.reactivex.Single
+import io.reactivex.subjects.SingleSubject
 import it.droidcon.testingdaggerrxjava.TrampolineSchedulerRule
 import org.junit.After
 import org.junit.Before
@@ -18,26 +18,30 @@ class BasketPresenterTest {
 
     val secretKey = "1234"
 
+    val sessionApiSubject = SingleSubject.create<SessionTO>()
     val sessionApi = mock<SessionApi> {
-        on { login(any(), any()) } doReturn Single.just(SessionTO(true, secretKey))
+        on { login(any(), any()) } doReturn sessionApiSubject
     }
 
     val productId1 = "productId1"
     val productId2 = "productId2"
     val productId3 = "productId3"
     val basketId = "1"
+    val getBasketSubject = SingleSubject.create<List<BasketTO>>()
     val basketApi = mock<BasketApi> {
-        on { getBaskets(secretKey) } doReturn Single.just(listOf(BasketTO(basketId, "My shopping list",
-                listOf(productId1, productId2, productId3))))
+        on { getBaskets(secretKey) } doReturn getBasketSubject
     }
 
-    val productTO = ProductTO(productId1, "Lettuce", "VEGETABLES")
+    val productTO3 = ProductTO(productId1, "Lettuce", "VEGETABLES")
     val productTO1 = ProductTO(productId2, "Diced Chicken", "MEAT")
     val productTO2 = ProductTO(productId3, "Banana", "FRUIT")
+    val product1ApiSubject = SingleSubject.create<ProductTO>()
+    val product2ApiSubject = SingleSubject.create<ProductTO>()
+    val product3ApiSubject = SingleSubject.create<ProductTO>()
     val productsApi = mock<ProductsApi> {
-        on { productsSingle(secretKey, productId1) } doReturn Single.just(productTO)
-        on { productsSingle(secretKey, productId2) } doReturn Single.just(productTO1)
-        on { productsSingle(secretKey, productId3) } doReturn Single.just(productTO2)
+        on { productsSingle(secretKey, productId1) } doReturn product1ApiSubject
+        on { productsSingle(secretKey, productId2) } doReturn product2ApiSubject
+        on { productsSingle(secretKey, productId3) } doReturn product3ApiSubject
     }
 
     val view = mock<ShoppingBasketView> {}
@@ -54,10 +58,17 @@ class BasketPresenterTest {
 
     @Test
     fun should_display_list_of_basket_items() {
+        sessionApiSubject.onSuccess((SessionTO(true, secretKey)))
+        getBasketSubject.onSuccess((listOf(BasketTO(basketId, "My shopping list",
+                listOf(productId1, productId2, productId3)))))
+        product1ApiSubject.onSuccess(productTO1)
+        product2ApiSubject.onSuccess(productTO2)
+        product3ApiSubject.onSuccess(productTO3)
+
         verify(view).displayBaskets(listOf(BasketItem(basketId, "My shopping list",
-                listOf(productTO.toPresentation(),
-                        productTO1.toPresentation(),
-                        productTO2.toPresentation()))))
+                listOf(productTO1.toProduct(),
+                        productTO2.toProduct(),
+                        productTO3.toProduct()))))
     }
 
     @After
