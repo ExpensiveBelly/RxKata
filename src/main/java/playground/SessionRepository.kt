@@ -3,9 +3,7 @@ package playground
 import io.reactivex.Single
 import io.reactivex.subjects.BehaviorSubject
 
-class SessionRepository(private val sessionApi: SessionApi,
-                        userName: String,
-                        password: String) {
+class SessionRepository(private val sessionApi: SessionApi, private val userName: String, private val password: String) {
 
     private val loginStateSubject = BehaviorSubject.createDefault<LoginState>(LoginState.LoggedOut)
 
