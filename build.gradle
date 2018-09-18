@@ -33,7 +33,7 @@ dependencies {
     testCompile group: 'junit', name: 'junit', version: '4.12'
 }
 buildscript {
-    ext.kotlin_version = '1.2.61'
+    ext.kotlin_version = '1.2.70'
     repositories {
         mavenCentral()
     }
