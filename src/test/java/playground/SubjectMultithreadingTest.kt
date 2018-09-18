@@ -15,11 +15,11 @@ import kotlin.concurrent.thread
 class SubjectMultithreadingTest {
 
     @Test
-    fun `break take(n)`() {
+    fun `should use toSerialised in order not to break take(n)`() {
         val numberOfThreads = 10
 
         repeat(100000) {
-            val publishSubject = PublishSubject.create<Int>() // Fix: .toSerialized().
+            val publishSubject = PublishSubject.create<Int>().toSerialized()
             val actuallyReceived = AtomicInteger()
 
             publishSubject.take(3).subscribe { actuallyReceived.incrementAndGet() }
