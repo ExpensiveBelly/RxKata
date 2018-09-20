@@ -24,10 +24,17 @@ class BackpressureExercisesTest {
     }
 
     @Ignore
-    fun interval_should_throw_backpressure_exception() {
+    fun interval_should_throw_backpressure_exception_but_it_doesnt() {
         backpressureExercises.dishesInterval.observeOn(Schedulers.newThread()).blockingSubscribe {
             System.out.println("Interval Washing: $it")
             Thread.sleep(150000)
+        }
+    }
+
+    @Ignore
+    fun zip_should_throw_backpressure_exception() {
+        backpressureExercises.dishesZip.blockingSubscribe {
+            System.out.println("Interval Washing: $it")
         }
     }
 }

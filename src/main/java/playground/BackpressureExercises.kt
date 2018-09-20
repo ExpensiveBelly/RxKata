@@ -1,6 +1,7 @@
 package playground
 
 import io.reactivex.Observable
+import io.reactivex.functions.BiFunction
 import java.util.*
 import java.util.concurrent.TimeUnit
 
@@ -9,6 +10,9 @@ class BackpressureExercises {
 
     val dishesRange = Observable.range(1, 1000000000).map { Dish(it) }
     val dishesInterval = Observable.interval(1, TimeUnit.MILLISECONDS).map { Dish(it.toInt()) }
+    val dishesZip: Observable<Dish> = Observable.zip(Observable.interval(1, TimeUnit.MILLISECONDS),
+            Observable.interval(10, TimeUnit.SECONDS),
+            BiFunction { t1, t2 -> Dish(t1.toInt() + t2.toInt()) })
 
 }
 
