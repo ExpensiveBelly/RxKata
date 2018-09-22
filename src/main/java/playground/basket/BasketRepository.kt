@@ -1,4 +1,4 @@
-package playground
+package playground.basket
 
 import io.reactivex.Single
 import io.reactivex.schedulers.Schedulers

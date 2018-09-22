@@ -1,5 +1,6 @@
 package playground
 
+import Result
 import it.droidcon.testingdaggerrxjava.TrampolineSchedulerRule
 import org.junit.Rule
 import org.junit.Test
