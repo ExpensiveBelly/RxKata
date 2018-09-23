@@ -4,7 +4,7 @@ private const val PASS_THRESHOLD = 5
 
 class KotlinCollectionsSolutions {
 
-    class Person(val name: String, val age: Int, val gender: Sex = Sex.MALE) {
+    data class Person(val id: Long, val name: String, val age: Int, val gender: Sex = Sex.MALE) {
         enum class Sex {
             MALE,
             FEMALE
@@ -12,10 +12,10 @@ class KotlinCollectionsSolutions {
     }
 
     private val persons = listOf(
-            Person("David", 12),
-            Person("Max", 18),
-            Person("Peter", 23),
-            Person("Pamela", 23, Person.Sex.FEMALE))
+            Person(1, "David", 12),
+            Person(2, "Max", 18),
+            Person(3, "Peter", 23),
+            Person(4, "Pamela", 23, Person.Sex.FEMALE))
 
     private val items = listOf("trampoline", "house", "computer", "tray")
     private val things = listOf("laptop", "monitor", "mouse", "keyboard")
@@ -105,7 +105,7 @@ class KotlinCollectionsSolutions {
             listOf("a1", "a2", "b1", "c2", "c1").filter { it.startsWith('c') }.map(String::toUpperCase).sorted()
 
     // Kotlin:
-    inline fun String?.ifPresent(thenDo: (String) -> Unit) = this?.apply { thenDo(this) }
+    private inline fun String?.ifPresent(thenDo: (String) -> Unit) = this?.apply { thenDo(this) }
 
     fun `eager using first item if it exists`() {
         listOf("a1", "a2", "a3").firstOrNull()?.apply(::println)
@@ -133,9 +133,19 @@ class KotlinCollectionsSolutions {
 
     inline fun <T : Any> Collection<T>.summarizingInt(transform: (T) -> Int): SummaryStatisticsInt = this.fold(SummaryStatisticsInt()) { stats, item -> stats.accumulate(transform(item)) }
 
-    fun `Collect with SummarizingInt`() {
+    fun `collect with SummarizingInt`() {
         val stats2 = persons.map { it.age }.summarizingInt()
 
         val stats3 = persons.summarizingInt { it.age }
+    }
+
+    fun `reorder person list according to person_ids`(personIds: List<Long>): List<Person> {
+        val originalListIndexes = (0..(persons.size - 1)).toList()
+        val newListIndexesFromPersonId = personIds.map { personId ->
+            persons.indexOfFirst { it.id == personId }
+        }
+        return newListIndexesFromPersonId.takeIf { it != originalListIndexes }?.let {
+            persons.slice(it)
+        } ?: emptyList()
     }
 }
