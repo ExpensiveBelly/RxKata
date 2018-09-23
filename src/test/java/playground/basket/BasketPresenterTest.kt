@@ -71,6 +71,17 @@ class BasketPresenterTest {
                         productTO3.toProduct()))))
     }
 
+    @Test
+    fun should_display_network_error() {
+        sessionApiSubject.onSuccess((SessionTO(true, secretKey)))
+        getBasketSubject.onError(ConnectionError(ConnectionErrorType.NETWORK))
+        product1ApiSubject.onSuccess(productTO1)
+        product2ApiSubject.onSuccess(productTO2)
+        product3ApiSubject.onSuccess(productTO3)
+
+        verify(view).displayError(ErrorType.Network(true))
+    }
+
     @After
     fun tearDown() {
         presenter.detach()

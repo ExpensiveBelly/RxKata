@@ -18,7 +18,7 @@ class BasketPresenter(private val basketRepository: BasketRepository,
                         else -> view.displayError(ErrorType.Other)
                     }
                 }
-                .retry()
+//                .retry()
                 .subscribe()
     }
 
