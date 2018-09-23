@@ -76,7 +76,7 @@ class KotlinCollectionsExercisesTest {
 
     @Test
     fun `filter a list to another list`() {
-       assertThat(exercises.`filter a list to another list with items that start with o`()).isEqualTo(emptyList<String>())
+        assertThat(exercises.`filter a list to another list with items that start with o`()).isEqualTo(emptyList<String>())
     }
 
     @Test
@@ -102,5 +102,22 @@ class KotlinCollectionsExercisesTest {
     @Test
     fun `map names, join together with delimiter`() {
         assertThat(exercises.`map names, join together with delimiter`()).isEqualTo("DAVID | MAX | PETER | PAMELA")
+    }
+
+    @Test
+    fun `reorder person list according to new ids`() {
+        assertThat(exercises.`reorder person list according to person_ids`(listOf(4, 2, 3, 1))).isEqualTo(
+                listOf(
+                        Person(id = 4, name = "Pamela", age = 23, gender = Person.Sex.FEMALE),
+                        Person(id = 2, name = "Max", age = 18, gender = Person.Sex.MALE),
+                        Person(id = 3, name = "Peter", age = 23, gender = Person.Sex.MALE),
+                        Person(id = 1, name = "David", age = 12, gender = Person.Sex.MALE)))
+
+        assertThat(exercises.`reorder person list according to person_ids`(listOf(3, 4, 1, 2))).isEqualTo(
+                listOf(
+                        Person(id = 3, name = "Peter", age = 23, gender = Person.Sex.MALE),
+                        Person(id = 4, name = "Pamela", age = 23, gender = Person.Sex.FEMALE),
+                        Person(id = 1, name = "David", age = 12, gender = Person.Sex.MALE),
+                        Person(id = 2, name = "Max", age = 18, gender = Person.Sex.MALE)))
     }
 }
