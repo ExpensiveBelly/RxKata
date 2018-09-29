@@ -57,4 +57,23 @@ class KotlinAcademyTest {
         }
     }
 
+    @Test
+    fun fold_is_the_mother_of_collection_processing_functions() {
+        fun Iterable<Int>.sum(): Int = fold(0) { acc, i -> acc + i }
+        fun Iterable<Int>.product(): Int = fold(1) { acc, i -> acc * i }
+        fun <T, R> Iterable<T>.map(transform: (T) -> R): List<R> = fold(emptyList()) { acc, i -> acc + transform(i) }
+        fun <T, R> Iterable<T>.flatMap(transform: (T) -> R): List<R> = fold(emptyList()) { acc, i -> acc + transform(i) }
+        fun <T> Iterable<T>.filter(predicate: (T) -> Boolean): List<T> = fold(emptyList()) { acc, i -> if (predicate(i)) acc + (i) else acc }
+        fun <T> Iterable<T>.joinToString(separator: String = " ,", tr: (T) -> String = { "$it" }): String =
+                foldIndexed("") { index, acc, i -> acc + (if (index != 0) separator else "") + tr(i) }
+
+        val list = listOf(1, 2, 3, 4, 5)
+
+        list.sum() shouldEqual 15
+        list.product() shouldEqual 120
+        list.map { it * 2 } shouldEqual listOf(2, 4, 6, 8, 10)
+        list.flatMap { listOf(it, it + 10) }.flatten() shouldEqual listOf(1, 11, 2, 12, 3, 13, 4, 14, 5, 15)
+        list.filter { it % 2 == 0 } shouldEqual listOf(2, 4)
+        list.joinToString(separator = "") shouldEqual "12345"
+    }
 }
