@@ -3,6 +3,10 @@ package marcinmoskala
 import org.amshove.kluent.shouldEqual
 import org.junit.Test
 
+/**
+ * https://blog.kotlin-academy.com/
+ */
+
 class KotlinAcademyTest {
 
     @Test
