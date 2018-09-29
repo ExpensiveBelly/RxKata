@@ -72,8 +72,10 @@ class KotlinAcademyTest {
         list.sum() shouldEqual 15
         list.product() shouldEqual 120
         list.map { it * 2 } shouldEqual listOf(2, 4, 6, 8, 10)
-        list.flatMap { listOf(it, it + 10) }.flatten() shouldEqual listOf(1, 11, 2, 12, 3, 13, 4, 14, 5, 15)
         list.filter { it % 2 == 0 } shouldEqual listOf(2, 4)
         list.joinToString(separator = "") shouldEqual "12345"
+
+        //TODO: Why do we need to flatten here?
+        list.flatMap { listOf(it, it + 10) }.flatten() shouldEqual listOf(1, 11, 2, 12, 3, 13, 4, 14, 5, 15)
     }
 }
