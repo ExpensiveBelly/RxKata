@@ -19,7 +19,7 @@ class SubjectMultithreadingTest {
         val numberOfThreads = 10
 
         repeat(100000) {
-            val publishSubject = PublishSubject.create<Int>()
+            val publishSubject = PublishSubject.create<Int>().toSerialized()
             val actuallyReceived = AtomicInteger()
 
             publishSubject.take(3).subscribe { actuallyReceived.incrementAndGet() }
