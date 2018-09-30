@@ -32,6 +32,13 @@ BONUS: Kotlin collection exercises as well.
 
 [Kotlin Koans Solutions](https://github.com/efung/kotlin-koans-solutions)
 
+[Kotlin Academy](https://blog.kotlin-academy.com/)
+
+---
+
+##### What's next?
+Check my [Trello](https://trello.com/b/cxsA3tFZ) board.
+
 ---
 
 ##### Interview questions
