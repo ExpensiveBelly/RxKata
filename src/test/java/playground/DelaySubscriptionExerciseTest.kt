@@ -2,6 +2,7 @@ package playground
 
 import io.reactivex.Observable
 import io.reactivex.schedulers.TestScheduler
+import io.reactivex.subjects.BehaviorSubject
 import org.junit.Test
 import java.util.concurrent.TimeUnit
 
@@ -49,8 +50,9 @@ class DelaySubscriptionExerciseTest {
 
     @Test
     fun should_delay_subscription_till_a_custom_observable_emits() {
-        val delayer = Observable.empty<Any>()
+        val delayer = BehaviorSubject.create<Any>()
 
+        delayer.onNext(Any())
         val testObserver = delaySubscriptionExercise.delay_subscription_till_an_observable_emits(delayer).test()
         testObserver
                 .assertSubscribed()
