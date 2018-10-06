@@ -6,7 +6,7 @@ import io.reactivex.*
  * https://gist.github.com/tomaszpolanski/99c37c388e06e57ef72a5c8e752b8c2c
  */
 
-inline fun <reified T> printEvent(tag: String, success: T?, error: Throwable?) =
+inline fun <reified T> printEvent(tag: String, success: T?, error: Throwable?): Any =
         when {
             success == null && error == null -> Log.d(tag, "Complete") /* Only with Maybe */
             success != null -> Log.d(tag, "Success $success")
@@ -30,39 +30,34 @@ inline fun tag() =
                 .first { it.fileName.endsWith(".kt") }
                 .let { stack -> "${stack.fileName.removeSuffix(".kt")}::${stack.methodName}:${stack.lineNumber}" }
 
-inline fun <reified T> Single<T>.log(): Single<T> {
-    val tag = tag()
+inline fun <reified T> Single<T>.log(tag: String = tag()): Single<T> {
     return doOnEvent { success, error -> printEvent(tag, success, error) }
             .doOnSubscribe { Log.d(tag, "Subscribe") }
             .doOnDispose { Log.d(tag, "Dispose") }
 }
 
-inline fun <reified T> Maybe<T>.log(): Maybe<T> {
-    val tag = tag()
+inline fun <reified T> Maybe<T>.log(tag: String = tag()): Maybe<T> {
     return doOnEvent { success, error -> printEvent(tag, success, error) }
             .doOnSubscribe { Log.d(tag, "Subscribe") }
             .doOnDispose { Log.d(tag, "Dispose") }
 }
 
-inline fun Completable.log(): Completable {
-    val tag = tag()
+inline fun Completable.log(tag: String = tag()): Completable {
     return doOnEvent { printEvent(tag, it) }
             .doOnSubscribe { Log.d(tag, "Subscribe") }
             .doOnDispose { Log.d(tag, "Dispose") }
 }
 
-inline fun <reified T> Observable<T>.log(): Observable<T> {
-    val line = tag()
-    return doOnEach { Log.d(line, "Each $it") }
-            .doOnSubscribe { Log.d(line, "Subscribe") }
-            .doOnDispose { Log.d(line, "Dispose") }
+inline fun <reified T> Observable<T>.log(tag: String = tag()): Observable<T> {
+    return doOnEach { Log.d(tag, "Each $it") }
+            .doOnSubscribe { Log.d(tag, "Subscribe") }
+            .doOnDispose { Log.d(tag, "Dispose") }
 }
 
-inline fun <reified T> Flowable<T>.log(): Flowable<T> {
-    val line = tag()
-    return doOnEach { Log.d(line, "Each $it") }
-            .doOnSubscribe { Log.d(line, "Subscribe") }
-            .doOnCancel { Log.d(line, "Cancel") }
+inline fun <reified T> Flowable<T>.log(tag: String = tag()): Flowable<T> {
+    return doOnEach { Log.d(tag, "Each $it") }
+            .doOnSubscribe { Log.d(tag, "Subscribe") }
+            .doOnCancel { Log.d(tag, "Cancel") }
 }
 
 
