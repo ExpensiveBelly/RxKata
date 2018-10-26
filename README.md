@@ -33,3 +33,7 @@ BONUS: Kotlin collection exercises as well.
 [RxRiddles](https://github.com/vanniktech/RxRiddles)
 
 [Kotlin Koans Solutions](https://github.com/efung/kotlin-koans-solutions)
+
+[Kotlin Puzzlers](https://github.com/angryziber/kotlin-puzzlers)
+
+[Marcin Moskala Advanced Kotlin workshop](https://github.com/MarcinMoskala/advanced-kotlin-workshop-tasks)
