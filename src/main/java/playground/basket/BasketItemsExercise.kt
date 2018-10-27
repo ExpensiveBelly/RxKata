@@ -2,6 +2,18 @@ package playground.basket
 
 import io.reactivex.Single
 
+/**
+ * Given the following classes, implement a way for the `ShoppingBasketView` to `displayBaskets`.
+ * Bear in mind the following constraints:
+ * 1. In order to `getBaskets` we need a `secretKey`, and for that we need to be `login` (SessionApi)
+ * 2. `getBaskets` return BasketTOs, which contain only the productIds, but not the `Product`. In order to get the product
+ * we need to use the `ProductsApi` `productsSingle()`
+ * 3. Threading (parallelism whenever possible)
+ * 4. Error handling (login failure, getProducts failure, retries)
+ * 5. Bear in mind that we don't want to login twice, even if we try to request the products twice. Think of a way to cache
+ * the login response so it can be re-used in the stream.
+ */
+
 sealed class ErrorType {
     data class Network(val isConnected: Boolean) : ErrorType()
 
