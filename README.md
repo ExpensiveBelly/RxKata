@@ -37,3 +37,12 @@ BONUS: Kotlin collection exercises as well.
 [Kotlin Puzzlers](https://github.com/angryziber/kotlin-puzzlers)
 
 [Marcin Moskala Advanced Kotlin workshop](https://github.com/MarcinMoskala/advanced-kotlin-workshop-tasks)
+
+[Kotlin Academy](https://blog.kotlin-academy.com/)
+
+---
+
+##### What's next?
+Check my [Trello](https://trello.com/b/cxsA3tFZ) board.
+
+---
