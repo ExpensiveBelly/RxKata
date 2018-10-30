@@ -7,10 +7,10 @@ import io.reactivex.Single
  * Bear in mind the following constraints:
  * 1. In order to `getBaskets` we need a `secretKey`, and for that we need to be `login` (SessionApi)
  * 2. `getBaskets` return BasketTOs, which contain only the productIds, but not the `Product`. In order to get the product
- * we need to use the `ProductsApi` `productsSingle()`
+ * we need to use the `ProductsApi` `getProducts()`
  * 3. Threading (parallelism whenever possible)
  * 4. Error handling (login failure, getProducts failure, retries)
- * 5. Bear in mind that we don't want to login twice, even if we try to request the products twice. Think of a way to cache
+ * 5. Bear in mind that we don't want to login twice, even if we try to request the getProducts twice. Think of a way to cache
  * the login response so it can be re-used in the stream.
  */
 
@@ -56,7 +56,7 @@ interface BasketApi {
 data class BasketTO(val id: String, val name: String, val productIds: List<String>)
 
 interface ProductsApi {
-    fun productsSingle(secretKey: String, id: String): Single<ProductTO>
+    fun getProducts(secretKey: String, id: String): Single<ProductTO>
 }
 
 data class ProductTO(val id: String, val name: String, val type: String)

@@ -31,10 +31,10 @@ package playground.basket
 //                                basketApi.getBaskets(sessionTo.secretKey)
 //                                        .flattenAsObservable { it }
 //                                        .flatMap({ basketTO ->
-//                                            productsApi.productsSingle(sessionTo.secretKey, basketTO.id)
+//                                            productsApi.getProducts(sessionTo.secretKey, basketTO.id)
 //                                                    .subscribeOn(Schedulers.io())
-//                                                    .flatMapObservable { products ->
-//                                                        Observable.just(listOf(BasketItem(basketTO.id, basketTO.name, products.map { it.toDomain() })))
+//                                                    .flatMapObservable { getProducts ->
+//                                                        Observable.just(listOf(BasketItem(basketTO.id, basketTO.name, getProducts.map { it.toDomain() })))
 //                                                    }
 //                                        }, 10)
 //                            }

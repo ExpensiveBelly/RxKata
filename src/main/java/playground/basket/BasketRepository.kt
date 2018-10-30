@@ -17,7 +17,7 @@ class BasketRepository(private val sessionRepository: SessionRepository,
                         .flatMap { basketTOs ->
                             Single.zip(basketTOs.map { basketTO ->
                                 Single.zip(basketTO.productIds.map { productId ->
-                                    productsApi.productsSingle(sessionKey, productId)
+                                    productsApi.getProducts(sessionKey, productId)
                                             .subscribeOn(Schedulers.io())
                                             .observeOn(Schedulers.computation())
                                             .doOnError { reportIfSessionInvalid() }

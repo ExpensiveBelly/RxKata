@@ -39,9 +39,9 @@ class BasketPresenterTest {
     private val product2ApiSubject = SingleSubject.create<ProductTO>()
     private val product3ApiSubject = SingleSubject.create<ProductTO>()
     private val productsApi = mock<ProductsApi> {
-        on { productsSingle(secretKey, productId1) } doReturn product1ApiSubject
-        on { productsSingle(secretKey, productId2) } doReturn product2ApiSubject
-        on { productsSingle(secretKey, productId3) } doReturn product3ApiSubject
+        on { getProducts(secretKey, productId1) } doReturn product1ApiSubject
+        on { getProducts(secretKey, productId2) } doReturn product2ApiSubject
+        on { getProducts(secretKey, productId3) } doReturn product3ApiSubject
     }
 
     private val view = mock<ShoppingBasketView> {}
