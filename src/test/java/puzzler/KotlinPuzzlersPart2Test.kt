@@ -36,6 +36,10 @@ class KotlinPuzzlersPart2Test {
 
     @Test
     fun puzzle8() {
-        KotlinPuzzlersPart2.Puzzle8().execute()
+        try {
+            KotlinPuzzlersPart2.Puzzle8().execute()
+        } catch (npe: NullPointerException) {
+            println(npe)
+        }
     }
 }
