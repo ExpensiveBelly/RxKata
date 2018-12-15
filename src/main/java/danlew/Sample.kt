@@ -42,10 +42,20 @@ object Sample {
                 .firstElement()
                 .toObservable()
 
+        /*
+         If we uncomment this code along with the .delay in the network we will see that we only hit the network once
+         because of the share() operator. If we remove it the network will be hit once per subscriber (5 times in this case)
+          */
+//        source.subscribe { println("1 Received: ${it.get().value}") }
+//        source.subscribe { println("2 Received: ${it.get().value}") }
+//        source.subscribe { println("3 Received: ${it.get().value}") }
+//        source.subscribe { println("4 Received: ${it.get().value}") }
+//        source.subscribe { println("5 Received: ${it.get().value}") }
+
         // "Request" latest data once a second
         Observable.interval(1, TimeUnit.SECONDS)
                 .flatMap { source }
-                .subscribe { System.out.println("Received: " + it.get().value) }
+                .subscribe { println("Received: ${it.get().value}") }
 
         // Occasionally clear memory (as if app restarted) so that we must go to disk
         Observable.interval(3, TimeUnit.SECONDS)

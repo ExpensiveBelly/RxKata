@@ -27,6 +27,7 @@ package danlew
 import io.reactivex.Observable
 import io.reactivex.ObservableTransformer
 import java.util.*
+import java.util.concurrent.atomic.AtomicInteger
 
 /**
  * Simulates three different sources - one from memory, one from disk,
@@ -46,7 +47,7 @@ class Sources {
     private var disk: Optional<Data> = Optional.empty()
 
     // Each "network" response is different
-    private var requestNumber = 0
+    private var requestNumber = AtomicInteger(0)
 
     // In order to simulate memory being cleared, but data still on disk
     fun clearMemory() {
@@ -68,21 +69,17 @@ class Sources {
 
 
     fun network(): Observable<Optional<Data>> = Observable.create<Optional<Data>> {
-        requestNumber++
-        it.onNext(Optional.of(Data("Server Response #$requestNumber")))
-        println("NETWORK has the data you are looking for!")
+        it.onNext(Optional.of(Data("Server Response #${requestNumber.incrementAndGet()}")))
         it.onComplete()
     }
-            .doOnNext {
-                memory = it
-                disk = it
-            }.share()
-
+//            .delay(500, TimeUnit.MILLISECONDS)
+            .share()
             .doOnNext {
                 memory = it
                 disk = it
             }
             .compose(logSource("NETWORK"))
+
 
     // Simple logging to let us know what each source is returning
     private fun logSource(source: String): ObservableTransformer<Optional<Data>, Optional<Data>> {
