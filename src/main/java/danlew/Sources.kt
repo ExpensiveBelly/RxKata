@@ -1,0 +1,95 @@
+/**
+ * The MIT License (MIT)
+
+Copyright (c) 2015 Daniel Lew
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+ */
+
+package danlew
+
+import io.reactivex.Observable
+import io.reactivex.ObservableTransformer
+import java.util.*
+
+/**
+ * Simulates three different sources - one from memory, one from disk,
+ * and one from network. In reality, they're all in-memory, but let's
+ * play pretend.
+ *
+ * Observable.create() is used so that we always return the latest data
+ * to the subscriber; if you use just() it will only return the data from
+ * a certain point in time.
+ */
+class Sources {
+
+    // Memory cache of data
+    private var memory: Optional<Data> = Optional.empty()
+
+    // What's currently "written" on disk
+    private var disk: Optional<Data> = Optional.empty()
+
+    // Each "network" response is different
+    private var requestNumber = 0
+
+    // In order to simulate memory being cleared, but data still on disk
+    fun clearMemory() {
+        println("Wiping memory...")
+        memory = Optional.empty()
+    }
+
+    fun memory(): Observable<Data> = Observable.create<Data> { emitter ->
+        if (memory.isPresent) emitter.onNext(memory.get())
+        emitter.onComplete()
+    }
+            .compose(logSource("MEMORY"))
+
+    fun disk(): Observable<Data> = Observable.create<Data> { emitter ->
+        if (disk.isPresent) emitter.onNext(disk.get())
+        emitter.onComplete()
+    }
+            .doOnNext { memory = Optional.of(it) }
+            .compose(logSource("DISK"))
+
+
+    fun network(): Observable<Data> = Observable.create<Data> {
+        requestNumber++
+        it.onNext(Data("Server Response #$requestNumber"))
+        it.onComplete()
+    }
+            .doOnNext { disk = Optional.of(it) }
+            .doOnNext { memory = Optional.of(it) }
+            .compose(logSource("NETWORK"))
+
+    // Simple logging to let us know what each source is returning
+    private fun logSource(source: String): ObservableTransformer<Data, Data> {
+        return ObservableTransformer { dataObservable ->
+            dataObservable.doOnNext { data ->
+                if (data == null) {
+                    println("$source does not have any data.")
+                } else if (!data.isUpToDate) {
+                    println("$source has stale data.")
+                } else {
+                    println("$source has the data you are looking for!")
+                }
+            }
+        }
+    }
+
+}
