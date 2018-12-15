@@ -54,36 +54,43 @@ class Sources {
         memory = Optional.empty()
     }
 
-    fun memory(): Observable<Data> = Observable.create<Data> { emitter ->
-        if (memory.isPresent) emitter.onNext(memory.get())
+    fun memory(): Observable<Optional<Data>> = Observable.create<Optional<Data>> { emitter ->
+        emitter.onNext(memory)
         emitter.onComplete()
-    }
-            .compose(logSource("MEMORY"))
+    }.compose(logSource("MEMORY"))
 
-    fun disk(): Observable<Data> = Observable.create<Data> { emitter ->
-        if (disk.isPresent) emitter.onNext(disk.get())
+    fun disk(): Observable<Optional<Data>> = Observable.create<Optional<Data>> { emitter ->
+        emitter.onNext(disk)
         emitter.onComplete()
     }
-            .doOnNext { memory = Optional.of(it) }
+            .doOnNext { memory = it }
             .compose(logSource("DISK"))
 
 
-    fun network(): Observable<Data> = Observable.create<Data> {
+    fun network(): Observable<Optional<Data>> = Observable.create<Optional<Data>> {
         requestNumber++
-        it.onNext(Data("Server Response #$requestNumber"))
+        it.onNext(Optional.of(Data("Server Response #$requestNumber")))
+        println("NETWORK has the data you are looking for!")
         it.onComplete()
     }
-            .doOnNext { disk = Optional.of(it) }
-            .doOnNext { memory = Optional.of(it) }
+            .doOnNext {
+                memory = it
+                disk = it
+            }.share()
+
+            .doOnNext {
+                memory = it
+                disk = it
+            }
             .compose(logSource("NETWORK"))
 
     // Simple logging to let us know what each source is returning
-    private fun logSource(source: String): ObservableTransformer<Data, Data> {
+    private fun logSource(source: String): ObservableTransformer<Optional<Data>, Optional<Data>> {
         return ObservableTransformer { dataObservable ->
             dataObservable.doOnNext { data ->
-                if (data == null) {
+                if (!data.isPresent) {
                     println("$source does not have any data.")
-                } else if (!data.isUpToDate) {
+                } else if (!data.get().isUpToDate) {
                     println("$source has stale data.")
                 } else {
                     println("$source has the data you are looking for!")
@@ -91,5 +98,6 @@ class Sources {
             }
         }
     }
+
 
 }

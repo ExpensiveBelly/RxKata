@@ -38,13 +38,14 @@ object Sample {
                 sources.memory(),
                 sources.disk(),
                 sources.network())
-                .filter(Data::isUpToDate)
+                .filter { it.isPresent && it.get().isUpToDate }
                 .firstElement()
+                .toObservable()
 
         // "Request" latest data once a second
         Observable.interval(1, TimeUnit.SECONDS)
-                .flatMap { source.toObservable() }
-                .subscribe { System.out.println("Received: " + it.value) }
+                .flatMap { source }
+                .subscribe { System.out.println("Received: " + it.get().value) }
 
         // Occasionally clear memory (as if app restarted) so that we must go to disk
         Observable.interval(3, TimeUnit.SECONDS)
@@ -62,5 +63,4 @@ object Sample {
         }
 
     }
-
 }
