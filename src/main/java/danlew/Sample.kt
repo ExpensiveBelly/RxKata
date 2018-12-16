@@ -55,7 +55,7 @@ object Sample {
         // "Request" latest data once a second
         Observable.interval(1, TimeUnit.SECONDS)
                 .flatMap { source }
-                .subscribe { println("Received: ${it.get().value}") }
+                .subscribe { println("Received: ${it.get()}") }
 
         // Occasionally clear memory (as if app restarted) so that we must go to disk
         Observable.interval(3, TimeUnit.SECONDS)

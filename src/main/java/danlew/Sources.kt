@@ -40,6 +40,15 @@ import java.util.concurrent.atomic.AtomicInteger
  */
 class Sources {
 
+    // Create our sequence for querying best available data
+    val source: Observable<Optional<Data>> = Observable.concat(
+            memory(),
+            disk(),
+            network())
+            .filter { it.isPresent && it.get().isUpToDate }
+            .firstElement()
+            .toObservable()
+
     // Memory cache of data
     private var memory: Optional<Data> = Optional.empty()
 
@@ -53,6 +62,11 @@ class Sources {
     fun clearMemory() {
         println("Wiping memory...")
         memory = Optional.empty()
+    }
+
+    fun clearDisk() {
+        println("Wiping disk...")
+        disk = Optional.empty()
     }
 
     fun memory(): Observable<Optional<Data>> = Observable.create<Optional<Data>> { emitter ->

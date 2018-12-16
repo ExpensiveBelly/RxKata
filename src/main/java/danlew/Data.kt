@@ -28,18 +28,14 @@ package danlew
  * Simple data class, keeps track of when it was created
  * so that it knows when the its gone stale.
  */
-class Data(internal val value: String) {
-
-    internal val timestamp: Long
-
-    val isUpToDate: Boolean
-        get() = System.currentTimeMillis() - timestamp < STALE_MS
-
-    init {
-        this.timestamp = System.currentTimeMillis()
-    }
+data class Data(private val value: String) {
 
     companion object {
         private const val STALE_MS = (5 * 1000).toLong() // Data is stale after 5 seconds
     }
+
+    private val timestamp: Long = System.currentTimeMillis()
+
+    val isUpToDate: Boolean
+        get() = System.currentTimeMillis() - timestamp < STALE_MS
 }
