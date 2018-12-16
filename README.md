@@ -40,6 +40,8 @@ BONUS: Kotlin collection exercises as well.
 
 [Kotlin Academy](https://blog.kotlin-academy.com/)
 
+[Rx on error retry](https://github.com/platoblm/rx-onerror-retry-cache)
+
 ---
 
 ##### What's next?
