@@ -46,9 +46,11 @@ class BasketPresenterTest {
 
     private val view = mock<ShoppingBasketView> {}
 
+    private val sessionRepository = SessionRepository(sessionApi, "username", "password")
+
     private val presenter: BasketPresenter = BasketPresenter(
             BasketRepository(
-                    SessionRepository(sessionApi, "username", "password"),
+                    sessionRepository,
                     basketApi, productsApi), view)
 
     @Before
@@ -59,11 +61,7 @@ class BasketPresenterTest {
     @Test
     fun should_display_list_of_basket_items() {
         sessionApiSubject.onSuccess((SessionTO(true, secretKey)))
-        getBasketSubject.onSuccess((listOf(BasketTO(basketId, "My shopping list",
-                listOf(productId1, productId2, productId3)))))
-        product1ApiSubject.onSuccess(productTO1)
-        product2ApiSubject.onSuccess(productTO2)
-        product3ApiSubject.onSuccess(productTO3)
+        getBasketSubject.onSuccess(myBasket())
 
         verify(view).displayBaskets(listOf(BasketItem(basketId, "My shopping list",
                 listOf(productTO1.toProduct(),
@@ -72,7 +70,15 @@ class BasketPresenterTest {
     }
 
     @Test
-    fun should_display_network_error() {
+    fun should_display_network_error_when_login_failure() {
+        sessionApiSubject.onError(ConnectionError(ConnectionErrorType.NETWORK))
+        getBasketSubject.onSuccess((myBasket()))
+
+        verify(view).displayError(ErrorType.Network(true))
+    }
+
+    @Test
+    fun should_display_network_error_when_getting_baskets_fails() {
         sessionApiSubject.onSuccess((SessionTO(true, secretKey)))
         getBasketSubject.onError(ConnectionError(ConnectionErrorType.NETWORK))
         product1ApiSubject.onSuccess(productTO1)
@@ -80,6 +86,24 @@ class BasketPresenterTest {
         product3ApiSubject.onSuccess(productTO3)
 
         verify(view).displayError(ErrorType.Network(true))
+    }
+
+    @Test
+    fun should_display_session_failure_if_disconnected() {
+        sessionApiSubject.onSuccess((SessionTO(true, secretKey)))
+        getBasketSubject.onSuccess(myBasket())
+
+        sessionRepository.reportSessionInvalid()
+
+        verify(view).displayError(ErrorType.Other)
+    }
+
+    private fun myBasket(): List<BasketTO> {
+        product1ApiSubject.onSuccess(productTO1)
+        product2ApiSubject.onSuccess(productTO2)
+        product3ApiSubject.onSuccess(productTO3)
+        return listOf(BasketTO(basketId, "My shopping list",
+                listOf(productId1, productId2, productId3)))
     }
 
     @After

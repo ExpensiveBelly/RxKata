@@ -36,7 +36,8 @@ class SessionRepository(private val sessionApi: SessionApi, private val userName
             }
             .replay(1).refCount()
 
-    fun reportSessionInvalid() = loginStateSubject.onNext(LoginState.LoggedOut)
+    fun reportSessionInvalid() = loginStateSubject
+            .onNext(LoginState.LoggedOut)
 }
 
 sealed class LoginState {

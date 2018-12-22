@@ -10,8 +10,7 @@ class BasketPresenter(private val basketRepository: BasketRepository,
 
     fun attach() {
         disposable = basketRepository.basketObservable
-                .firstOrError()
-                .doOnSuccess { view.displayBaskets(it) }
+                .doOnNext { view.displayBaskets(it) }
                 .doOnError {
                     when (it) {
                         is ConnectionError -> view.displayError(ErrorType.Network(it.errorType == ConnectionErrorType.NETWORK))
