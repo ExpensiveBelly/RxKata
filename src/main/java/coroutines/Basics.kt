@@ -2,6 +2,10 @@ package coroutines
 
 import kotlinx.coroutines.*
 
+/**
+ * https://github.com/Kotlin/kotlinx.coroutines/blob/master/docs/basics.md
+ */
+
 fun main() {
     helloWorld()
     helloWorld2()
