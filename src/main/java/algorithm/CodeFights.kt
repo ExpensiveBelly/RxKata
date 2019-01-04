@@ -32,6 +32,14 @@ private fun firstDuplicate(a: MutableList<Int>): Int {
     return -1
 }
 
+/**
+ * Note: Write a solution that only iterates over the string once and uses O(1) additional memory,
+ * since this is what you would be asked to do during a real interview.
+ *
+ * Given a string s, find and return the first instance of a non-repeating character in it.
+ * If there is no such character, return '_'.
+ */
+
 private fun firstNotRepeatingCharacter(s: String): Char {
     s.toCharArray().forEach {
         if (s.indexOf(it) == s.lastIndexOf(it)) return it
