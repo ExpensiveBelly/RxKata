@@ -100,7 +100,7 @@ fun sudoku2(grid: MutableList<MutableList<Char>>): Boolean {
 
     val threeByThreeGridDuplicate = chunked2.map { it.flatten().groupingBy { it }.eachCount().filterNot { it.key == '.' } }.any { it.values.any { it > 1 } }
 //    val threeByThreeGridDuplicate = chunked2.map { it.map { it.map { it.groupingBy { it }.eachCount().filterNot { it.key == '.' } } }.map { it.any { it.values.any { it > 1 } } }.any { it } }.any { it }
-    val rowDuplicate = grid.chunked(9).map { it.map { it.groupBy { it }.filterNot { it.key == '.' }.any { it.value.size > 1 } } }.any { it.any { it } }
+    val rowDuplicate = grid.map { it.groupBy { it }.filterNot { it.key == '.' }.any { it.value.size > 1 } }.any { it }
     val columnDuplicate = (0 until 9).map { x ->
         (0 until grid.size).map { y -> grid[y][x] }
     }.chunked(9).map { it.map { it.groupBy { it }.filterNot { it.key == '.' }.any { it.value.size > 1 } } }.any { it.any { it } }
@@ -147,22 +147,22 @@ fun isCryptSolution(crypt: MutableList<String>, solution: MutableList<MutableLis
 
 
 fun main() {
-    println(isCryptSolution(mutableListOf("SEND", "MORE", "MONEY"), mutableListOf(
-            mutableListOf('O', '0'),
-            mutableListOf('M', '1'),
-            mutableListOf('Y', '2'),
-            mutableListOf('E', '5'),
-            mutableListOf('N', '6'),
-            mutableListOf('D', '7'),
-            mutableListOf('R', '8'),
-            mutableListOf('S', '9'))))
-
-    println(isCryptSolution(mutableListOf("TEN", "TWO", "ONE"), mutableListOf(
-            mutableListOf('O', '1'),
-            mutableListOf('T', '0'),
-            mutableListOf('W', '9'),
-            mutableListOf('E', '5'),
-            mutableListOf('N', '4'))))
+//    println(isCryptSolution(mutableListOf("SEND", "MORE", "MONEY"), mutableListOf(
+//            mutableListOf('O', '0'),
+//            mutableListOf('M', '1'),
+//            mutableListOf('Y', '2'),
+//            mutableListOf('E', '5'),
+//            mutableListOf('N', '6'),
+//            mutableListOf('D', '7'),
+//            mutableListOf('R', '8'),
+//            mutableListOf('S', '9'))))
+//
+//    println(isCryptSolution(mutableListOf("TEN", "TWO", "ONE"), mutableListOf(
+//            mutableListOf('O', '1'),
+//            mutableListOf('T', '0'),
+//            mutableListOf('W', '9'),
+//            mutableListOf('E', '5'),
+//            mutableListOf('N', '4'))))
 
 //    ],
 //            [],
@@ -181,38 +181,38 @@ fun main() {
 //
 //    printMatrix(a, 'original')
 //    printMatrix(rotateImage(a))
-//    val validSudoku = mutableListOf(
-//            mutableListOf('.', '.', '.', '1', '4', '.', '.', '2', '.'),
-//            mutableListOf('.', '.', '6', '.', '.', '.', '.', '.', '.'),
-//            mutableListOf('.', '.', '.', '.', '.', '.', '.', '.', '.'),
-//            mutableListOf('.', '.', '1', '.', '.', '.', '.', '.', '.'),
-//            mutableListOf('.', '6', '7', '.', '.', '.', '.', '.', '9'),
-//            mutableListOf('.', '.', '.', '.', '.', '.', '8', '1', '.'),
-//            mutableListOf('.', '3', '.', '.', '.', '.', '.', '.', '6'),
-//            mutableListOf('.', '.', '.', '.', '.', '7', '.', '.', '.'),
-//            mutableListOf('.', '.', '.', '5', '.', '.', '.', '7', '.'))
-//
-//    val invalidSudoku = mutableListOf(
-//            mutableListOf('.', '.', '.', '.', '2', '.', '.', '9', '.'),
-//            mutableListOf('.', '.', '.', '.', '6', '.', '.', '.', '.'),
-//            mutableListOf('7', '1', '.', '.', '7', '5', '.', '.', '.'),
-//            mutableListOf('.', '7', '.', '.', '.', '.', '.', '.', '.'),
-//            mutableListOf('.', '.', '.', '.', '8', '3', '.', '.', '.'),
-//            mutableListOf('.', '.', '8', '.', '.', '7', '.', '6', '.'),
-//            mutableListOf('.', '.', '.', '.', '.', '2', '.', '.', '.'),
-//            mutableListOf('.', '1', '.', '2', '.', '.', '.', '.', '.'),
-//            mutableListOf('.', '2', '.', '.', '3', '.', '.', '.', '.'))
-//
-//    val invalidSudoku2 = mutableListOf(
-//            mutableListOf('.','.','.','.','.','.','5','.','.'),
-//            mutableListOf('.','.','.','.','.','.','.','.','.'),
-//            mutableListOf('.','.','.','.','.','.','.','.','.'),
-//            mutableListOf('9','3','.','.','2','.','4','.','.'),
-//            mutableListOf('.','.','7','.','.','.','3','.','.'),
-//            mutableListOf('.','.','.','.','.','.','.','.','.'),
-//            mutableListOf('.','.','.','3','4','.','.','.','.'),
-//            mutableListOf('.','.','.','.','.','3','.','.','.'),
-//            mutableListOf('.','.','.','.','.','5','2','.','.'))
-//
-//    sudoku2(invalidSudoku2)
+    val validSudoku = mutableListOf(
+            mutableListOf('.', '.', '.', '1', '4', '.', '.', '2', '.'),
+            mutableListOf('.', '.', '6', '.', '.', '.', '.', '.', '.'),
+            mutableListOf('.', '.', '.', '.', '.', '.', '.', '.', '.'),
+            mutableListOf('.', '.', '1', '.', '.', '.', '.', '.', '.'),
+            mutableListOf('.', '6', '7', '.', '.', '.', '.', '.', '9'),
+            mutableListOf('.', '.', '.', '.', '.', '.', '8', '1', '.'),
+            mutableListOf('.', '3', '.', '.', '.', '.', '.', '.', '6'),
+            mutableListOf('.', '.', '.', '.', '.', '7', '.', '.', '.'),
+            mutableListOf('.', '.', '.', '5', '.', '.', '.', '7', '.'))
+
+    val invalidSudoku = mutableListOf(
+            mutableListOf('.', '.', '.', '.', '2', '.', '.', '9', '.'),
+            mutableListOf('.', '.', '.', '.', '6', '.', '.', '.', '.'),
+            mutableListOf('7', '1', '.', '.', '7', '5', '.', '.', '.'),
+            mutableListOf('.', '7', '.', '.', '.', '.', '.', '.', '.'),
+            mutableListOf('.', '.', '.', '.', '8', '3', '.', '.', '.'),
+            mutableListOf('.', '.', '8', '.', '.', '7', '.', '6', '.'),
+            mutableListOf('.', '.', '.', '.', '.', '2', '.', '.', '.'),
+            mutableListOf('.', '1', '.', '2', '.', '.', '.', '.', '.'),
+            mutableListOf('.', '2', '.', '.', '3', '.', '.', '.', '.'))
+
+    val invalidSudoku2 = mutableListOf(
+            mutableListOf('.', '.', '.', '.', '.', '.', '5', '.', '.'),
+            mutableListOf('.', '.', '.', '.', '.', '.', '.', '.', '.'),
+            mutableListOf('.', '.', '.', '.', '.', '.', '.', '.', '.'),
+            mutableListOf('9', '3', '.', '.', '2', '.', '4', '.', '.'),
+            mutableListOf('.', '.', '7', '.', '.', '.', '3', '.', '.'),
+            mutableListOf('.', '.', '.', '.', '.', '.', '.', '.', '.'),
+            mutableListOf('.', '.', '.', '3', '4', '.', '.', '.', '.'),
+            mutableListOf('.', '.', '.', '.', '.', '3', '.', '.', '.'),
+            mutableListOf('.', '.', '.', '.', '.', '5', '2', '.', '.'))
+
+    sudoku2(invalidSudoku2)
 }
