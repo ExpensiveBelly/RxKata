@@ -1,5 +1,8 @@
 package algorithm
 
+import com.google.gson.Gson
+import java.io.File
+
 fun main() {
     //3, 1, 2, 3, 4, 5
     val first = ListNode(1)
@@ -16,7 +19,128 @@ fun main() {
 //    fifth.next = sixth
 
 //    println(removeKFromList(first, 3))
-    println(isListPalindrome(first))
+//    println(isListPalindrome(first))
+
+    val list_a = fromArray(intArrayOf(4, 7, 4, 2031))
+    val list_b = fromArray(intArrayOf(5, 3, 7, 4, 7, 9099))
+//    println("Sum: " + addTwoHugeNumbers(list_a, list_b))
+    val (a, b) = Resources.fromJsonFile("test-13.json")
+//    addTwoHugeNumbers(a, b)?.print()
+    addTwoHugeNumbers(a!!, b!!)?.print()
+}
+
+private fun fromArray(arr: IntArray): ListNode<Int>? {
+    val res = ListNode(0)
+    var current = res
+    for (i in arr.indices) {
+        val node = ListNode(arr[i])
+        current.next = node
+        current = node
+    }
+    return res.next
+}
+
+object Resources {
+    fun fromJsonFile(fileName: String): Pair<ListNode<Int>?, ListNode<Int>?> {
+        val readText = File(Resources.javaClass.classLoader.getResource(fileName).toURI()).readText()
+        val fromJson = Gson().fromJson<LinkedListInput>(readText, LinkedListInput::class.java)
+
+        return Pair(returnList(fromJson.input.a), returnList(fromJson.input.b))
+    }
+
+    private fun returnList(ints: IntArray): ListNode<Int>? {
+        var listNode: ListNode<Int> = ListNode(0)
+        val head = listNode
+        ints.forEach {
+            val node = ListNode(it)
+            listNode.next = node
+            listNode = node
+        }
+        return head.next
+    }
+}
+
+/**
+ * You're given 2 huge integers represented by linked lists.
+ * Each linked list element is a number from 0 to 9999 that represents a number with exactly 4 digits.
+ * The represented number might have leading zeros. Your task is to add up these huge integers and return the result in the same format.
+ */
+
+
+fun addTwoHugeNumbers(a: ListNode<Int>?, b: ListNode<Int>?): ListNode<Int>? {
+    var headA: ListNode<Int>? = a
+    var prev: ListNode<Int>? = null
+    var headB: ListNode<Int>? = b
+    var returnHead: ListNode<Int>? = null
+
+    while (headA != null) {
+        val next = headA.next
+        headA.next = prev
+        prev = headA
+        headA = next
+    }
+
+    headA = prev
+    prev = null
+
+    while (headB != null) {
+        val next = headB.next
+        headB.next = prev
+        prev = headB
+        headB = next
+    }
+    headB = prev
+
+    var carry = 0
+    while (headA != null && headB != null) {
+        var sum = headA.value + headB.value + carry
+        headA = headA.next
+        headB = headB.next
+
+        carry = sum / 10000
+        sum = sum % 10000
+
+        val newNode = ListNode(sum)
+        newNode.next = returnHead
+        returnHead = newNode
+    }
+
+    while (headA != null) {
+        var sum = headA.value + carry
+        headA = headA.next
+
+        carry = sum / 10000
+        sum = sum % 10000
+        val newNode = ListNode(sum)
+
+        newNode.next = returnHead
+        returnHead = newNode
+    }
+
+    while (headB != null) {
+
+        var sum = headB.value + carry
+        headB = headB.next
+
+        carry = sum / 10000
+        sum = sum % 10000
+
+        val newNode = ListNode(sum)
+        newNode.next = returnHead
+        returnHead = newNode
+    }
+    if (carry != 0) {
+        val newNode = ListNode(carry)
+        newNode.next = returnHead
+        returnHead = newNode
+    }
+
+    return returnHead
+}
+
+fun ListNode<Int>.print() {
+    print("$value, ")
+    next?.print()
 }
 
 /**
