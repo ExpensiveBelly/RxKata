@@ -4,10 +4,10 @@ package initialiser
  * https://medium.com/keepsafe-engineering/an-in-depth-look-at-kotlins-initializers-a0420fcbf546
  */
 
-open class Parent {
+open class Parent(arg: Unit = println("Parent primary constructor default argument")) {
     private val a = println("Parent.a")
 
-    constructor(arg: Unit = println("Parent primary constructor default argument")) {
+    init {
         println("Parent primary constructor")
     }
 
@@ -57,6 +57,6 @@ class Child : Parent {
  * Child secondary constructor
  */
 
-fun main(args: Array<String>) {
+fun main() {
     Child(1)
 }
