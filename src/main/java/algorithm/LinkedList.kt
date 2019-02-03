@@ -21,12 +21,53 @@ fun main() {
 //    println(removeKFromList(first, 3))
 //    println(isListPalindrome(first))
 
-    val list_a = fromArray(intArrayOf(4, 7, 4, 2031))
-    val list_b = fromArray(intArrayOf(5, 3, 7, 4, 7, 9099))
+//    val list_a = fromArray(intArrayOf(4, 7, 4, 2031))
+//    val list_b = fromArray(intArrayOf(5, 3, 7, 4, 7, 9099))
 //    println("Sum: " + addTwoHugeNumbers(list_a, list_b))
-    val (a, b) = Resources.fromJsonFile("test-13.json")
+//    val (a, b) = Resources.fromJsonFile("test-13.json")
 //    addTwoHugeNumbers(a, b)?.print()
-    addTwoHugeNumbers(a!!, b!!)?.print()
+//    addTwoHugeNumbers(a!!, b!!)?.print()
+    println(mergeTwoLinkedLists(fromArray(intArrayOf(1, 2, 3)), fromArray(intArrayOf(4, 5, 6))))
+}
+
+/**
+ * Given two singly linked lists sorted in non-decreasing order, your task is to merge them. In other words, return a
+ * singly linked list, also sorted in non-decreasing order, that contains the elements from both original lists.
+ */
+
+fun mergeTwoLinkedLists(l1: ListNode<Int>?, l2: ListNode<Int>?): ListNode<Int>? {
+    var head = ListNode(0)
+    val l = head
+    var list1 = l1
+    var list2 = l2
+    while (list1 != null || list2 != null) {
+        var node: ListNode<Int>?
+        if (compareValuesNullBigger(list1?.value, list2?.value) < 0) {
+            node = ListNode(list1!!.value)
+            list1 = list1.next
+        } else {
+            node = ListNode(list2!!.value)
+            list2 = list2.next
+        }
+        head.next = node
+        head = node
+    }
+    return l.next
+}
+
+/**
+ * Compares two nullable [Comparable] values. Null is considered more than any value.
+ *
+ * @sample samples.comparisons.Comparisons.compareValues
+ */
+
+private fun <T : Comparable<*>> compareValuesNullBigger(a: T?, b: T?): Int {
+    if (a === b) return 0
+    if (a == null) return 1
+    if (b == null) return -1
+
+    @Suppress("UNCHECKED_CAST")
+    return (a as Comparable<Any>).compareTo(b)
 }
 
 private fun fromArray(arr: IntArray): ListNode<Int>? {
