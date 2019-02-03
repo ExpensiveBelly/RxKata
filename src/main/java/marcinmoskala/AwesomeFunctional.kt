@@ -32,3 +32,15 @@ fun fib4(n: Int): Int {
     return (2 until n).fold(1 to 1) { (f, s), _ -> s to (f + s) }.second
 }
 
+
+/**
+ * https://medium.com/@hadiyarajesh/power-of-kotlin-generate-fibonacci-series-in-6-lines-of-code-with-lambdas-and-higher-order-91b85998cab7?__s=cpsr5vbwafommpowd9io
+ */
+val fibonacciSequence = generateSequence(1 to 1) {
+    //Generating Sequence starting from 1 {
+    it.second to it.first + it.second //Calculating Fn  = Fn-1 + Fn-2 and mapping to return Pair<Int,Int>
+}.map { it.second } //Getting first element of next sequence
+
+fun main() {
+    println("First X Fibonacci numbers are : 0,1, ${fibonacciSequence.take(20).joinToString()}")
+}
