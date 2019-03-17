@@ -35,8 +35,20 @@ Explanation: 12300040005 + 10001000100 = 22301040105.
      */
 
     fun addTwoHugeNumbers(a: List<Int>, b: List<Int>): List<Int> {
-//        return a.zip(b).asReversed().flatMap { if (it.first + it.second) }
-        return TODO()
+        return listOf(a.zipAll(b, 0, 0).foldRight(0) { pair: Pair<Int, Int>, acc: Int -> acc })
+    }
+
+    private fun <T1 : Any, T2 : Any> List<T1>.zipAll(other: List<T2>, emptyValue: T1, otherEmptyValue: T2): List<Pair<T1, T2>> {
+        val i1 = this.iterator()
+        val i2 = other.iterator()
+        return generateSequence {
+            if (i1.hasNext() || i2.hasNext()) {
+                Pair(if (i1.hasNext()) i1.next() else emptyValue,
+                        if (i2.hasNext()) i2.next() else otherEmptyValue)
+            } else {
+                null
+            }
+        }.toList()
     }
 
     /*
