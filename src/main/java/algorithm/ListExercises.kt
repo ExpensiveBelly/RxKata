@@ -35,7 +35,20 @@ Explanation: 12300040005 + 10001000100 = 22301040105.
      */
 
     fun addTwoHugeNumbers(a: List<Int>, b: List<Int>): List<Int> {
-        return listOf(a.zipAll(b, 0, 0).foldRight(0) { pair: Pair<Int, Int>, acc: Int -> acc })
+        return propagateCarry(a.reversed().zipAll(b.reversed(), 0, 0)
+                .fold(emptyList()) { acc, pair -> acc + (pair.first + pair.second) })
+    }
+
+    private fun propagateCarry(summedList: List<Int>): List<Int> {
+        var listWithCarry = emptyList<Int>()
+
+        var carry = 0
+        summedList.forEachIndexed { index: Int, _: Int ->
+            val element = summedList[index] + carry
+            listWithCarry += element % 10000
+            carry = (element / 10000)
+        }
+        return listWithCarry.reversed()
     }
 
     private fun <T1 : Any, T2 : Any> List<T1>.zipAll(other: List<T2>, emptyValue: T1, otherEmptyValue: T2): List<Pair<T1, T2>> {

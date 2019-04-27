@@ -139,7 +139,7 @@ fun addTwoHugeNumbers(a: ListNode<Int>?, b: ListNode<Int>?): ListNode<Int>? {
         headB = headB.next
 
         carry = sum / 10000
-        sum = sum % 10000
+        sum %= 10000
 
         val newNode = ListNode(sum)
         newNode.next = returnHead
