@@ -1,11 +1,12 @@
 package algorithm
 
+import Resources
 import org.junit.Assert.assertEquals
 import org.junit.Test
 
-class ListExercisesTest {
+class ListFunctionalExercisesTest {
 
-    private val listExercises = ListExercises()
+    private val exercises: ListFunctionalExercises = ListFunctionalExercises()
 
     /*
         For l = [1, 2, 3, 4, 5] and k = 2, the output should be
@@ -18,8 +19,8 @@ class ListExercisesTest {
 
     @Test
     fun should_reverse_list_in_k_groups() {
-        assertEquals(listOf(2, 1, 4, 3, 5), listExercises.reverseNodesInKGroups(listOf(1, 2, 3, 4, 5), 2))
-        assertEquals(listOf(3, 2, 1, 6, 5, 4, 9, 8, 7, 10, 11), listExercises.reverseNodesInKGroups(generateSequence(1) { it + 1 }.take(11).toList(), 3))
+        assertEquals(listOf(2, 1, 4, 3, 5), exercises.reverseNodesInKGroups(listOf(1, 2, 3, 4, 5), 2))
+        assertEquals(listOf(3, 2, 1, 6, 5, 4, 9, 8, 7, 10, 11), exercises.reverseNodesInKGroups(generateSequence(1) { it + 1 }.take(11).toList(), 3))
     }
 
     /*
@@ -31,8 +32,8 @@ class ListExercisesTest {
 
     @Test
     fun isPalindrome() {
-        assertEquals(true, listExercises.isListPalindrome(listOf(0, 1, 0)))
-        assertEquals(false, listExercises.isListPalindrome(listOf(1, 2, 2, 3)))
+        assertEquals(true, exercises.isListPalindrome(listOf(0, 1, 0)))
+        assertEquals(false, exercises.isListPalindrome(listOf(1, 2, 2, 3)))
     }
 
     /*
@@ -49,8 +50,10 @@ class ListExercisesTest {
 
     @Test
     fun add_two_huge_numbers() {
-        assertEquals(listOf(223, 104, 105), listExercises.addTwoHugeNumbers(listOf(123, 4, 5), listOf(100, 100, 100)))
-        assertEquals(listOf(9876, 5434, 0), listExercises.addTwoHugeNumbers(listOf(9876, 5432, 1999), listOf(1, 8001)))
+        assertEquals(listOf(223, 104, 105), exercises.addTwoHugeNumbers(listOf(123, 4, 5), listOf(100, 100, 100)))
+        assertEquals(listOf(9876, 5434, 0), exercises.addTwoHugeNumbers(listOf(9876, 5432, 1999), listOf(1, 8001)))
+        val (a, b, output) = Resources.fromJsonFile("test-13.json")
+        assertEquals(output, exercises.addTwoHugeNumbers(a, b))
     }
 
     /*
@@ -62,8 +65,8 @@ class ListExercisesTest {
 
     @Test
     fun merge_two_linked_lists() {
-        assertEquals(listOf(1, 2, 3, 4, 5, 6), listExercises.mergeTwoLinkedLists(listOf(1, 2, 3), listOf(4, 5, 6)))
-        assertEquals(listOf(0, 1, 1, 2, 3, 4, 5), listExercises.mergeTwoLinkedLists(listOf(1, 1, 2, 4), listOf(0, 3, 5)))
+        assertEquals(listOf(1, 2, 3, 4, 5, 6), exercises.mergeTwoLinkedLists(listOf(1, 2, 3), listOf(4, 5, 6)))
+        assertEquals(listOf(0, 1, 1, 2, 3, 4, 5), exercises.mergeTwoLinkedLists(listOf(1, 1, 2, 4), listOf(0, 3, 5)))
     }
 
     /*
@@ -75,7 +78,7 @@ class ListExercisesTest {
 
     @Test
     fun remove_k_from_list() {
-        assertEquals(listOf(1, 2, 4, 5), listExercises.removeKFromList(listOf(3, 1, 2, 3, 4, 5), 3))
-        assertEquals(listOf(1, 2, 3, 4, 5, 6, 7), listExercises.removeKFromList(listOf(1, 2, 3, 4, 5, 6, 7), 10))
+        assertEquals(listOf(1, 2, 4, 5), exercises.removeKFromList(listOf(3, 1, 2, 3, 4, 5), 3))
+        assertEquals(listOf(1, 2, 3, 4, 5, 6, 7), exercises.removeKFromList(listOf(1, 2, 3, 4, 5, 6, 7), 10))
     }
 }

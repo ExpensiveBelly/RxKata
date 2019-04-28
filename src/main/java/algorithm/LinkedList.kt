@@ -1,8 +1,5 @@
 package algorithm
 
-import com.google.gson.Gson
-import java.io.File
-
 fun main() {
     //3, 1, 2, 3, 4, 5
     val first = ListNode(1)
@@ -81,24 +78,15 @@ private fun fromArray(arr: IntArray): ListNode<Int>? {
     return res.next
 }
 
-object Resources {
-    fun fromJsonFile(fileName: String): Pair<ListNode<Int>?, ListNode<Int>?> {
-        val readText = File(Resources.javaClass.classLoader.getResource(fileName).toURI()).readText()
-        val fromJson = Gson().fromJson<LinkedListInput>(readText, LinkedListInput::class.java)
-
-        return Pair(returnList(fromJson.input.a), returnList(fromJson.input.b))
+private fun IntArray.toListNode(): ListNode<Int>? {
+    var listNode: ListNode<Int> = ListNode(0)
+    val head = listNode
+    forEach {
+        val node = ListNode(it)
+        listNode.next = node
+        listNode = node
     }
-
-    private fun returnList(ints: IntArray): ListNode<Int>? {
-        var listNode: ListNode<Int> = ListNode(0)
-        val head = listNode
-        ints.forEach {
-            val node = ListNode(it)
-            listNode.next = node
-            listNode = node
-        }
-        return head.next
-    }
+    return head.next
 }
 
 /**
