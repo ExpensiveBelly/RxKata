@@ -42,6 +42,8 @@ BONUS: Kotlin collection exercises as well.
 
 [Rx on error retry](https://github.com/platoblm/rx-onerror-retry-cache)
 
+[Awesome RxJava](https://project-awesome.org/eleventigers/awesome-rxjava)
+
 ---
 
 ##### What's next?
