@@ -23,7 +23,7 @@ dependencies {
     testImplementation group: 'junit', name: 'junit', version: '4.12'
     testImplementation 'org.mockito:mockito-core:2.10.0'
     testImplementation 'net.wuerl.kotlin:assertj-core-kotlin:0.2.1'
-    testImplementation 'com.nhaarman:mockito-kotlin:1.6.0'
+    testImplementation "com.nhaarman.mockitokotlin2:mockito-kotlin:2.1.0"
     testImplementation 'org.amshove.kluent:kluent:1.42'
 }
 
