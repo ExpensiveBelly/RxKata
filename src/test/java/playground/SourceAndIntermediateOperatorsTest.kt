@@ -49,4 +49,17 @@ class SourceAndIntermediateOperatorsTest {
     fun singleOrError_does_not_complete_parent_observable() {
         subject.singleOrError().test().assertSubscribed().also { subject.onNext(Unit) }.assertNotComplete()
     }
+
+    @Test
+    fun singleOrError_will_error_the_parent_observable() {
+        subject.singleOrError().test().assertSubscribed().also {
+            subject.onNext(Unit)
+            subject.onNext(Unit)
+        }.assertError(IllegalArgumentException::class.java)
+    }
+
+    @Test
+    fun flatmap_completable_will_error_parent_observable() {
+        subject.flatMapCompletable { Completable.error(RuntimeException()) }.test().also { subject.onNext(Unit) }.assertError(RuntimeException::class.java)
+    }
 }
