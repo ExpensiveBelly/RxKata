@@ -44,6 +44,12 @@ BONUS: Kotlin collection exercises as well.
 
 [Awesome RxJava](https://project-awesome.org/eleventigers/awesome-rxjava)
 
+[RxJava Android Samples](https://github.com/kaushikgopal/RxJava-Android-Samples)
+
+[Subjects series](http://akarnokd.blogspot.com/2015/06/subjects-part-1.html)
+
+[Schedulers series](http://akarnokd.blogspot.com/2015/05/schedulers-part-1.html)
+
 ---
 
 ##### What's next?
