@@ -2,6 +2,7 @@ package playground
 
 import io.reactivex.Completable
 import io.reactivex.Observable
+import io.reactivex.Single
 import io.reactivex.subjects.PublishSubject
 import org.junit.Test
 
@@ -61,5 +62,28 @@ class SourceAndIntermediateOperatorsTest {
     @Test
     fun flatmap_completable_will_error_parent_observable() {
         subject.flatMapCompletable { Completable.error(RuntimeException()) }.test().also { subject.onNext(Unit) }.assertError(RuntimeException::class.java)
+    }
+
+    @Test
+    fun subject_errors_when_observable_empty_concat_with_error_inside_flatmap() {
+        subject.flatMap { Observable.empty<Unit>().concatWith(Observable.error(IllegalStateException())) }.test().also { subject.onNext(Unit) }.assertError(IllegalStateException::class.java)
+    }
+
+    @Test
+    fun subject_does_not_complete_when_observable_empty_inside_flatmap() {
+        subject.flatMap { Observable.empty<Unit>() }.concatWith(Observable.error(IllegalStateException())).test().also { subject.onNext(Unit) }.assertNoValues().assertNotComplete().assertNoErrors()
+    }
+
+    @Test
+    fun first_or_error_errors_because_single_just_completes() {
+        subject.firstOrError().flatMap { Single.just(Unit) }.concatWith(Single.error(IllegalStateException())).test().also {
+            subject.onNext(Unit)
+            subject.onComplete()
+        }.assertError(IllegalStateException::class.java)
+    }
+
+    @Test
+    fun observable_onExceptionResumeNext_not_passing_the_exception() {
+        Observable.error<Throwable>(IllegalStateException()).onExceptionResumeNext { Observable.error<Throwable>(IllegalStateException()) }.test().assertNoErrors()
     }
 }
