@@ -2,6 +2,7 @@ package playground
 
 import io.reactivex.Completable
 import io.reactivex.Observable
+import io.reactivex.ObservableSource
 import io.reactivex.Single
 import io.reactivex.subjects.PublishSubject
 import org.junit.Test
@@ -78,12 +79,26 @@ class SourceAndIntermediateOperatorsTest {
     fun first_or_error_errors_because_single_just_completes() {
         subject.firstOrError().flatMap { Single.just(Unit) }.concatWith(Single.error(IllegalStateException())).test().also {
             subject.onNext(Unit)
+        }.assertError(IllegalStateException::class.java)
+
+        subject.singleOrError().flatMap { Single.just(Unit) }.concatWith(Single.error(IllegalStateException())).test().also {
+            subject.onNext(Unit)
             subject.onComplete()
         }.assertError(IllegalStateException::class.java)
     }
 
     @Test
-    fun observable_onExceptionResumeNext_not_passing_the_exception() {
-        Observable.error<Throwable>(IllegalStateException()).onExceptionResumeNext { Observable.error<Throwable>(IllegalStateException()) }.test().assertNoErrors()
+    fun observable_onExceptionResumeNext_passing_the_exception() {
+        Observable.error<Throwable>(IllegalStateException()).onExceptionResumeNext { Observable.error<Throwable>(IllegalStateException()) }.test().assertNoErrors() //Lambda not subscribed inside onExceptionResumeNext
+
+        Observable.error<Throwable>(IllegalStateException()).onExceptionResumeNext(Observable.error<Throwable>(IllegalStateException())).test().assertError(IllegalStateException::class.java)
+    }
+
+    @Test
+    fun observable_onErrorResumeNext_passes_the_exception() {
+        Observable.error<Throwable>(IllegalStateException()).onErrorResumeNext(Observable.error(IllegalStateException())).test().assertError(IllegalStateException::class.java)
+
+        //Don't use it this way though, subscribing within the `onErrorResumeNext`
+        Observable.error<Throwable>(IllegalStateException()).onErrorResumeNext(ObservableSource { observer -> Observable.error<Throwable>(IllegalStateException()).subscribe(observer) }).test().assertError(IllegalStateException::class.java)
     }
 }
