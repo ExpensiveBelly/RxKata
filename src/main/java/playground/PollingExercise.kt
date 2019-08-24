@@ -12,7 +12,6 @@ import kotlin.random.Random
  *
  * TODO:
  * - Fetch login key and use that to fetch data
- * - Aggregate lists using `scan`
  * - Tests
  */
 
