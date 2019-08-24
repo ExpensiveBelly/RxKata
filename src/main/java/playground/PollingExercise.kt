@@ -30,11 +30,12 @@ class PollingExercise {
                                         .build())
                     }
                     .startWith(emptyList<Int>())
+                    .scan { t1, t2 -> t1.union(t2).toList() }
                     .doOnNext { println("onNext $it") }
 
 
     private fun fetchData(seed: Int) = Single.timer(200, TimeUnit.MILLISECONDS).map {
-        Random.nextInt(10).takeIf { it > 4 }?.let { generateSequence(seed) { it + 1 }.take(10).toList() }
+        Random.nextInt(10).takeIf { it > 3 }?.let { generateSequence(seed) { it + 1 }.take(10).toList() }
                 ?: throw IllegalStateException()
     }
 }
