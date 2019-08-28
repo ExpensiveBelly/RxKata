@@ -14,12 +14,10 @@ import kotlin.random.Random
 
 /**
  * How to poll data with Rx depending on a given value?
- *
- * TODO:
- * - Tests
  */
 
 typealias Username = String
+
 typealias Token = String
 
 class PollingExercise {
@@ -27,6 +25,13 @@ class PollingExercise {
     private enum class Key {
         INSTANCE
     }
+
+    /**
+     * Use `private val memoizedTokenSupplier = Suppliers.memoizeWithExpiration({ getLoginToken() }, 2, TimeUnit.SECONDS)`
+     * if there's no need to invalidate the Supplier.
+     *
+     * LoadingCache allows `invalidate(Key.INSTANCE)` which resets the value
+     */
 
     private val tokenCache: LoadingCache<Key, Observable<Token>> = CacheBuilder.newBuilder()
             .maximumSize(1)
