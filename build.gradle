@@ -20,6 +20,7 @@ dependencies {
     implementation 'com.jakewharton.rxrelay2:rxrelay:2.1.0'
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.1.1'
     implementation 'com.github.davidmoten:rxjava2-extras:0.1.35'
+    implementation 'com.google.guava:guava:28.0-jre'
 
     testImplementation group: 'junit', name: 'junit', version: '4.12'
     testImplementation 'org.mockito:mockito-core:2.10.0'
