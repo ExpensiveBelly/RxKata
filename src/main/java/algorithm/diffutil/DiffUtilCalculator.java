@@ -5,6 +5,12 @@ import io.reactivex.annotations.Nullable;
 
 import java.util.List;
 
+/**
+ * This version of the DiffUtil has been copy/pasted from androidx.recyclerview:recyclerview:1.0.0
+ *
+ * @param <T>
+ */
+
 public class DiffUtilCalculator<T> {
 
 	private final List<T> oldList;
