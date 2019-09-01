@@ -1,31 +1,23 @@
 package algorithm.diffutil
 
+import algorithm.diffutil.callback.DefaultDiffUtilCallback
+import algorithm.diffutil.callback.ExpandableListDiffCallback
+
 fun main() {
-    val oldList = mutableListOf("Hello", "World")
-    val newList = mutableListOf("Hello")
-    DiffUtilCalculator(oldList, newList, object : DiffUtil.ItemCallback<String>() {
-        override fun areItemsTheSame(oldItem: String, newItem: String): Boolean {
-            return oldItem == newItem
-        }
+//    flattenedLists(listOf("Hello"), listOf("Hello", "World"))
 
-        override fun areContentsTheSame(oldItem: String, newItem: String): Boolean {
-            return oldItem == newItem
-        }
-    }).dispatchDiffUpdatesTo(object : ListUpdateCallback {
-        override fun onInserted(position: Int, count: Int) {
-            println("onInserted : position = [${position}], count = [${count}]")
-        }
-
-        override fun onRemoved(position: Int, count: Int) {
-            println("onRemoved : position = [${position}], count = [${count}]")
-        }
-
-        override fun onMoved(fromPosition: Int, toPosition: Int) {
-            println("onMoved : fromPosition = [${fromPosition}], toPosition = [${toPosition}]")
-        }
-
-        override fun onChanged(position: Int, count: Int, payload: Any?) {
-            println("onChange: position = [${position}], count = [${count}], payload = [${payload}]")
-        }
-    })
+    nestedLists(listOf(Nested("Summary 1", emptyList())), listOf(Nested("Summary 2", emptyList())))
 }
+
+data class Nested(val summary: String, val items: List<String>)
+
+fun nestedLists(oldList: List<Nested>, newList: List<Nested>) {
+    println("Nested lists")
+    calculateDiffUtil(oldList, newList, ExpandableListDiffCallback(oldList, newList, oldList.map { it.items.size }, newList.map { it.items.size }))
+}
+
+private fun flattenedLists(oldList: List<String>, newList: List<String>) {
+    println("Flattened lists")
+    calculateDiffUtil(oldList, newList, DefaultDiffUtilCallback(oldList, newList, EqualsDiffCallback()))
+}
+

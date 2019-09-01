@@ -16,6 +16,7 @@
 
 package algorithm.diffutil;
 
+import algorithm.diffutil.callback.listupdate.BatchingListUpdateCallback;
 import com.github.davidmoten.guavamini.annotations.VisibleForTesting;
 import io.reactivex.annotations.NonNull;
 import io.reactivex.annotations.Nullable;
