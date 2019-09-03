@@ -1,9 +1,7 @@
 package algorithm.diffutil
 
-import io.reactivex.annotations.NonNull
 
+fun calculateDiffUtilAndDispatch(diffCallback: DiffUtil.Callback, listUpdateCallback: ListUpdateCallback) = calculateDiffResult(diffCallback).dispatchUpdatesTo(listUpdateCallback)
 
-fun calculateDiffUtil(diffCallback: DiffUtil.Callback, listUpdateCallback: ListUpdateCallback) = dispatchDiffUpdatesTo(diffCallback, listUpdateCallback)
+fun calculateDiffResult(diffCallback: DiffUtil.Callback) = DiffUtil.calculateDiff(diffCallback)
 
-fun dispatchDiffUpdatesTo(diffUtilCallback: DiffUtil.Callback, @NonNull updateCallback: ListUpdateCallback) =
-        DiffUtil.calculateDiff(diffUtilCallback).dispatchUpdatesTo(updateCallback)

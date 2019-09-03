@@ -18,13 +18,13 @@ fun nestedLists(oldList: List<Nested>, newList: List<Nested>) {
     val newListTransformed = newList.flatMap { listOf(it.summary) + it.items }
     println("OldList : $oldListTransformed")
     println("NewList : $newListTransformed")
-    calculateDiffUtil(ExpandableListDiffCallback(oldListTransformed, newListTransformed, oldList.map { it.items.size }, newList.map { it.items.size }), LoggingUpdateCallback())
+    calculateDiffUtilAndDispatch(ExpandableListDiffCallback(oldListTransformed, newListTransformed, oldList.map { it.items.size }, newList.map { it.items.size }), LoggingUpdateCallback())
 }
 
 private fun flattenedLists(oldList: List<String>, newList: List<String>) {
     println("** Flattened lists **")
     println("OldList : $oldList")
     println("NewList : $newList")
-    calculateDiffUtil(DefaultDiffUtilCallback(oldList, newList, EqualsDiffCallback()), LoggingUpdateCallback())
+    calculateDiffUtilAndDispatch(DefaultDiffUtilCallback(oldList, newList, EqualsDiffCallback()), LoggingUpdateCallback())
 }
 

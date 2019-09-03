@@ -457,6 +457,34 @@ public class DiffUtil {
 		 * If false, the addition or removal is at the beginning of the snake.
 		 */
 		boolean reverse;
+
+		@Override
+		public int hashCode() {
+			return Objects.hash(x, y, size, removal, reverse);
+		}
+
+		@Override
+		public boolean equals(Object o) {
+			if (this == o) return true;
+			if (o == null || getClass() != o.getClass()) return false;
+			Snake snake = (Snake) o;
+			return x == snake.x &&
+					y == snake.y &&
+					size == snake.size &&
+					removal == snake.removal &&
+					reverse == snake.reverse;
+		}
+
+		@Override
+		public String toString() {
+			return "Snake{" +
+					"x=" + x +
+					", y=" + y +
+					", size=" + size +
+					", removal=" + removal +
+					", reverse=" + reverse +
+					'}';
+		}
 	}
 
 	/**
