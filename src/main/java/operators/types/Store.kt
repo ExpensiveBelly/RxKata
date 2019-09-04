@@ -19,7 +19,7 @@ internal class Store {
      */
 
     fun purchase(productName: String, quantity: Int): Observable<BigDecimal> {
-        return Observable.fromCallable({
+        return Observable.fromCallable {
             Thread.sleep(1000)
             if (productsCache.contains(productName)) {
                 throw Throwable("Products should be grouped")
@@ -27,7 +27,7 @@ internal class Store {
             println("Purchasing " + productName + ", Quantity: " + quantity + " thread: " + Thread.currentThread().name)
             productsCache.add(productName)
             return@fromCallable pricesMap[productName]?.times(quantity)?.let { BigDecimal(it) }
-        })
+        }
 
     }
 }

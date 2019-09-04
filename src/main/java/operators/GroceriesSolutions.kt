@@ -36,7 +36,7 @@ class GroceriesSolutions {
                     store.purchase(pair.value0, pair.value1.toInt())
                             .subscribeOn(Schedulers.io())
                 }
-                .reduce({ obj, augend -> obj.add(augend) })
+                .reduce { obj, augend -> obj.add(augend) }
                 .toObservable()
     }
 }
