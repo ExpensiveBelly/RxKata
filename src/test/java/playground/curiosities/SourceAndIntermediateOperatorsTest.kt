@@ -1,4 +1,4 @@
-package playground
+package playground.curiosities
 
 import io.reactivex.Completable
 import io.reactivex.Observable

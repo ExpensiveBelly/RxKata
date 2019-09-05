@@ -1,4 +1,4 @@
-package playground
+package playground.curiosities
 
 import com.jakewharton.rxrelay2.PublishRelay
 import io.reactivex.Observable
