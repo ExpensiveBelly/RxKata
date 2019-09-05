@@ -13,7 +13,7 @@ class CancelableVsDisposableTest {
     @Test
     fun cancelable_should_dispose_the_stream() {
         val testScheduler = TestScheduler()
-        var innerDisposable = Disposables.disposed()
+        var innerDisposable = Disposables.empty()
         val testObserver = Observable.create<Int> { emitter ->
             innerDisposable = Observable.interval(0, 100, TimeUnit.MILLISECONDS, testScheduler)
                     .doOnNext { emitter.onNext(it.toInt()) }.subscribe()
@@ -31,7 +31,7 @@ class CancelableVsDisposableTest {
     @Test
     fun disposable_should_dispose_the_stream() {
         val testScheduler = TestScheduler()
-        var innerDisposable = Disposables.disposed()
+        var innerDisposable = Disposables.empty()
         val testObserver = Observable.create<Int> { emitter ->
             innerDisposable = Observable.interval(0, 100, TimeUnit.MILLISECONDS, testScheduler)
                     .doOnNext { emitter.onNext(it.toInt()) }.subscribe()
