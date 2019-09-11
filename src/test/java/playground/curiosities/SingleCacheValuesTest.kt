@@ -36,29 +36,29 @@ class SingleCacheValuesTest {
         }
     }
 
-    private fun <T> Single<T>.cacheAtomicReference() = Single.just(AtomicReference<T>()).flatMap { reference ->
-        if (reference.get() != null) Single.just(reference.get())
-        else doOnSuccess { reference.set(it) }.toObservable().replay(1).refCount().firstOrError()
+    private fun <T> Single<T>.cacheAtomicReference(): Single<T> {
+        val reference = AtomicReference<T>()
+        val referenceShared = doOnSuccess { reference.set(it) }.toObservable().replay(1).refCount().firstOrError()
+        return Single.defer {
+            val value = reference.get()
+            if (value != null) Single.just(value)
+            else referenceShared
+        }
     }
 
     @Test
-    fun should_cache_atomic_reference_value_when_more_subscribers_subscribe() {
+    fun should_share_atomic_reference_value_when_multiple_subscribers_subscribe() {
         val testScheduler = TestScheduler()
         val text = "Hello"
         val singleCached = Single.defer { Single.just(text).delay(100, TimeUnit.MILLISECONDS, testScheduler) }.cacheAtomicReference()
 
-        singleCached.test()
-                .assertSubscribed()
-                .assertNoValues()
-                .also { testScheduler.advanceTimeBy(50, TimeUnit.MILLISECONDS) }
-                .also {
-                    singleCached.test()
-                            .assertSubscribed()
-                            .assertNoValues()
-                            .also { testScheduler.advanceTimeBy(100, TimeUnit.MILLISECONDS) }
-                            .assertValue(text)
-                }
-                .assertValue(text)
+        val subscriber1 = singleCached.test()
+        testScheduler.advanceTimeBy(50, TimeUnit.MILLISECONDS)
+        subscriber1.assertNoValues()
+        val subscriber2 = singleCached.test()
+        testScheduler.advanceTimeBy(50, TimeUnit.MILLISECONDS)
+        subscriber1.assertValue(text)
+        subscriber2.assertValue(text)
     }
 
     @Test
