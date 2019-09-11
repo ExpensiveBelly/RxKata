@@ -62,8 +62,24 @@ class SingleCacheValuesTest {
     }
 
     @Test
-    fun should_cache_atomic_reference_even_if_unsubscribed() {
-        val testScheduler = TestScheduler()
+    fun should_not_persist_errors_and_try_again_when_using_cache_atomic_reference() {
+        val text = "Hello"
+        var firstTime = true
+        val singleCachedError = Single.defer {
+            if (firstTime) {
+                Single.error<Throwable>(IllegalStateException()).doOnError { firstTime = false }
+            } else {
+                Single.just(text)
+            }
+        }.cacheAtomicReference()
+
+        singleCachedError.test().assertError(IllegalStateException::class.java)
+        singleCachedError.test().assertValue(text)
+        singleCachedError.test().assertValue(text)
+    }
+
+    @Test
+    fun should_cache_atomic_reference_even_if_unsubscribed_and_share_the_same_value() {
         val text = "Hello"
         val singleCached = Single.defer { Single.just(text) }.cacheAtomicReference()
 
@@ -72,5 +88,39 @@ class SingleCacheValuesTest {
         disposable.dispose()
 
         singleCached.test().assertValue(text)
+    }
+
+    /**
+     * What's the difference between `cacheAtomicReference` and `cache` operator?
+     */
+
+    @Test
+    fun `cache_should_re-throw_the_error_whereas_cacheAtomicReference_should_not`() {
+        val text = "Hello"
+        var firstTimeCacheAtomicReference = true
+        val singleCachedAtomicReference = Single.defer {
+            if (firstTimeCacheAtomicReference) {
+                Single.error<Throwable>(IllegalStateException()).doOnError { firstTimeCacheAtomicReference = false }
+            } else {
+                Single.just(text)
+            }
+        }.cacheAtomicReference()
+
+        var firstTimeCache = true
+        val singleCached = Single.defer {
+            if (firstTimeCache) {
+                Single.error<Throwable>(IllegalStateException()).doOnError { firstTimeCache = false }
+            } else {
+                Single.just(text)
+            }
+        }.cache()
+
+        singleCachedAtomicReference.test().assertError(IllegalStateException::class.java)
+        // Subsequent subscription triggers the source again
+        singleCachedAtomicReference.test().assertValue(text)
+
+        singleCached.test().assertError(IllegalStateException::class.java)
+        // Subsequent subscription throws error again
+        singleCached.test().assertError(IllegalStateException::class.java)
     }
 }
