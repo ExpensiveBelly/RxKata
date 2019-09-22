@@ -29,9 +29,9 @@ public class MapFlatMapSolutions {
 	 */
 	public Observable<Integer> exerciseFlatten() {
 		Observable<Triplet<Integer, Integer, Integer>> pairObservable =
-				just(new Triplet<>(1, 2, 3),
-						new Triplet<>(4, 5, 6),
-						new Triplet<>(7, 8, 9));
+				just(Triplet.with(1, 2, 3),
+						Triplet.with(4, 5, 6),
+						Triplet.with(7, 8, 9));
 
 		return pairObservable.flatMap(triplet -> Observable.fromArray(
 				triplet.getValue0(),
@@ -52,7 +52,7 @@ public class MapFlatMapSolutions {
 
 		return booking.getUser()
 				.flatMap(Booking.User::getEmail)
-				.map(email -> just(email)).orElse(Observable.empty());
+				.map(Observable::just).orElse(Observable.empty());
 	}
 
 	static class Booking {
