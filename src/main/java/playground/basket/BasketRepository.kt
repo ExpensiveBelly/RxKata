@@ -1,10 +1,10 @@
 package playground.basket
 
+import com.pacoworks.komprehensions.rx2.doFlatMap
 import io.reactivex.Observable
 import io.reactivex.Single
 import io.reactivex.SingleTransformer
 import io.reactivex.schedulers.Schedulers
-
 
 class BasketRepository(private val sessionRepository: SessionRepository,
                        private val basketApi: BasketApi,
@@ -44,6 +44,26 @@ class BasketRepository(private val sessionRepository: SessionRepository,
                                 .toList()
                                 .map { BasketItem(basketTO.id, basketTO.name, it) }
                     }.toList()
+        }
+    }
+
+    private fun fetchGetProductsKomprehensions(sessionKey: String): SingleTransformer<List<BasketTO>, List<BasketItem>> {
+        return SingleTransformer { basketToList ->
+            doFlatMap(
+                    { basketToList.flattenAsObservable { it } },
+                    { basketTO -> Observable.fromIterable(basketTO.productIds) },
+                    { _, productId ->
+                        productsApi.getProducts(sessionKey, productId)
+                                .subscribeOn(Schedulers.io())
+                                .observeOn(Schedulers.computation())
+                                .doOnError { reportIfSessionInvalid() }
+                                .map { it.toProduct() }
+                                .toObservable()
+                                .toList()
+                                .toObservable()
+                    },
+                    { basketTO, _, products -> Observable.just(BasketItem(basketTO.id, basketTO.name, products)) })
+                    .toList()
         }
     }
 

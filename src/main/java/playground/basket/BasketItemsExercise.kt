@@ -53,7 +53,7 @@ interface BasketApi {
     fun getBaskets(secretKey: String): Single<List<BasketTO>>
 }
 
-data class BasketTO(val id: String, val name: String, val productIds: List<String>)
+data class BasketTO(val id: String, val name: String, val productIds: List<ProductId>)
 
 interface ProductsApi {
     fun getProducts(secretKey: String, id: String): Single<ProductTO>
