@@ -73,16 +73,16 @@ class BasketRepository(private val sessionRepository: SessionRepository,
                     }) { list -> list.map { it as Product } }.map { BasketItem(basketTO.id, basketTO.name, it) }
                 }) { list -> list.map { it as BasketItem } }
             }
-
-    fun ProductTO.toProduct() = Product(this.id, this.name,
-            when (type) {
-                "FRUIT" -> ProductType.FRUIT
-                "MEAT" -> ProductType.MEAT
-                "FISH" -> ProductType.FISH
-                "VEGETABLES" -> ProductType.VEGETABLES
-                "UNKNOWN" -> ProductType.UNKNOWN
-                else -> {
-                    ProductType.UNKNOWN
-                }
-            })
 }
+
+fun ProductTO.toProduct() = Product(this.id, this.name,
+        when (type) {
+            "FRUIT" -> ProductType.FRUIT
+            "MEAT" -> ProductType.MEAT
+            "FISH" -> ProductType.FISH
+            "VEGETABLES" -> ProductType.VEGETABLES
+            "UNKNOWN" -> ProductType.UNKNOWN
+            else -> {
+                ProductType.UNKNOWN
+            }
+        })
