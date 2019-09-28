@@ -3,7 +3,6 @@ package playground.basket
 import com.pacoworks.komprehensions.rx2.doFlatMap
 import io.reactivex.Observable
 import io.reactivex.Single
-import io.reactivex.SingleTransformer
 import io.reactivex.schedulers.Schedulers
 
 class BasketRepository(private val sessionRepository: SessionRepository,
@@ -17,7 +16,7 @@ class BasketRepository(private val sessionRepository: SessionRepository,
                         .subscribeOn(Schedulers.io())
                         .observeOn(Schedulers.computation())
                         .doOnError { reportIfSessionInvalid() }
-                        .compose(fetchGetProductsNoConcurrencyLimit(sessionKey))
+                        .fetchGetProductsMaxConcurrency(sessionKey)
             }
             .replay(1).refCount()
 
@@ -28,9 +27,8 @@ class BasketRepository(private val sessionRepository: SessionRepository,
      * Limits concurrency to 10 threads in parallel
      */
 
-    private fun fetchGetProductsMaxConcurrency(sessionKey: String, maxConcurrency: Int = 10): SingleTransformer<List<BasketTO>, List<BasketItem>> {
-        return SingleTransformer { basketToList ->
-            basketToList.flattenAsObservable { it }
+    private fun Single<List<BasketTO>>.fetchGetProductsMaxConcurrency(sessionKey: String, maxConcurrency: Int = 10) =
+            flattenAsObservable { it }
                     .flatMapSingle { basketTO ->
                         Observable.fromIterable(basketTO.productIds)
                                 .flatMap({ productId ->
@@ -44,13 +42,10 @@ class BasketRepository(private val sessionRepository: SessionRepository,
                                 .toList()
                                 .map { BasketItem(basketTO.id, basketTO.name, it) }
                     }.toList()
-        }
-    }
 
-    private fun fetchGetProductsKomprehensions(sessionKey: String): SingleTransformer<List<BasketTO>, List<BasketItem>> {
-        return SingleTransformer { basketToList ->
+    private fun Single<List<BasketTO>>.fetchGetProductsKomprehensions(sessionKey: String) =
             doFlatMap(
-                    { basketToList.flattenAsObservable { it } },
+                    { flattenAsObservable { it } },
                     { basketTO -> Observable.fromIterable(basketTO.productIds) },
                     { _, productId ->
                         productsApi.getProducts(sessionKey, productId)
@@ -64,13 +59,11 @@ class BasketRepository(private val sessionRepository: SessionRepository,
                     },
                     { basketTO, _, products -> Observable.just(BasketItem(basketTO.id, basketTO.name, products)) })
                     .toList()
-        }
-    }
 
-    private fun fetchGetProductsNoConcurrencyLimit(sessionKey: String): SingleTransformer<List<BasketTO>, List<BasketItem>> {
-        return SingleTransformer { basketToList ->
-            basketToList.flatMap { basketTOs ->
-                Single.zip(basketTOs.map { basketTO ->
+
+    private fun Single<List<BasketTO>>.fetchGetProductsNoConcurrencyLimit(sessionKey: String): Single<List<BasketItem>> =
+            flatMap { basketTOs ->
+                Single.zip(basketTOs.map { basketTO: BasketTO ->
                     Single.zip(basketTO.productIds.map { productId ->
                         productsApi.getProducts(sessionKey, productId)
                                 .subscribeOn(Schedulers.io())
@@ -80,19 +73,16 @@ class BasketRepository(private val sessionRepository: SessionRepository,
                     }) { list -> list.map { it as Product } }.map { BasketItem(basketTO.id, basketTO.name, it) }
                 }) { list -> list.map { it as BasketItem } }
             }
-        }
-    }
+
+    fun ProductTO.toProduct() = Product(this.id, this.name,
+            when (type) {
+                "FRUIT" -> ProductType.FRUIT
+                "MEAT" -> ProductType.MEAT
+                "FISH" -> ProductType.FISH
+                "VEGETABLES" -> ProductType.VEGETABLES
+                "UNKNOWN" -> ProductType.UNKNOWN
+                else -> {
+                    ProductType.UNKNOWN
+                }
+            })
 }
-
-
-fun ProductTO.toProduct() = Product(this.id, this.name,
-        when (type) {
-            "FRUIT" -> ProductType.FRUIT
-            "MEAT" -> ProductType.MEAT
-            "FISH" -> ProductType.FISH
-            "VEGETABLES" -> ProductType.VEGETABLES
-            "UNKNOWN" -> ProductType.UNKNOWN
-            else -> {
-                ProductType.UNKNOWN
-            }
-        })
