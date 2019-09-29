@@ -6,6 +6,7 @@ import com.nytimes.android.external.cache3.CacheLoader
 import com.nytimes.android.external.cache3.LoadingCache
 import com.nytimes.android.external.cache3.Supplier
 import io.reactivex.Observable
+import io.reactivex.Scheduler
 import io.reactivex.Single
 import io.reactivex.schedulers.Schedulers
 import java.util.concurrent.TimeUnit
@@ -64,9 +65,26 @@ class PollingExercise {
     }
 }
 
+class PollingExerciseTakeUntil() {
+
+    private data class ServerPollingResponse(val jobDone: Boolean)
+
+    fun pollUsingTakeUntil(intervalSeconds: Long, scheduler: Scheduler = Schedulers.computation()) = pollServerPollingResponse()
+            .repeatWhen { it.delay(intervalSeconds, TimeUnit.SECONDS, scheduler) }
+            .takeUntil { it.jobDone }
+            .doOnNext { println("onNext $it") }
+            .filter { it.jobDone }
+            .subscribe()
+
+    private fun pollServerPollingResponse() = Observable.timer(200, TimeUnit.MILLISECONDS)
+            .map { ServerPollingResponse(false) }
+}
+
 fun main() {
     val intervalSeconds = 1L
-    PollingExercise().poll(intervalSeconds).subscribe()
+    PollingExercise().pollUsingInterval(intervalSeconds).subscribe()
+    PollingExerciseTakeUntil().pollUsingTakeUntil(intervalSeconds)
 
     Thread.sleep(intervalSeconds * 5 * 1000)
 }
+
