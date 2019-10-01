@@ -35,7 +35,8 @@ RxJava
 [RxJavaExtensions](https://github.com/akarnokd/RxJavaExtensions)  
 [Rx2-tools](https://github.com/fsbarata/rx2-tools)  
 [RxPaper](https://github.com/pakoito/RxPaper)  
-[RxObservableDiskCache2](https://github.com/pakoito/RxObservableDiskCache2)  
+[RxObservableDiskCache2](https://github.com/pakoito/RxObservableDiskCache2)
+[RxJavaDemoApp](https://github.com/JoaoMotondon/RxJavaDemoApp)  
 
 Kotlin  
 
