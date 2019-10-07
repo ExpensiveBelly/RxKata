@@ -39,7 +39,7 @@ class PollingExercise {
             .expireAfterWrite(2, TimeUnit.SECONDS)
             .build(CacheLoader.from(Supplier { getLoginToken() }))
 
-    fun poll(intervalSeconds: Long) =
+    fun pollUsingInterval(intervalSeconds: Long) =
             Observable.interval(0, intervalSeconds, TimeUnit.SECONDS)
                     .switchMap { interval ->
                         tokenCache.get(Key.INSTANCE)!!.switchMapSingle { loginToken ->

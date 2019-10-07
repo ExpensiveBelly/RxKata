@@ -5,6 +5,10 @@ import io.reactivex.functions.BiFunction
 import java.util.*
 import java.util.concurrent.TimeUnit
 
+/**
+ * Good explanation on backpressure Rx2:
+ * https://stackoverflow.com/questions/40323307/observable-vs-flowable-rxjava2
+ */
 
 class BackpressureExercises {
 
