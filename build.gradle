@@ -24,6 +24,7 @@ dependencies {
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.1.1'
     implementation 'com.github.davidmoten:rxjava2-extras:0.1.35'
     implementation 'com.nytimes.android:cache3:3.1.1'
+    implementation 'io.arrow-kt:arrow-core:0.10.0'
 
     testImplementation group: 'junit', name: 'junit', version: '4.12'
     testImplementation 'org.mockito:mockito-core:2.10.0'
