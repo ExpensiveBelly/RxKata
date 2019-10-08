@@ -39,8 +39,3 @@ class Delegation {
     class CImpl(b: B = BImpl(), a: A = AImpl(b)) : B by b, A by a
 
 }
-
-fun main() {
-
-
-}
