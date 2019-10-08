@@ -2,6 +2,7 @@ package playground
 
 import io.reactivex.Observable
 import io.reactivex.Single
+import io.reactivex.exceptions.CompositeException
 import io.reactivex.schedulers.Schedulers
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit
@@ -30,7 +31,7 @@ class ConcatPaginationExercise {
 
     fun fetchNumberOfPagesEagerlyDelayError(number: Int) =
             Observable.range(0, number)
-                    .concatMapEagerDelayError({ fetchPage(it, 30).toObservable().subscribeOn(Schedulers.io()) }, true)
+                    .concatMapEagerDelayError({ fetchPage(it, 90).toObservable().subscribeOn(Schedulers.io()) }, true)
 }
 
 enum class Choice {
@@ -55,7 +56,12 @@ fun main() {
                 println("${TimeUnit.MILLISECONDS.convert(System.nanoTime() - start, TimeUnit.NANOSECONDS)}ms")
                 countDownLatch.countDown()
             }
-            .subscribe({ println(it) }, { println(it) })
+            .subscribe(
+                    { println(it) },
+                    {
+                        if (it is CompositeException) println(it.exceptions)
+                        else println(it)
+                    })
 
     countDownLatch.await()
 }
