@@ -3,7 +3,7 @@ package playground.basket
 import io.reactivex.Single
 import io.reactivex.subjects.BehaviorSubject
 
-class SessionRepository(private val sessionApi: SessionApi, private val userName: String, private val password: String) {
+class SessionRepository(private val sessionApi: SessionApi, userName: String, password: String) {
 
     private val loginStateSubject = BehaviorSubject.createDefault<LoginState>(LoginState.LoggedOut)
 
@@ -23,7 +23,7 @@ class SessionRepository(private val sessionApi: SessionApi, private val userName
                 }
             }
             .toObservable()
-            .concatWith(loginStateSubject)
+            .concatWith(loginStateSubject) //So you keep getting notified
             .flatMapSingle { loginState ->
                 when (loginState) {
                     is LoginState.LoggedIn -> Single.just(loginState.key)
