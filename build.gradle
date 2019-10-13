@@ -16,6 +16,13 @@ dependencies {
     implementation "io.reactivex.rxjava2:rxjava:2.1.4"
     implementation 'io.reactivex.rxjava2:rxkotlin:2.1.0'
     implementation "org.javatuples:javatuples:1.2"
+    implementation 'com.google.code.gson:gson:2.8.5'
+    implementation 'com.jakewharton.rxrelay2:rxrelay:2.1.0'
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.1.1'
+    implementation 'com.github.davidmoten:rxjava2-extras:0.1.35'
+    implementation 'com.nytimes.android:cache3:3.1.1'
+    implementation 'io.arrow-kt:arrow-core:0.10.0'
+    implementation 'com.github.akarnokd:rxjava2-extensions:0.20.10'
 
     testImplementation group: 'junit', name: 'junit', version: '4.12'
     testImplementation 'org.mockito:mockito-core:2.10.0'
