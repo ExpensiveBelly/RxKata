@@ -5,6 +5,8 @@ import io.reactivex.Observable
 import io.reactivex.ObservableSource
 import io.reactivex.Single
 import io.reactivex.subjects.PublishSubject
+import junit.framework.TestCase.assertFalse
+import junit.framework.TestCase.assertTrue
 import org.junit.Test
 
 
@@ -18,27 +20,41 @@ class SourceAndIntermediateOperatorsTest {
      */
 
     @Test
-    fun first_or_error_completes_parent_observable() {
-        subject.firstOrError().test().assertSubscribed().also { subject.onNext(Unit) }.assertComplete()
+    fun first_or_error_disposes_parent_observable() {
+        var disposed = false
+        subject.doOnDispose { disposed = true }
+                .firstOrError()
+                .test()
+                .assertSubscribed()
+                .also { subject.onNext(Unit) }
+                .assertComplete()
+
+        assertFalse(subject.hasComplete()) // Completes downstream
+        assertFalse(subject.hasObservers())
+        assertTrue(disposed) // Disposes upstream
     }
 
     @Test
-    fun flatmap_does_not_complete_parent_observable() {
+    fun flatmap_does_not_dispose_parent_observable() {
         subject.flatMap { Observable.just(Unit) }.test().assertSubscribed().also { subject.onNext(Unit) }.assertNotComplete()
     }
 
     @Test
-    fun flatmap_completable_does_not_complete_parent_observable() {
+    fun flatmap_completable_does_not_dispose_parent_observable() {
         subject.flatMapCompletable { Completable.complete() }.test().assertSubscribed().also { subject.onNext(Unit) }.assertNotComplete()
     }
 
     @Test
-    fun firstelement_completes_parent_observable() {
-        subject.firstElement().test().assertSubscribed().also { subject.onNext(Unit) }.assertComplete()
+    fun firstelement_disposes_parent_observable() {
+        var disposed = false
+        subject.doOnDispose { disposed = true }.firstElement().test().assertSubscribed().also { subject.onNext(Unit) }.assertComplete()
+
+        assertFalse(subject.hasComplete())
+        assertTrue(disposed)
     }
 
     @Test
-    fun filter_does_not_complete_parent_observable() {
+    fun filter_does_not_dispose_parent_observable() {
         subject.filter { it != Unit }.test().assertSubscribed().also { subject.onNext(Unit) }.assertNotComplete()
     }
 
@@ -48,7 +64,7 @@ class SourceAndIntermediateOperatorsTest {
      */
 
     @Test
-    fun singleOrError_does_not_complete_parent_observable() {
+    fun singleOrError_does_not_dispose_parent_observable() {
         subject.singleOrError().test().assertSubscribed().also { subject.onNext(Unit) }.assertNotComplete()
     }
 
@@ -71,7 +87,7 @@ class SourceAndIntermediateOperatorsTest {
     }
 
     @Test
-    fun subject_does_not_complete_when_observable_empty_inside_flatmap() {
+    fun subject_does_not_dispose_when_observable_empty_inside_flatmap() {
         subject.flatMap { Observable.empty<Unit>() }.concatWith(Observable.error(IllegalStateException())).test().also { subject.onNext(Unit) }.assertNoValues().assertNotComplete().assertNoErrors()
     }
 
