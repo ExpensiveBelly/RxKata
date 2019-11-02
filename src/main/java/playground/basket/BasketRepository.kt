@@ -4,6 +4,7 @@ import com.pacoworks.komprehensions.rx2.doFlatMap
 import io.reactivex.Observable
 import io.reactivex.Single
 import io.reactivex.schedulers.Schedulers
+import playground.extensions.zip
 
 class BasketRepository(private val sessionRepository: SessionRepository,
                        private val basketApi: BasketApi,
@@ -63,15 +64,15 @@ class BasketRepository(private val sessionRepository: SessionRepository,
 
     private fun Single<List<BasketTO>>.fetchGetProductsNoConcurrencyLimit(sessionKey: String): Single<List<BasketItem>> =
             flatMap { basketTOs ->
-                Single.zip(basketTOs.map { basketTO: BasketTO ->
-                    Single.zip(basketTO.productIds.map { productId ->
+                zip(basketTOs.map { basketTO: BasketTO ->
+                    zip(basketTO.productIds.map { productId ->
                         productsApi.getProducts(sessionKey, productId)
                                 .subscribeOn(Schedulers.io())
                                 .observeOn(Schedulers.computation())
                                 .doOnError { reportIfSessionInvalid() }
                                 .map { it.toProduct() }
-                    }) { list -> list.map { it as Product } }.map { BasketItem(basketTO.id, basketTO.name, it) }
-                }) { list -> list.map { it as BasketItem } }
+                    }).map { BasketItem(basketTO.id, basketTO.name, it) }
+                })
             }
 }
 

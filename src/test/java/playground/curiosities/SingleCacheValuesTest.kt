@@ -5,8 +5,8 @@ import io.reactivex.schedulers.TestScheduler
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
 import org.junit.Test
+import playground.extensions.cacheAtomicReference
 import java.util.concurrent.TimeUnit
-import java.util.concurrent.atomic.AtomicReference
 
 class SingleCacheValuesTest {
 
@@ -33,16 +33,6 @@ class SingleCacheValuesTest {
             singleCached.test().assertSubscribed().assertValue(text1)
             delay(100)
             singleCached.test().assertValue(text2)
-        }
-    }
-
-    private fun <T> Single<T>.cacheAtomicReference(): Single<T> {
-        val reference = AtomicReference<T>()
-        val referenceShared = doOnSuccess { reference.set(it) }.toObservable().replay(1).refCount().firstOrError()
-        return Single.defer {
-            val value = reference.get()
-            if (value != null) Single.just(value)
-            else referenceShared
         }
     }
 

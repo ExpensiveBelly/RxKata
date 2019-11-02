@@ -9,6 +9,7 @@ import io.reactivex.Observable
 import io.reactivex.Scheduler
 import io.reactivex.Single
 import io.reactivex.schedulers.Schedulers
+import playground.extensions.cacheAtomicReference
 import java.util.concurrent.TimeUnit
 import kotlin.random.Random
 
@@ -34,19 +35,19 @@ class PollingExercise {
      * LoadingCache allows `invalidate(Key.INSTANCE)` which resets the value
      */
 
-    private val tokenCache: LoadingCache<Key, Observable<Token>> = CacheBuilder.newBuilder()
+    private val tokenCache: LoadingCache<Key, Single<Token>> = CacheBuilder.newBuilder()
             .maximumSize(1)
             .expireAfterWrite(2, TimeUnit.SECONDS)
             .build(CacheLoader.from(Supplier { getLoginToken() }))
 
     fun pollUsingInterval(intervalSeconds: Long) =
             Observable.interval(0, intervalSeconds, TimeUnit.SECONDS)
-                    .switchMap { interval ->
-                        tokenCache.get(Key.INSTANCE)!!.switchMapSingle { loginToken ->
+                    .switchMapSingle { interval ->
+                        tokenCache.get(Key.INSTANCE)!!.flatMap { loginToken ->
                             fetchData(interval.toInt()).subscribeOn(Schedulers.io())
                                     .observeOn(Schedulers.trampoline())
-                                    .doOnError { println("onError $it") }
                                     .retryWhen(RetryWhen.maxRetries(3)
+                                            .action { println("Retrying $it") }
                                             .exponentialBackoff(100, TimeUnit.MILLISECONDS)
                                             .retryWhenInstanceOf(IllegalStateException::class.java)
                                             .build())
@@ -57,7 +58,8 @@ class PollingExercise {
                     .scan { t1, t2 -> t1.union(t2).toList() }
                     .doOnNext { println("onNext $it") }
 
-    private fun getLoginToken(): Observable<Token> = Observable.just(Random.nextInt(100000).toString()).doOnNext { println("Token: $it") }
+    private fun getLoginToken(): Single<Token> =
+            Observable.defer { Observable.just(Random.nextInt(100000).toString()).doOnNext { println("Token: $it") } }.firstOrError().cacheAtomicReference()
 
     private fun fetchData(seed: Int) = Single.timer(200, TimeUnit.MILLISECONDS).map {
         Random.nextInt(10).takeIf { it > 3 }?.let { generateSequence(seed) { it + 1 }.take(10).toList() }
@@ -87,4 +89,3 @@ fun main() {
 
     Thread.sleep(intervalSeconds * 5 * 1000)
 }
-
