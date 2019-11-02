@@ -1,6 +1,7 @@
 package playground.extensions
 
 import io.reactivex.Single
+import io.reactivex.schedulers.Schedulers
 import java.util.concurrent.atomic.AtomicReference
 
 fun <T> Single<T>.cacheAtomicReference(): Single<T> {
@@ -13,6 +14,9 @@ fun <T> Single<T>.cacheAtomicReference(): Single<T> {
     }
 }
 
+@Suppress("UNCHECKED_CAST")
 fun <T> zip(singles: List<Single<T>>): Single<List<T>> =
         if (singles.isNotEmpty()) Single.zip(singles) { list -> list.map { it as T } }
         else Single.just(emptyList())
+
+val mainScheduler = Schedulers.from(Runnable::run)
