@@ -1,5 +1,6 @@
 package playground.stream
 
+import com.github.davidmoten.rx2.RetryWhen
 import com.news.*
 import com.nytimes.android.external.cache3.CacheBuilder
 import com.nytimes.android.external.cache3.CacheLoader
@@ -37,6 +38,12 @@ class TweetsPostsRepository(private val infoApi: InfoApi,
                         .subscribeOn(Schedulers.io())
                         .observeOn(Schedulers.computation())
                         .map { InfoItem(id, it.title, it.date) }
+                        .retryWhen(RetryWhen
+                                .maxRetries(3)
+                                .retryIf { throwable ->
+                                    throwable is ConnectionError && throwable.errorType == ConnectionErrorType.UNKNOWN
+                                }
+                                .build())
                         .cacheAtomicReference()
             })
 
@@ -45,23 +52,15 @@ class TweetsPostsRepository(private val infoApi: InfoApi,
     private val currentFacebookPostsObservable = infoApi.currentFacebookPosts
             .map { it.items }
             .flattenAsObservable { it }
-            .concatMapSingle { itemTo ->
-                infoApi.getDetails(itemTo.id)
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(Schedulers.computation())
-                        .map { InfoItem(itemTo.id, it.title, it.date) }
+            .concatMapEager { itemTo ->
+                infoDetailsCache.get(itemTo.id)?.toObservable()
             }.toList()
 
     private val currentTweetsObservable = infoApi.currentTweets
             .map { it.items }
             .flatMap { itemsTo ->
                 zip(itemsTo.map { it.id }.map { id ->
-                    infoApi.getDetails(id)
-                            .subscribeOn(Schedulers.io())
-                            .retryWhen { it.flatMapSingle { if (it is ConnectionError && it.errorType == ConnectionErrorType.UNKNOWN) Single.just(Unit) else Single.error(it) } }
-                            //.onErrorResumeNext { if (it is ConnectionError && it.errorType == ConnectionErrorType.INVALID_DATA) Single.just(NewsItem(null, null, null)) else Single.error(it) } and then you filter the nulls (Ignore failures)
-                            .observeOn(Schedulers.computation())
-                            .map { InfoItem(id, it.title, it.date) }
+                    infoDetailsCache.get(id)!!
                 })
             }
 

@@ -6,6 +6,7 @@ import com.news.InfoType
 import com.news.InfoView
 import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.functions.Function
 import io.reactivex.rxkotlin.plusAssign
 import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.schedulers.Schedulers
@@ -16,6 +17,7 @@ class TweetsPostsPresenter(private val repository: TweetsPostsRepository) {
     private val compositeDisposable = CompositeDisposable()
 
     fun attach(view: InfoView) {
+
         compositeDisposable += repository.tweetsAndPostsStream
                 .retryWhen { errors ->
                     errors.takeWhile { it is ConnectionError && it.errorType == ConnectionErrorType.DISCONNECTED }
@@ -33,7 +35,15 @@ class TweetsPostsPresenter(private val repository: TweetsPostsRepository) {
                     }
                 }
                 .observeOn(mainScheduler)
-                .subscribeBy(onNext = { view.displayItems(it) })
+                .onErrorResumeNext(Function { throwable ->
+                    if (throwable is ConnectionError && throwable.errorType == ConnectionErrorType.INVALID_DATA) {
+                        view.displayConnectionError(throwable.errorType) //We display an error but we continue the execution
+                        Observable.just(emptyList())
+                    } else throw throwable
+                })
+                .subscribeBy(
+                        onNext = { view.displayItems(it) },
+                        onError = { if (it is ConnectionError) view.displayConnectionError(it.errorType) else throw it })
     }
 
     fun detach() {

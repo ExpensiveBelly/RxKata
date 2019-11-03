@@ -31,6 +31,7 @@ dependencies {
     testImplementation 'net.wuerl.kotlin:assertj-core-kotlin:0.2.1'
     testImplementation "com.nhaarman.mockitokotlin2:mockito-kotlin:2.1.0"
     testImplementation 'org.amshove.kluent:kluent:1.42'
+    testImplementation 'org.mockito:mockito-inline:2.13.0'
 }
 
 sourceCompatibility = 1.8
