@@ -4,6 +4,7 @@ import io.reactivex.Flowable
 import io.reactivex.Single
 import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.schedulers.Schedulers
+import playground.extensions.mainScheduler
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.atomic.AtomicInteger
 
@@ -18,7 +19,7 @@ class ShowErrorAfterThreeRetries {
                     .retryWhen { errors ->
                         val counter = AtomicInteger(0)
                         errors.takeWhile { counter.getAndIncrement() != 3 }
-                                .observeOn(Schedulers.single())
+                            .observeOn(mainScheduler)
                                 .doOnNext { println("Retrying... $counter ${Thread.currentThread().name}") }
                                 .observeOn(Schedulers.computation())
                                 .flatMap { Flowable.just(counter) }
