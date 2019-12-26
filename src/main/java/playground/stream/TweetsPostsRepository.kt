@@ -10,6 +10,7 @@ import io.reactivex.Scheduler
 import io.reactivex.Single
 import io.reactivex.schedulers.Schedulers
 import playground.extensions.cacheAtomicReference
+import playground.extensions.concatScanEager
 import playground.extensions.zip
 import java.util.concurrent.TimeUnit
 
@@ -63,6 +64,18 @@ class TweetsPostsRepository(private val infoApi: InfoApi,
                     infoDetailsCache.get(id)!!
                 })
             }
+
+    val aggregatedFacebookPostsObservableEager = concatScanEager(
+            initialValueSingle = currentFacebookPostsObservable,
+            valuesObservable = facebookPostsObservable,
+            accumulator = { content, update -> content + update }
+    )
+
+    val aggregatedTweetsObservableEager = concatScanEager(
+            initialValueSingle = currentTweetsObservable,
+            valuesObservable = tweetsObservable,
+            accumulator = { content, update -> content + update }
+    )
 
     val aggregatedFacebookPostsObservable = currentFacebookPostsObservable.flatMapObservable { itemList ->
         facebookPostsObservable.scan(itemList, { t1, t2 -> t1 + t2 })

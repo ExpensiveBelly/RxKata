@@ -30,8 +30,8 @@ class TweetsPostsPresenter(private val repository: TweetsPostsRepository) {
         compositeDisposable += view.type
                 .switchMap { newsType ->
                     when (newsType) {
-                        InfoType.TWEETS -> repository.aggregatedTweetsObservable
-                        InfoType.FACEBOOK_POSTS -> repository.aggregatedFacebookPostsObservable
+                        InfoType.TWEETS -> repository.aggregatedTweetsObservableEager
+                        InfoType.FACEBOOK_POSTS -> repository.aggregatedFacebookPostsObservableEager
                     }
                 }
                 .observeOn(mainScheduler)
