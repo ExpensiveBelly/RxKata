@@ -1,6 +1,7 @@
 package playground
 
 import org.junit.Test
+import playground.maybe.RepeatInvalidationExercise
 
 class RepeatInvalidationExerciseTest {
 

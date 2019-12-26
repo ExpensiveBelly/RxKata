@@ -1,4 +1,4 @@
-package playground
+package playground.maybe
 
 import io.reactivex.Maybe
 import io.reactivex.Single
