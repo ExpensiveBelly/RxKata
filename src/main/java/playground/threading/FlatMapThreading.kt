@@ -1,4 +1,4 @@
-package playground.curiosities
+package playground.threading
 
 import io.reactivex.Observable
 import io.reactivex.schedulers.Schedulers
@@ -29,7 +29,7 @@ class FlatMapThreading {
 }
 
 fun main() {
-    val countDownLatch: CountDownLatch = CountDownLatch(1)
+    val countDownLatch = CountDownLatch(1)
     FlatMapThreading().flatmap
             .doOnComplete { countDownLatch.countDown() }
             .subscribe()

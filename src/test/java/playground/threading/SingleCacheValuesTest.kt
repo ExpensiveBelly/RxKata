@@ -1,4 +1,4 @@
-package playground.curiosities
+package playground.threading
 
 import io.reactivex.Single
 import io.reactivex.schedulers.TestScheduler

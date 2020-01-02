@@ -1,4 +1,4 @@
-package playground.curiosities
+package playground.threading
 
 import io.reactivex.subjects.PublishSubject
 import org.assertj.core.api.Assertions.assertThat

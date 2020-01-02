@@ -4,7 +4,8 @@ import io.reactivex.Maybe
 import io.reactivex.Single
 
 /**
- * Maybe will only repeat (resubscribe) when
+ * How to use Maybe to only resubscribe to the stream when a condition is not met
+ *
  */
 
 class RepeatInvalidationExercise {

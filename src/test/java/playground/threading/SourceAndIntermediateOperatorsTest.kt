@@ -1,4 +1,4 @@
-package playground.curiosities
+package playground.threading
 
 import io.reactivex.Completable
 import io.reactivex.Observable

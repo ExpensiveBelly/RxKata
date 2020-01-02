@@ -1,5 +1,7 @@
 @file:Suppress("NOTHING_TO_INLINE")
 
+package utils
+
 import io.reactivex.*
 
 /**
@@ -7,12 +9,12 @@ import io.reactivex.*
  */
 
 inline fun <reified T> printEvent(tag: String, success: T?, error: Throwable?): Any =
-        when {
-            success == null && error == null -> Log.d(tag, "Complete") /* Only with Maybe */
-            success != null -> Log.d(tag, "Success $success")
-            error != null -> Log.d(tag, "Error $error")
-            else -> -1 /* Cannot happen*/
-        }
+    when {
+        success == null && error == null -> Log.d(tag, "Complete") /* Only with Maybe */
+        success != null -> Log.d(tag, "Success $success")
+        error != null -> Log.d(tag, "Error $error")
+        else -> -1 /* Cannot happen*/
+    }
 
 inline fun printEvent(tag: String, error: Throwable?) =
         when {
@@ -26,9 +28,9 @@ inline fun printEvent(tag: String, error: Throwable?) =
  */
 
 inline fun tag() =
-        Thread.currentThread().stackTrace
-                .first { it.fileName.endsWith(".kt") }
-                .let { stack -> "${stack.fileName.removeSuffix(".kt")}::${stack.methodName}:${stack.lineNumber}" }
+    Thread.currentThread().stackTrace
+        .first { it.fileName?.endsWith(".kt") ?: false }
+        .let { stack -> "${stack?.fileName?.removeSuffix(".kt")}::${stack.methodName}:${stack.lineNumber}" }
 
 inline fun <reified T> Single<T>.log(tag: String = tag()): Single<T> {
     return doOnEvent { success, error -> printEvent(tag, success, error) }
@@ -65,5 +67,4 @@ object Log {
     fun d(tag: String, message: String) {
         println("$tag : $message")
     }
-
 }
