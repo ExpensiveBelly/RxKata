@@ -19,31 +19,32 @@ class TweetsPostsPresenter(private val repository: TweetsPostsRepository) {
     fun attach(view: InfoView) {
 
         compositeDisposable += repository.tweetsAndPostsStream
-                .retryWhen { errors ->
-                    errors.takeWhile { it is ConnectionError && it.errorType == ConnectionErrorType.DISCONNECTED }
-                            .observeOn(mainScheduler)
-                            .doOnNext { view.displayConnectionError((it as ConnectionError).errorType) }
-                            .observeOn(Schedulers.computation())
-                            .flatMap { Observable.just(Unit) }
-                }.subscribe()
+            .retryWhen { errors ->
+                errors.takeWhile { it is ConnectionError && it.errorType == ConnectionErrorType.DISCONNECTED }
+                    .observeOn(mainScheduler)
+                    .doOnNext { view.displayConnectionError((it as ConnectionError).errorType) }
+                    .observeOn(Schedulers.computation())
+                    .flatMap { Observable.just(Unit) }
+            }.subscribe()
 
         compositeDisposable += view.type
-                .switchMap { newsType ->
-                    when (newsType) {
-                        InfoType.TWEETS -> repository.aggregatedTweetsObservableEager
-                        InfoType.FACEBOOK_POSTS -> repository.aggregatedFacebookPostsObservableEager
-                    }
+            .distinctUntilChanged()
+            .switchMap { newsType ->
+                when (newsType) {
+                    InfoType.TWEETS -> repository.aggregatedTweetsObservableEager
+                    InfoType.FACEBOOK_POSTS -> repository.aggregatedFacebookPostsObservableEager
                 }
-                .observeOn(mainScheduler)
-                .onErrorResumeNext(Function { throwable ->
-                    if (throwable is ConnectionError && throwable.errorType == ConnectionErrorType.INVALID_DATA) {
-                        view.displayConnectionError(throwable.errorType) //We display an error but we continue the execution
-                        Observable.just(emptyList())
-                    } else throw throwable
-                })
-                .subscribeBy(
-                        onNext = { view.displayItems(it) },
-                        onError = { if (it is ConnectionError) view.displayConnectionError(it.errorType) else throw it })
+            }
+            .observeOn(mainScheduler)
+            .onErrorResumeNext(Function { throwable ->
+                if (throwable is ConnectionError && throwable.errorType == ConnectionErrorType.INVALID_DATA) {
+                    view.displayConnectionError(throwable.errorType) //We display an error but we continue the execution
+                    Observable.just(emptyList())
+                } else throw throwable
+            })
+            .subscribeBy(
+                onNext = { view.displayItems(it) },
+                onError = { if (it is ConnectionError) view.displayConnectionError(it.errorType) else throw it })
     }
 
     fun detach() {
