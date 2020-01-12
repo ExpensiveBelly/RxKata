@@ -10,7 +10,7 @@ import io.reactivex.subjects.SingleSubject
 import it.droidcon.testingdaggerrxjava.TrampolineSchedulerRule
 import org.junit.Rule
 import org.junit.Test
-import playground.stream.TweetsPostsRepository
+import playground.stream.*
 import java.time.Instant
 import java.util.*
 

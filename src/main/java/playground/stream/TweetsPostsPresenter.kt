@@ -1,9 +1,5 @@
 package playground.stream
 
-import com.news.ConnectionError
-import com.news.ConnectionErrorType
-import com.news.InfoType
-import com.news.InfoView
 import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.functions.Function

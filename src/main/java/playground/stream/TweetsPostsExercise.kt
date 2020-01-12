@@ -1,4 +1,4 @@
-package com.news
+package playground.stream
 
 import io.reactivex.Observable
 import io.reactivex.Single
