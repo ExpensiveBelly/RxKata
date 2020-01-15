@@ -1,7 +1,6 @@
 package playground.stream
 
 import com.github.davidmoten.rx2.RetryWhen
-import com.news.*
 import com.nytimes.android.external.cache3.CacheBuilder
 import com.nytimes.android.external.cache3.CacheLoader
 import com.nytimes.android.external.cache3.LoadingCache
