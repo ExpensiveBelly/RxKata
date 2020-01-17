@@ -1,5 +1,6 @@
 package playground
 
+import com.nhaarman.mockito_kotlin.clearInvocations
 import com.nhaarman.mockito_kotlin.inOrder
 import com.nhaarman.mockito_kotlin.mock
 import com.nhaarman.mockito_kotlin.verify
@@ -8,22 +9,38 @@ import org.junit.Test
 
 class DisposeUpstreamErrorDownstreamTest {
 
-    private val mockForTesting = mock<MockForTesting> {}
-    private val disposeUpstreamErrorDownstream = DisposeUpstreamErrorDownstream(mockForTesting)
+    private val streamErrorMockForTesting = mock<StreamErrorMockForTesting> {}
+    private val streamCompleteMockForTesting = mock<StreamCompleteMockForTesting> {}
+    private val disposeUpstreamErrorDownstream =
+        DisposeUpstreamErrorDownstream(streamErrorMockForTesting, streamCompleteMockForTesting)
 
     @Test
     fun `should dispose upstream and error downstream`() {
-        val test = disposeUpstreamErrorDownstream.stream.test()
+        val test = disposeUpstreamErrorDownstream.streamErrors.test()
 
-        inOrder(mockForTesting) {
-            verify(mockForTesting).beforeMapOnNext()
-            verify(mockForTesting).beforeMapOnDispose()
-            verify(mockForTesting, never()).beforeMapOnError()
+        inOrder(streamErrorMockForTesting) {
+            verify(streamErrorMockForTesting).beforeMapOnNext()
+            verify(streamErrorMockForTesting).beforeMapOnDispose()
+            verify(streamErrorMockForTesting, never()).beforeMapOnError()
 
-            verify(mockForTesting, never()).afterMapOnNext()
-            verify(mockForTesting).afterMapOnError()
-            verify(mockForTesting, never()).afterMapOnDispose()
+            verify(streamErrorMockForTesting, never()).afterMapOnNext()
+            verify(streamErrorMockForTesting).afterMapOnError()
+            verify(streamErrorMockForTesting, never()).afterMapOnDispose()
         }
-        verify(mockForTesting).beforeMapOnDispose()
+        verify(streamErrorMockForTesting).beforeMapOnDispose()
+    }
+
+    @Test
+    fun `should propagate completion downstream and when the flatmap completes then the stream completes`() {
+        disposeUpstreamErrorDownstream.streamCompletes.test()
+
+        verify(streamCompleteMockForTesting).beforeFlatMap()
+        verify(streamCompleteMockForTesting, never()).afterFlatMap()
+        clearInvocations(streamCompleteMockForTesting)
+
+        disposeUpstreamErrorDownstream.subject.onComplete()
+
+        verify(streamCompleteMockForTesting, never()).beforeFlatMap()
+        verify(streamCompleteMockForTesting).afterFlatMap()
     }
 }
