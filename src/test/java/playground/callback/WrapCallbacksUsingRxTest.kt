@@ -1,4 +1,4 @@
-package playground
+package it.droidcon.testingdaggerrxjava.playground.callback
 
 import arrow.core.None
 import arrow.core.Option
