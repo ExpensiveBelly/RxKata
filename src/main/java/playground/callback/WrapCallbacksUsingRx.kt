@@ -1,12 +1,14 @@
 package playground.callback
 
+import arrow.core.Option
 import arrow.core.toOption
 import io.reactivex.Observable
+import io.reactivex.disposables.Disposables
 import io.reactivex.subjects.PublishSubject
 
 class WrapCallbacksUsingRx(private val sharedPreferences: SharedPreferences<String, String>) {
 
-    fun observe(key: String) = Observable.using(
+    fun observeWithUsing(key: String) = Observable.using(
         {
             val keyChangesSubject = PublishSubject.create<String>()
             val listener = object :
@@ -25,4 +27,20 @@ class WrapCallbacksUsingRx(private val sharedPreferences: SharedPreferences<Stri
         { (_, listener) ->
             sharedPreferences.unregisterOnSharedPreferenceChangeListener(listener)
         })
+
+    fun observeWithEmitter(key: String) = Observable.create<Option<String>> { emitter ->
+        val listener = object : SharedPreferences.OnSharedPreferenceChangeListener {
+            override fun onSharedPreferenceChanged() {
+                if (!emitter.isDisposed) emitter.onNext((sharedPreferences.map[key]).toOption())
+            }
+        }
+        sharedPreferences.registerOnSharedPreferenceChangeListener(listener)
+        emitter.onNext((sharedPreferences.map[key]).toOption())
+
+        emitter.setDisposable(Disposables.fromAction {
+            sharedPreferences.unregisterOnSharedPreferenceChangeListener(
+                listener
+            )
+        })
+    }
 }

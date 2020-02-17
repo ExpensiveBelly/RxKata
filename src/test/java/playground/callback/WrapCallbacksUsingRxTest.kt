@@ -18,7 +18,7 @@ class WrapCallbacksUsingRxTest {
 
     @Test
     fun `should register when subscribing and unregister when disposing`() {
-        val testObserver = wrapCallbacksUsingRx.observe("").test()
+        val testObserver = wrapCallbacksUsingRx.observeWithEmitter("").test()
 
         verify(mockSharedPreferences).registerOnSharedPreferenceChangeListener(any())
 
@@ -33,7 +33,7 @@ class WrapCallbacksUsingRxTest {
         val sharedPreferences = SharedPreferences<String, String>()
         val wrapCallbacksUsingRx = WrapCallbacksUsingRx(sharedPreferences)
 
-        val testObserver = wrapCallbacksUsingRx.observe(key).test()
+        val testObserver = wrapCallbacksUsingRx.observeWithEmitter(key).test()
 
         testObserver.assertValue(None)
     }
@@ -47,7 +47,7 @@ class WrapCallbacksUsingRxTest {
 
         sharedPreferences.map += key to value
 
-        val testObserver = wrapCallbacksUsingRx.observe(key).test()
+        val testObserver = wrapCallbacksUsingRx.observeWithEmitter(key).test()
 
         testObserver.assertValue(Option(value))
     }
@@ -62,7 +62,7 @@ class WrapCallbacksUsingRxTest {
 
         sharedPreferences.map += key to value1
 
-        val testObserver = wrapCallbacksUsingRx.observe(key).test()
+        val testObserver = wrapCallbacksUsingRx.observeWithEmitter(key).test()
 
         sharedPreferences.map += key to value2
 
@@ -80,7 +80,7 @@ class WrapCallbacksUsingRxTest {
         sharedPreferences.map += key to value1
         sharedPreferences.map += key to value2
 
-        val testObserver = wrapCallbacksUsingRx.observe(key).test()
+        val testObserver = wrapCallbacksUsingRx.observeWithEmitter(key).test()
 
         testObserver.assertValues(Option(value2))
     }
