@@ -35,7 +35,7 @@ class WrapCallbacksUsingRx(private val sharedPreferences: SharedPreferences<Stri
             }
         }
         sharedPreferences.registerOnSharedPreferenceChangeListener(listener)
-        emitter.onNext((sharedPreferences.map[key]).toOption())
+        if (!emitter.isDisposed) emitter.onNext((sharedPreferences.map[key]).toOption())
 
         emitter.setDisposable(Disposables.fromAction {
             sharedPreferences.unregisterOnSharedPreferenceChangeListener(
