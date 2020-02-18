@@ -1,10 +1,9 @@
 package operators
 
 import io.reactivex.Observable
+import io.reactivex.observables.GroupedObservable
 import io.reactivex.schedulers.Schedulers
 import operators.types.Store
-import org.javatuples.Pair
-import java.math.BigDecimal
 
 class GroceriesSolutions {
 
@@ -16,27 +15,17 @@ class GroceriesSolutions {
      * list using the `purchase` method in `Store` class.
      */
 
-    fun exercisePurchaseGroceries(groceries: Observable<String>): Observable<BigDecimal> {
-//        return groceries
-//                .flatMap { product ->
-//                    store.purchase(product, 1)
-//                }
-//                .reduce({ obj, augend -> obj.add(augend) })
-//                .toObservable()
-
-        return groceries
-                .groupBy { s -> s }
-                .flatMap { grouped ->
-                    grouped
-                            .count()
-                            .map { quantity -> Pair<String, Long>(grouped.key, quantity) }
-                            .toObservable()
-                }
-                .flatMap { pair ->
-                    store.purchase(pair.value0, pair.value1.toInt())
-                            .subscribeOn(Schedulers.io())
-                }
-                .reduce { obj, augend -> obj.add(augend) }
-                .toObservable()
-    }
+    fun exercisePurchaseGroceries(groceries: Observable<String>) = groceries
+        .groupBy { s -> s }
+        .flatMapSingle { grouped: GroupedObservable<String, String> ->
+            grouped.count().map { quantity -> Pair(grouped.key, quantity) }
+        }
+        .flatMap { pair ->
+            pair.first?.let {
+                store.purchase(it, pair.second.toInt())
+                    .subscribeOn(Schedulers.io())
+            }
+        }
+        .reduce { obj, augend -> obj.add(augend) }
+        .toObservable()
 }
