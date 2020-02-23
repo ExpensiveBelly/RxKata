@@ -4,6 +4,8 @@ import io.reactivex.Observable
 import io.reactivex.Single
 import io.reactivex.exceptions.CompositeException
 import io.reactivex.schedulers.Schedulers
+import utils.exponentialBackoffTransformation
+import utils.retryWith
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit
 import kotlin.random.Random
@@ -17,17 +19,18 @@ import kotlin.time.ExperimentalTime
 class ConcatPaginationExercise {
 
     private fun fetchPage(number: Int, probabilityOfError: Int = -1) =
-            Single.just("Page $number")
-                    .delay(500, TimeUnit.MILLISECONDS)
-                    .flatMap { if (Random.nextInt(100) > probabilityOfError) Single.just(it) else throw IllegalStateException() }
+        Single.just("Page $number")
+            .delay(500, TimeUnit.MILLISECONDS)
+            .flatMap { if (Random.nextInt(100) > probabilityOfError) Single.just(it) else throw IllegalStateException() }
+            .retryWith(exponentialBackoffTransformation())
 
     fun fetchNumberOfPages(number: Int) =
-            Observable.range(0, number)
-                    .concatMapSingle { fetchPage(it).subscribeOn(Schedulers.io()) }
+        Observable.range(0, number)
+            .concatMapSingle { fetchPage(it).subscribeOn(Schedulers.io()) }
 
     fun fetchNumberOfPagesEagerly(number: Int) =
-            Observable.range(0, number)
-                    .concatMapEager { fetchPage(it).toObservable().subscribeOn(Schedulers.io()) }
+        Observable.range(0, number)
+            .concatMapEager { fetchPage(it).toObservable().subscribeOn(Schedulers.io()) }
 
     fun fetchNumberOfPagesEagerlyDelayError(number: Int) =
             Observable.range(0, number)
@@ -52,16 +55,16 @@ fun main() {
             Choice.CONCAT_EAGER_DELAY_ERROR -> fetchNumberOfPagesEagerlyDelayError(numberOfPages)
         }
     }.doOnSubscribe { start = System.nanoTime() }
-            .doOnComplete {
-                println("${TimeUnit.MILLISECONDS.convert(System.nanoTime() - start, TimeUnit.NANOSECONDS)}ms")
-                countDownLatch.countDown()
-            }
-            .subscribe(
-                    { println(it) },
-                    {
-                        if (it is CompositeException) println(it.exceptions)
-                        else println(it)
-                    })
+        .doOnComplete {
+            println("${TimeUnit.MILLISECONDS.convert(System.nanoTime() - start, TimeUnit.NANOSECONDS)}ms")
+            countDownLatch.countDown()
+        }
+        .subscribe(
+            { println(it) },
+            {
+                if (it is CompositeException) println(it.exceptions)
+                else println(it)
+            })
 
     countDownLatch.await()
 }

@@ -8,6 +8,7 @@ import io.reactivex.Single
 import io.reactivex.exceptions.CompositeException
 import io.reactivex.schedulers.Schedulers
 import java.util.concurrent.TimeUnit
+import java.util.concurrent.atomic.AtomicReference
 
 fun <T, U> Observable<T>.mapNotNull(mapper: (T) -> U?) =
     flatMap { mapper(it)?.let { Observable.just(it) } ?: Observable.empty<U>() }
@@ -17,7 +18,7 @@ fun <T, U> Maybe<T>.mapNotNull(mapper: (T) -> U?) =
 
 private fun <A> Option<A>.toMaybe(): Maybe<A> = fold(ifEmpty = { Maybe.empty<A>() }, ifSome = { Maybe.just(it) })
 
-fun <T> Single<T>.broadcast() = toObservable().replay(1).refCount().singleOrError()
+fun <T> Single<T>.broadcast(): Single<T> = toObservable().replay(1).refCount().singleOrError()
 
 inline fun <reified U : Any> Observable<*>.filterType() =
     flatMapMaybe {
@@ -60,3 +61,20 @@ fun CompositeException.mergeIfSame(): Throwable {
     return if (distinctExceptions.size == 1) distinctExceptions[0]
     else CompositeException(distinctExceptions)
 }
+
+fun <T> Single<T>.cacheAtomicReference(): Single<T> {
+    val reference = AtomicReference<T>()
+    val referenceShared = doOnSuccess { reference.set(it) }.toObservable().replay(1).refCount().firstOrError()
+    return Single.defer {
+        val value = reference.get()
+        if (value != null) Single.just(value)
+        else referenceShared
+    }
+}
+
+@Suppress("UNCHECKED_CAST")
+fun <T> zip(singles: List<Single<T>>): Single<List<T>> =
+    if (singles.isNotEmpty()) Single.zip(singles) { list -> list.map { it as T } }
+    else Single.just(emptyList())
+
+val mainScheduler = Schedulers.from(Runnable::run)

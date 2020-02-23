@@ -8,9 +8,9 @@ import io.reactivex.Observable
 import io.reactivex.Scheduler
 import io.reactivex.Single
 import io.reactivex.schedulers.Schedulers
-import playground.extensions.cacheAtomicReference
-import playground.extensions.concatScanEager
-import playground.extensions.zip
+import utils.cacheAtomicReference
+import utils.concatScanEager
+import utils.zip
 import java.util.concurrent.TimeUnit
 
 class TweetsPostsRepository(private val infoApi: InfoApi,

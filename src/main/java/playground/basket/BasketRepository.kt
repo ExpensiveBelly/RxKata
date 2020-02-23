@@ -4,7 +4,7 @@ import com.pacoworks.komprehensions.rx2.doFlatMap
 import io.reactivex.Observable
 import io.reactivex.Single
 import io.reactivex.schedulers.Schedulers
-import playground.extensions.zip
+import utils.zip
 
 class BasketRepository(private val sessionRepository: SessionRepository,
                        private val basketApi: BasketApi,
