@@ -1,5 +1,7 @@
 package playground
 
+import io.reactivex.Observable
+import io.reactivex.ObservableEmitter
 import io.reactivex.subjects.BehaviorSubject
 import io.reactivex.subjects.PublishSubject
 import io.reactivex.subjects.ReplaySubject
@@ -43,12 +45,30 @@ class HowFirstOrErrorWorksTest {
 
         testObserver.assertValues(5 to 5, 1 to 5, 2 to 5, 3 to 5)
     }
-}
 
-private fun Subject<Int>.emitEvents() {
-    onNext(5)
-    onNext(1)
-    onNext(2)
-    onNext(3)
-    onComplete()
+    @Test
+    fun observable_create_keeps_intermediate_states() {
+        val observable = Observable.create<Int> { emitter ->
+            emitter.emitEvents()
+        }
+
+        val testObserver = observable.switchMapSingle { emission ->
+            observable.firstOrError().map { emission to it }
+        }.test()
+
+        testObserver.assertValueAt(19999, 19999 to 0)
+    }
+
+    private fun ObservableEmitter<Int>.emitEvents() {
+        for (i in 0 until 20000) onNext(i)
+        onComplete()
+    }
+
+    private fun Subject<Int>.emitEvents() {
+        onNext(5)
+        onNext(1)
+        onNext(2)
+        onNext(3)
+        onComplete()
+    }
 }
