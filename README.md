@@ -27,7 +27,7 @@ RxJava
 [RxBasicsKata](https://github.com/sergiiz/RxBasicsKata)  
 [RxRiddles](https://github.com/vanniktech/RxRiddles)  
 [Rx on error retry](https://github.com/platoblm/rx-onerror-retry-cache)  
-[Awesome RxJava](https://project-awesome.org/eleventigers/awesome-rxjava)  
+[Awesome RxJava](https://github.com/eleventigers/awesome-rxjava)  
 [RxJava Android Samples](https://github.com/kaushikgopal/RxJava-Android-Samples)  
 [Subjects series](http://akarnokd.blogspot.com/2015/06/subjects-part-1.html)  
 [Schedulers series](http://akarnokd.blogspot.com/2015/05/schedulers-part-1.html)  
