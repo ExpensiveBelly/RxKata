@@ -36,7 +36,8 @@ RxJava
 [Rx2-tools](https://github.com/fsbarata/rx2-tools)  
 [RxPaper](https://github.com/pakoito/RxPaper)  
 [RxObservableDiskCache2](https://github.com/pakoito/RxObservableDiskCache2)
-[RxJavaDemoApp](https://github.com/JoaoMotondon/RxJavaDemoApp)  
+[RxJavaDemoApp](https://github.com/JoaoMotondon/RxJavaDemoApp)
+[RxJava - The Problem with Subjects](http://tomstechnicalblog.blogspot.com/2016/03/rxjava-problem-with-subjects.html)   
 
 Kotlin  
 
