@@ -8,7 +8,7 @@ import java.util.concurrent.atomic.AtomicReference
 
 fun <T> Single<T>.cacheAtomicReference(): Single<T> {
     val reference = AtomicReference<T>()
-    val referenceShared = doOnSuccess { reference.set(it) }.toObservable().replay(1).refCount().firstOrError()
+    val referenceShared = doOnSuccess { reference.set(it) }.broadcast().firstOrError()
     return Single.defer {
         val value = reference.get()
         if (value != null) Single.just(value)
@@ -17,9 +17,9 @@ fun <T> Single<T>.cacheAtomicReference(): Single<T> {
 }
 
 @Suppress("UNCHECKED_CAST")
-fun <T> zip(singles: List<Single<T>>): Single<List<T>> =
-        if (singles.isNotEmpty()) Single.zip(singles) { list -> list.map { it as T } }
-        else Single.just(emptyList())
+fun <T> zip(singles: List<Single<T>>, defaultWhenEmpty: List<T>? = emptyList()): Single<List<T>> =
+    if (singles.isNotEmpty()) Single.zip(singles) { list -> list.map { it as T } }
+    else Single.just(defaultWhenEmpty)
 
 val mainScheduler = Schedulers.from(Runnable::run)
 

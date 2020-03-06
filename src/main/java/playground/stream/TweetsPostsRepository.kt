@@ -35,41 +35,51 @@ class TweetsPostsRepository(private val infoApi: InfoApi,
             .expireAfterAccess(1, TimeUnit.MINUTES)
             .build(CacheLoader.from { id ->
                 infoApi.getDetails(id)
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(Schedulers.computation())
-                        .map { InfoItem(id, it.title, it.date) }
-                        .retryWhen(RetryWhen
-                            .maxRetries(3)
-                            .retryIf { throwable ->
-                                throwable is ConnectionError && throwable.errorType == ConnectionErrorType.UNKNOWN
-                            }
-                            .build())
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(Schedulers.computation())
+                    .map { InfoItem(id, it.title, it.date) }
+                    .retryWhen(RetryWhen
+                        .maxRetries(3)
+                        .retryIf { throwable ->
+                            throwable is ConnectionError && throwable.errorType == ConnectionErrorType.UNKNOWN
+                        }
+                        .build())
                     .cacheAtomicReference()
             })
 
     private fun Observable<InfoItemTO>.toInfoItemToObservable() = concatMapSingle { infoDetailsCache.get(it.id) }
 
     /*
-    Different ways of flattening an observable
+    Different ways of flattening an observable and transforming it back to a list
      */
 
-    private val currentFacebookPostsFlatMapIterable = infoApi.currentFacebookPosts
+    private val currentFacebookPostsFlatMapIterable: Single<List<InfoItem>> = infoApi.currentFacebookPosts
         .map { it.items }
         .toObservable()
         .flatMapIterable { it }
+        .concatMapEager { itemTo ->
+            infoDetailsCache.get(itemTo.id)?.toObservable()
+        }.reduce(emptyList(), { t1: List<InfoItem>, t2: InfoItem ->
+            t1 + t2
+        })
 
-    private val currentFacebookPostsFromIterable = infoApi.currentFacebookPosts
+    private val currentFacebookPostsFromIterable: Single<List<InfoItem>> = infoApi.currentFacebookPosts
         .map { it.items }
         .flatMapObservable { Observable.fromIterable(it) }
+        .concatMapEager { itemTo ->
+            infoDetailsCache.get(itemTo.id)?.toObservable()
+        }.collect({ emptyList() }, { t1: List<InfoItem>, t2: InfoItem ->
+            t1 + t2
+        })
 
-    private val currentFacebookPostsObservableFlatten = infoApi.currentFacebookPosts
+    private val currentFacebookPostsObservableFlatten: Single<List<InfoItem>> = infoApi.currentFacebookPosts
         .map { it.items }
         .flattenAsObservable { it }
         .concatMapEager { itemTo ->
             infoDetailsCache.get(itemTo.id)?.toObservable()
         }.toList()
 
-    private val currentTweetsObservableZip = infoApi.currentTweets
+    private val currentTweetsObservableZip: Single<List<InfoItem>> = infoApi.currentTweets
         .map { it.items }
         .flatMap { itemsTo ->
             zip(itemsTo.map { it.id }.map { id ->
@@ -77,23 +87,25 @@ class TweetsPostsRepository(private val infoApi: InfoApi,
             })
         }
 
-    val aggregatedFacebookPostsObservableEager = concatScanEager(
+    val aggregatedFacebookPostsObservableEager: Observable<List<InfoItem>> = concatScanEager(
         initialValueSingle = currentFacebookPostsObservableFlatten,
         valuesObservable = facebookPostsObservable,
         accumulator = { content, update -> content + update }
     )
 
-    val aggregatedTweetsObservableEager = concatScanEager(
+    val aggregatedTweetsObservableEager: Observable<List<InfoItem>> = concatScanEager(
         initialValueSingle = currentTweetsObservableZip,
         valuesObservable = tweetsObservable,
         accumulator = { content, update -> content + update }
     )
 
-    val aggregatedFacebookPostsObservable = currentFacebookPostsObservableFlatten.flatMapObservable { itemList ->
-        facebookPostsObservable.scan(itemList, { t1, t2 -> t1 + t2 })
-    }
+    val aggregatedFacebookPostsObservable: Observable<List<InfoItem>> =
+        currentFacebookPostsObservableFlatten.flatMapObservable { itemList ->
+            facebookPostsObservable.scan(itemList, { t1, t2 -> t1 + t2 })
+        }
 
-    val aggregatedTweetsObservable = currentTweetsObservableZip.flatMapObservable { itemList ->
-        tweetsObservable.scan(itemList, { t1, t2 -> t1 + t2 })
-    }
+    val aggregatedTweetsObservable: Observable<List<InfoItem>> =
+        currentTweetsObservableZip.flatMapObservable { itemList ->
+            tweetsObservable.scan(itemList, { t1, t2 -> t1 + t2 })
+        }
 }
