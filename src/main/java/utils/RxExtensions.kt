@@ -26,11 +26,10 @@ inline fun <reified U : Any> Observable<*>.filterType() =
         else Maybe.empty()
     }
 
-fun <T> Observable<Result<T>>.responseOrError() = flatMapSingle {
-    if (it.isSuccess) {
-        Single.just(it.getOrNull())
-    } else {
-        Single.just(it.exceptionOrNull())
+fun <T, R : Throwable> Observable<Result<T, R>>.responseOrError(): Observable<T> = flatMapSingle {
+    when (it) {
+        is Result.Success -> Single.just(it.resp)
+        is Result.ErrorResult -> Single.error(it.error)
     }
 }
 
