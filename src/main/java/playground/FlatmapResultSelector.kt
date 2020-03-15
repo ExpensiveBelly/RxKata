@@ -1,8 +1,8 @@
 package playground
 
-import Result
 import io.reactivex.Observable
 import io.reactivex.schedulers.Schedulers
+import utils.Result
 
 /**
  * https://medium.com/@douglas.iacovelli/rxjava-kotlin-keep-the-original-value-in-a-flatmap-bbd6a6974a99
@@ -21,7 +21,7 @@ class FlatmapResultSelector {
         return Observable.just("Will")
                 .observeOn(Schedulers.io())
                 .flatMap({ name ->
-                    updateUserName.execute(name) //returns another Observable<Result> after calling the API
+                    updateUserName.execute(name) //returns another Observable<utils.Result> after calling the API
                 }, {
                     //this is executed after resolving the last observable emitted, so the result is ready.
                     name: String, apiResult: Result<String, Throwable> ->
