@@ -128,7 +128,7 @@ class ExceptionHandlingForLaunchTest {
     fun `When CoroutineExceptionHandler is added to child-scope, exception is still handled by overriding top-scope`() {
         CoroutineScope(dispatcher).run {
             launch(xHandlerOverride) {
-                launch(xHandlerChildScope) {
+                launch(xHandlerChildScope) { //launch(xHandlerChildScope) really only matters for coroutines without parent.
                     delay(1000)
                     throw ThrownException
                 }
@@ -139,6 +139,24 @@ class ExceptionHandlingForLaunchTest {
             assertThat(uncaughtException, nullValue())
             assertEquals(listOf<Throwable>(ThrownException), xHandlerOverride.uncaughtExceptions)
             assertEquals(emptyList<Throwable>(), xHandlerChildScope.uncaughtExceptions)
+        }
+    }
+
+    @Test
+    fun `When CoroutineExceptionHandler is added to child-scope in a SupervisorJob, exception is handled by overriding handler`() {
+        CoroutineScope(dispatcher).run {
+            launch(xHandlerOverride) {
+                launch(SupervisorJob() + xHandlerChildScope) {
+                    delay(1000)
+                    throw ThrownException
+                }
+            }
+
+            dispatcher.advanceTimeBy(1000)
+
+            assertThat(uncaughtException, nullValue())
+            assertEquals(listOf<Throwable>(ThrownException), xHandlerChildScope.uncaughtExceptions)
+            assertEquals(emptyList<Throwable>(), xHandlerOverride.uncaughtExceptions)
         }
     }
 
