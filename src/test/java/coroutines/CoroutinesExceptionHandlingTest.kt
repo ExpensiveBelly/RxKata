@@ -143,10 +143,10 @@ class ExceptionHandlingForLaunchTest {
     }
 
     @Test
-    fun `When CoroutineExceptionHandler is added to child-scope in a SupervisorJob, exception is handled by overriding handler`() {
+    fun `When CoroutineExceptionHandler is added to child-scope in a Job, exception is handled by overriding handler`() {
         CoroutineScope(dispatcher).run {
             launch(xHandlerOverride) {
-                launch(SupervisorJob() + xHandlerChildScope) {
+                launch(Job() + xHandlerChildScope) {
                     delay(1000)
                     throw ThrownException
                 }
@@ -194,8 +194,68 @@ class ExceptionHandlingForLaunchTest {
             assertEquals(emptyList<Throwable>(), xHandlerChildScope.uncaughtExceptions)
         }
     }
+
+    @Test(expected = Exception::class)
+    fun `When async throws an Exception by calling await() it cancels the scope`() {
+        runBlocking {
+            try {
+                val x = async {
+                    delay(1000)
+                    throw Exception()
+                    10
+                }
+                println("Awaiting...")
+                x.await()
+            } catch (e: Exception) {
+                println("Here")
+                delay(1000)
+                println("What?!")
+            }
+        }
+    }
+
+
+    @Test
+    fun `When async throws an Exception by calling await() it cancels the scope unless it is wrapped in a supervisorScope`() {
+        runBlocking {
+            supervisorScope {
+                try {
+                    val x = async {
+                        delay(1000)
+                        throw Exception()
+                        10
+                    }
+                    println("Awaiting...")
+                    x.await()
+                } catch (e: Exception) {
+                    println("Here")
+                    delay(1000)
+                    println("What?!")
+                }
+            }
+        }
+    }
+
+    @Test
+    fun `When async throws an exception inside a launch with a handler and a Job it gets caught by the exception handler`() {
+        suspend fun oops() {
+            delay(1000)
+            throw ThrownException
+        }
+
+        CoroutineScope(dispatcher).run {
+            launch(xHandlerTopScope) {
+                async { oops() }
+            }
+        }
+
+        dispatcher.advanceTimeBy(1000)
+
+        assertEquals(listOf<Throwable>(ThrownException), xHandlerTopScope.uncaughtExceptions)
+    }
 }
 
+@ExperimentalCoroutinesApi
 class TestCoroutineExceptionHandler :
     AbstractCoroutineContextElement(CoroutineExceptionHandler), UncaughtExceptionCaptor, CoroutineExceptionHandler {
     private val _exceptions = mutableListOf<Throwable>()
