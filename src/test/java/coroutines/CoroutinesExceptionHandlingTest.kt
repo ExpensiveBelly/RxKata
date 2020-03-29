@@ -1,6 +1,8 @@
 package it.droidcon.testingdaggerrxjava.coroutines
 
 
+import com.nhaarman.mockito_kotlin.mock
+import com.nhaarman.mockito_kotlin.verify
 import junit.framework.TestCase.assertEquals
 import junit.framework.TestCase.assertTrue
 import kotlinx.coroutines.*
@@ -106,6 +108,10 @@ class ExceptionHandlingForLaunchTest {
         }
     }
 
+    /*
+    withContext  never invokes its uncaught exception handler.
+     */
+
     @Test
     fun `When CoroutineExceptionHandler is added to child-scope, exception is still handled by top-scope`() {
         CoroutineScope(xHandlerTopScope + dispatcher).run {
@@ -195,43 +201,56 @@ class ExceptionHandlingForLaunchTest {
         }
     }
 
-    @Test(expected = Exception::class)
-    fun `When async throws an Exception by calling await() it cancels the scope`() {
+    /*
+    https://medium.com/androiddevelopers/cancellation-in-coroutines-aa6b90163629
+     */
+
+    @Test(expected = Exception::class) //Exception bubbles up b
+    fun `When async throws an Exception by calling await() it cancels the scope and Exception is thrown`() {
         runBlocking {
             try {
                 val x = async {
-                    delay(1000)
                     throw Exception()
                     10
                 }
                 println("Awaiting...")
                 x.await()
             } catch (e: Exception) {
-                println("Here")
-                delay(1000)
-                println("What?!")
+                println("Catch Exception")
+                println("Is this coroutine active? " + this.isActive)
+                delay(1) //This is a suspend function, on an already cancelled coroutine
+                println("This is never printed")
             }
         }
     }
 
+    private interface Verifier {
+        fun awaiting()
+        fun catch()
+        fun catchAfterDelay()
+    }
 
     @Test
     fun `When async throws an Exception by calling await() it cancels the scope unless it is wrapped in a supervisorScope`() {
         runBlocking {
             supervisorScope {
+                val verifier = mock<Verifier>()
                 try {
                     val x = async {
-                        delay(1000)
                         throw Exception()
                         10
                     }
-                    println("Awaiting...")
+                    verifier.awaiting()
                     x.await()
                 } catch (e: Exception) {
-                    println("Here")
-                    delay(1000)
-                    println("What?!")
+                    verifier.catch()
+                    delay(1)
+                    verifier.catchAfterDelay()
                 }
+
+                verify(verifier).awaiting()
+                verify(verifier).catch()
+                verify(verifier).catchAfterDelay()
             }
         }
     }
