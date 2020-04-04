@@ -12,7 +12,7 @@ import utils.zip
 import java.util.concurrent.TimeUnit
 
 class TweetsPostsRepository(
-    infoApi: InfoApi,
+    private val infoApi: InfoApi,
     ioScheduler: Scheduler = Schedulers.io(),
     computationScheduler: Scheduler = Schedulers.computation()
 ) {
@@ -112,4 +112,30 @@ class TweetsPostsRepository(
         currentTweetsObservableZip.flatMapObservable { itemList ->
             tweetsObservable.scan(itemList, { t1, t2 -> t1 + t2 })
         }
+
+    fun getContentItemsObservable(type: InfoType): Observable<List<InfoItem>> =
+        when (type) {
+            InfoType.TWEETS -> infoApi.currentTweets
+            InfoType.FACEBOOK_POSTS -> infoApi.currentFacebookPosts
+        }
+            .subscribeOn(Schedulers.io())
+            .observeOn(Schedulers.computation())
+            .map { infoTO -> infoTO.items.map { it.id } }
+            .flattenAsObservable { it }
+            .concatWith(getInfoTypeIdsObservable(type))
+            .concatMapSingle { infoDetailsCache.get(it, loader = { infoDetailsCacheLoaderFun(it) }) }
+            .scan(emptyList(), { t1: List<InfoItem>, t2: InfoItem -> t1 + t2 })
+
+    private fun getInfoTypeIdsObservable(type: InfoType): Observable<Id> =
+        infoApi.stream
+            .subscribeOn(Schedulers.io())
+            .observeOn(Schedulers.computation())
+            .filter { it.type.toContentType() == type }
+            .map { it.id }
+
+    private fun String.toContentType() = when (this) {
+        InfoType.TWEETS.name -> InfoType.TWEETS
+        InfoType.FACEBOOK_POSTS.name -> InfoType.FACEBOOK_POSTS
+        else -> null
+    }
 }
