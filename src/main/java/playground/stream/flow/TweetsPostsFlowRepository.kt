@@ -1,8 +1,6 @@
 package playground.stream.flow
 
-import com.nytimes.android.external.cache3.CacheBuilder
-import com.nytimes.android.external.cache3.CacheLoader
-import com.nytimes.android.external.cache3.LoadingCache
+import com.dropbox.android.external.cache4.Cache
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
 import playground.stream.InfoItem
@@ -11,6 +9,7 @@ import java.io.IOException
 import java.util.concurrent.TimeUnit
 
 
+@ExperimentalCoroutinesApi
 class TweetsPostsFlowRepository(private val infoApi: TweetsPostsFlowExercise.InfoFlowApi) {
 
     private val tweetsAndPostsStream = infoApi.stream
@@ -22,30 +21,33 @@ class TweetsPostsFlowRepository(private val infoApi: TweetsPostsFlowExercise.Inf
     private val tweetsFlow =
         tweetsAndPostsStream.filter { it.type == InfoType.TWEETS.name }.toInfoItemFlow()
 
-    private val infoDetailsCache: LoadingCache<ContentId, Deferred<InfoItem>> = CacheBuilder.newBuilder()
-        .maximumSize(200)
+    private val infoDetailsCache: Cache<ContentId, Deferred<InfoItem>> = Cache.Builder.newBuilder()
+        .maximumCacheSize(200)
         .expireAfterAccess(1, TimeUnit.MINUTES)
-        .build(CacheLoader.from { id ->
-            CoroutineScope(Dispatchers.IO).async(start = CoroutineStart.LAZY) {
-                retryIO {
-                    val infoItemDetailsTO = infoApi.getDetails(id).await()
-                    InfoItem(id, infoItemDetailsTO.title, infoItemDetailsTO.date)
-                }
-            }
-        })
+        .build()
 
     private fun Flow<TweetsPostsFlowExercise.InfoItemTO>.toInfoItemFlow() = flatMapConcat {
         flow {
-            emit(infoDetailsCache.get(it.id)?.await())
+            emit(it.toInfoItemDeferred().await())
         }
     }
+
+    private fun TweetsPostsFlowExercise.InfoItemTO.toInfoItemDeferred() = infoDetailsCache.get(id) {
+        CoroutineScope(Dispatchers.IO).async(start = CoroutineStart.LAZY) {
+            retryIO {
+                val infoItemDetailsTO = infoApi.getDetails(id).await()
+                InfoItem(id, infoItemDetailsTO.title, infoItemDetailsTO.date)
+            }
+        }
+    }
+
 
     private val currentFacebookPosts =
         CoroutineScope(Dispatchers.IO).async {
             retryIO {
                 val infoTO = infoApi.currentFacebookPosts.await()
                 infoTO.items.map { infoItemTO ->
-                    infoDetailsCache.get(infoItemTO.id)?.await()
+                    infoItemTO.toInfoItemDeferred().await()
                 }.toList()
             }
         }
@@ -55,7 +57,7 @@ class TweetsPostsFlowRepository(private val infoApi: TweetsPostsFlowExercise.Inf
             retryIO {
                 val infoTO = infoApi.currentFacebookPosts.await()
                 infoTO.items.map { infoItemTO ->
-                    infoDetailsCache.get(infoItemTO.id)?.await()
+                    infoItemTO.toInfoItemDeferred().await()
                 }.toList()
             }
         }
