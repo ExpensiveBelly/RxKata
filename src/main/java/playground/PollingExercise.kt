@@ -1,10 +1,7 @@
 package playground
 
+import com.dropbox.android.external.cache4.Cache
 import com.github.davidmoten.rx2.RetryWhen
-import com.nytimes.android.external.cache3.CacheBuilder
-import com.nytimes.android.external.cache3.CacheLoader
-import com.nytimes.android.external.cache3.LoadingCache
-import com.nytimes.android.external.cache3.Supplier
 import io.reactivex.Observable
 import io.reactivex.Scheduler
 import io.reactivex.Single
@@ -35,23 +32,23 @@ class PollingExercise {
      * LoadingCache allows `invalidate(Key.INSTANCE)` which resets the value
      */
 
-    private val tokenCache: LoadingCache<Key, Single<Token>> = CacheBuilder.newBuilder()
-            .maximumSize(1)
-            .expireAfterWrite(2, TimeUnit.SECONDS)
-            .build(CacheLoader.from(Supplier { getLoginToken() }))
+    private val tokenCache: Cache<Key, Single<Token>> = Cache.Builder.newBuilder()
+        .maximumCacheSize(1)
+        .expireAfterWrite(2, TimeUnit.SECONDS)
+        .build()
 
     fun pollUsingInterval(intervalSeconds: Long) =
             Observable.interval(0, intervalSeconds, TimeUnit.SECONDS)
                     .switchMapSingle { interval ->
-                        tokenCache.get(Key.INSTANCE)!!.flatMap { loginToken ->
+                        tokenCache.get(Key.INSTANCE) { getLoginToken() }.flatMap { loginToken ->
                             fetchData(interval.toInt()).subscribeOn(Schedulers.io())
-                                    .observeOn(Schedulers.trampoline())
-                                    .retryWhen(RetryWhen.maxRetries(3)
-                                            .action { println("Retrying $it") }
-                                            .exponentialBackoff(100, TimeUnit.MILLISECONDS)
-                                            .retryWhenInstanceOf(IllegalStateException::class.java)
-                                            .build())
-                                    .observeOn(Schedulers.computation())
+                                .observeOn(Schedulers.trampoline())
+                                .retryWhen(RetryWhen.maxRetries(3)
+                                    .action { println("Retrying $it") }
+                                    .exponentialBackoff(100, TimeUnit.MILLISECONDS)
+                                    .retryWhenInstanceOf(IllegalStateException::class.java)
+                                    .build())
+                                .observeOn(Schedulers.computation())
                         }
                     }
                     .startWith(emptyList<Int>())
