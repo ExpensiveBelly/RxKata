@@ -38,9 +38,7 @@ class TweetsPostsPresenter(private val repository: TweetsPostsRepository) {
                     Observable.just(emptyList())
                 } else throw throwable
             })
-            .subscribeBy(
-                onNext = { view.displayItems(it) },
-                onError = { if (it is ConnectionError) view.displayConnectionError(it.errorType) else throw it })
+            .subscribeBy { view.displayItems(it) }
     }
 
     fun detach() {
