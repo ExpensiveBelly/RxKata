@@ -9,6 +9,7 @@ import java.io.IOException
 import java.util.concurrent.TimeUnit
 
 
+@FlowPreview
 @ExperimentalCoroutinesApi
 class TweetsPostsFlowRepository(private val infoApi: TweetsPostsFlowExercise.InfoFlowApi) {
 
@@ -28,11 +29,11 @@ class TweetsPostsFlowRepository(private val infoApi: TweetsPostsFlowExercise.Inf
 
     private fun Flow<TweetsPostsFlowExercise.InfoItemTO>.toInfoItemFlow() = flatMapConcat {
         flow {
-            emit(it.toInfoItemDeferred().await())
+            emit(it.toInfoItemAsync().await())
         }
     }
 
-    private fun TweetsPostsFlowExercise.InfoItemTO.toInfoItemDeferred() = infoDetailsCache.get(id) {
+    private fun TweetsPostsFlowExercise.InfoItemTO.toInfoItemAsync() = infoDetailsCache.get(id) {
         CoroutineScope(Dispatchers.IO).async(start = CoroutineStart.LAZY) {
             retryIO {
                 val infoItemDetailsTO = infoApi.getDetails(id).await()
@@ -47,7 +48,7 @@ class TweetsPostsFlowRepository(private val infoApi: TweetsPostsFlowExercise.Inf
             retryIO {
                 val infoTO = infoApi.currentFacebookPosts.await()
                 infoTO.items.map { infoItemTO ->
-                    infoItemTO.toInfoItemDeferred().await()
+                    infoItemTO.toInfoItemAsync().await()
                 }.toList()
             }
         }
@@ -57,7 +58,7 @@ class TweetsPostsFlowRepository(private val infoApi: TweetsPostsFlowExercise.Inf
             retryIO {
                 val infoTO = infoApi.currentFacebookPosts.await()
                 infoTO.items.map { infoItemTO ->
-                    infoItemTO.toInfoItemDeferred().await()
+                    infoItemTO.toInfoItemAsync().await()
                 }.toList()
             }
         }
