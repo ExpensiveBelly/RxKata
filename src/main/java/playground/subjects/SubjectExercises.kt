@@ -1,4 +1,4 @@
-package playground
+package playground.subjects
 
 import io.reactivex.Observable
 import io.reactivex.Single
@@ -37,7 +37,12 @@ class Exercise2 {
 
     data class MyData(val key: Int, val value: String)
 
-    val myList: List<MyData> = listOf(MyData(1, "Hello"), MyData(2, "CMC"))
+    val myList: List<MyData> = listOf(
+        MyData(
+            1,
+            "Hello"
+        ), MyData(2, "CMC")
+    )
 
     //What transformations are needed to transform `myList` into `myMap`?
 //    val myMap: Map<Int, String> =

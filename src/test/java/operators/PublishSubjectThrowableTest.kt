@@ -3,7 +3,7 @@ package operators
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Test
-import playground.PublishSubjectThrowable
+import playground.subjects.PublishSubjectThrowable
 
 class PublishSubjectThrowableTest {
 

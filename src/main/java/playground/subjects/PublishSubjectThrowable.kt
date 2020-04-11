@@ -1,4 +1,4 @@
-package playground
+package playground.subjects
 
 import io.reactivex.Completable
 import io.reactivex.subjects.PublishSubject
