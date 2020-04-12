@@ -37,7 +37,8 @@ RxJava
 [RxPaper](https://github.com/pakoito/RxPaper)  
 [RxObservableDiskCache2](https://github.com/pakoito/RxObservableDiskCache2)
 [RxJavaDemoApp](https://github.com/JoaoMotondon/RxJavaDemoApp)
-[RxJava - The Problem with Subjects](http://tomstechnicalblog.blogspot.com/2016/03/rxjava-problem-with-subjects.html)   
+[RxJava - The Problem with Subjects](http://tomstechnicalblog.blogspot.com/2016/03/rxjava-problem-with-subjects.html)
+[Another introduction to reactive programming](https://www.oneagency.se/an-introduction-to-reactive-programming-with-rxjava-part-2-the-framework/)   
 
 Kotlin  
 
