@@ -7,7 +7,7 @@ import io.reactivex.rxjava3.core.Observable
 import org.amshove.kluent.mock
 import org.junit.Test
 
-class DisposalTest {
+class DisposalExerciseTest {
 
     private interface RxLifecycle {
         fun doFinally()
