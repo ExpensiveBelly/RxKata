@@ -1,4 +1,4 @@
-package playground.threading
+package playground.cache
 
 import io.reactivex.Single
 import io.reactivex.schedulers.TestScheduler
@@ -104,6 +104,40 @@ class SingleCacheValuesTest {
                 Single.just(text)
             }
         }.cache()
+
+        singleCachedAtomicReference.test().assertError(IllegalStateException::class.java)
+        // Subsequent subscription triggers the source again
+        singleCachedAtomicReference.test().assertValue(text)
+
+        singleCached.test().assertError(IllegalStateException::class.java)
+        // Subsequent subscription throws error again
+        singleCached.test().assertError(IllegalStateException::class.java)
+    }
+
+    @Test
+    fun cache_with_on_terminate_detach_should_not_re_throw_the_error() {
+        val text = "Hello"
+        var firstTimeCacheAtomicReference = true
+        val singleCachedAtomicReference = Single.defer {
+            if (firstTimeCacheAtomicReference) {
+                Single.error<Throwable>(IllegalStateException()).doOnError { firstTimeCacheAtomicReference = false }
+            } else {
+                Single.just(text)
+            }
+        }.cacheAtomicReference()
+
+        var firstTimeCache = true
+        val singleCached = Single.defer {
+            if (firstTimeCache) {
+                Single.error<Throwable>(IllegalStateException()).doOnError { firstTimeCache = false }
+                    .onTerminateDetach()
+            } else {
+                Single.just(text)
+            }
+        }
+            .onTerminateDetach()
+            .cache()
+            .onTerminateDetach()
 
         singleCachedAtomicReference.test().assertError(IllegalStateException::class.java)
         // Subsequent subscription triggers the source again
