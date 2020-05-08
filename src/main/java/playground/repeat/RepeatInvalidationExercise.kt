@@ -1,4 +1,4 @@
-package playground.maybe
+package playground.repeat
 
 import io.reactivex.Maybe
 import io.reactivex.Single

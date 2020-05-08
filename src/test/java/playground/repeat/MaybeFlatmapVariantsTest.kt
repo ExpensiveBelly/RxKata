@@ -1,6 +1,7 @@
-package playground.maybe
+package playground.repeat
 
 import org.junit.Test
+import playground.doc.MaybeFlatmapVariants
 
 class MaybeFlatmapVariantsTest {
 

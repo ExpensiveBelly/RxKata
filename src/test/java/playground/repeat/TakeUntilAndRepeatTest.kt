@@ -1,4 +1,4 @@
-package playground.maybe
+package playground.repeat
 
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.reset
