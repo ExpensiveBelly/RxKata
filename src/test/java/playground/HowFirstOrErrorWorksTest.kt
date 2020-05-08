@@ -1,5 +1,7 @@
 package playground
 
+import com.nhaarman.mockitokotlin2.inOrder
+import com.nhaarman.mockitokotlin2.mock
 import io.reactivex.Observable
 import io.reactivex.ObservableEmitter
 import io.reactivex.subjects.BehaviorSubject
@@ -70,6 +72,31 @@ class HowFirstOrErrorWorksTest {
         }.test()
 
         testObserver.assertError(NoSuchElementException::class.java)
+    }
+
+    private interface Verifier {
+        fun doOnDispose()
+        fun doOnSuccess()
+    }
+
+    @Test
+    fun firstOrError_completes_downstream_and_dispose_upstream() {
+        val publishSubject = PublishSubject.create<Int>()
+        val verifier = mock<Verifier> {}
+
+        val testObserver = publishSubject
+            .doOnDispose { verifier.doOnDispose() }
+            .firstOrError()
+            .doOnSuccess { verifier.doOnSuccess() }
+            .test()
+
+        publishSubject.onNext(1)
+
+        testObserver.assertComplete()
+        inOrder(verifier) {
+            verify(verifier).doOnDispose()
+            verify(verifier).doOnSuccess()
+        }
     }
 
     private fun ObservableEmitter<Int>.emitEvents() {
