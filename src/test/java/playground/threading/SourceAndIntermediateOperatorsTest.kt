@@ -8,6 +8,7 @@ import io.reactivex.subjects.PublishSubject
 import junit.framework.TestCase.assertFalse
 import junit.framework.TestCase.assertTrue
 import org.junit.Test
+import java.util.concurrent.TimeUnit
 
 
 class SourceAndIntermediateOperatorsTest {
@@ -23,11 +24,11 @@ class SourceAndIntermediateOperatorsTest {
     fun first_or_error_disposes_parent_observable() {
         var disposed = false
         subject.doOnDispose { disposed = true }
-                .firstOrError()
-                .test()
-                .assertSubscribed()
-                .also { subject.onNext(Unit) }
-                .assertComplete()
+            .firstOrError()
+            .test()
+            .assertSubscribed()
+            .also { subject.onNext(Unit) }
+            .assertComplete()
 
         assertFalse(subject.hasComplete()) // Completes downstream
         assertFalse(subject.hasObservers())
@@ -36,18 +37,21 @@ class SourceAndIntermediateOperatorsTest {
 
     @Test
     fun flatmap_does_not_dispose_parent_observable() {
-        subject.flatMap { Observable.just(Unit) }.test().assertSubscribed().also { subject.onNext(Unit) }.assertNotComplete()
+        subject.flatMap { Observable.just(Unit) }.test().assertSubscribed().also { subject.onNext(Unit) }
+            .assertNotComplete()
     }
 
     @Test
     fun flatmap_completable_does_not_dispose_parent_observable() {
-        subject.flatMapCompletable { Completable.complete() }.test().assertSubscribed().also { subject.onNext(Unit) }.assertNotComplete()
+        subject.flatMapCompletable { Completable.complete() }.test().assertSubscribed().also { subject.onNext(Unit) }
+            .assertNotComplete()
     }
 
     @Test
     fun firstelement_disposes_parent_observable() {
         var disposed = false
-        subject.doOnDispose { disposed = true }.firstElement().test().assertSubscribed().also { subject.onNext(Unit) }.assertComplete()
+        subject.doOnDispose { disposed = true }.firstElement().test().assertSubscribed().also { subject.onNext(Unit) }
+            .assertComplete()
 
         assertFalse(subject.hasComplete())
         assertTrue(disposed)
@@ -78,43 +82,68 @@ class SourceAndIntermediateOperatorsTest {
 
     @Test
     fun flatmap_completable_will_error_parent_observable() {
-        subject.flatMapCompletable { Completable.error(RuntimeException()) }.test().also { subject.onNext(Unit) }.assertError(RuntimeException::class.java)
+        subject.flatMapCompletable { Completable.error(RuntimeException()) }.test().also { subject.onNext(Unit) }
+            .assertError(RuntimeException::class.java)
     }
 
     @Test
     fun subject_errors_when_observable_empty_concat_with_error_inside_flatmap() {
-        subject.flatMap { Observable.empty<Unit>().concatWith(Observable.error(IllegalStateException())) }.test().also { subject.onNext(Unit) }.assertError(IllegalStateException::class.java)
+        subject.flatMap { Observable.empty<Unit>().concatWith(Observable.error(IllegalStateException())) }.test()
+            .also { subject.onNext(Unit) }.assertError(IllegalStateException::class.java)
     }
 
     @Test
     fun subject_does_not_dispose_when_observable_empty_inside_flatmap() {
-        subject.flatMap { Observable.empty<Unit>() }.concatWith(Observable.error(IllegalStateException())).test().also { subject.onNext(Unit) }.assertNoValues().assertNotComplete().assertNoErrors()
+        subject.flatMap { Observable.empty<Unit>() }.concatWith(Observable.error(IllegalStateException())).test()
+            .also { subject.onNext(Unit) }.assertNoValues().assertNotComplete().assertNoErrors()
     }
 
     @Test
     fun first_or_error_errors_because_single_just_completes() {
-        subject.firstOrError().flatMap { Single.just(Unit) }.concatWith(Single.error(IllegalStateException())).test().also {
-            subject.onNext(Unit)
-        }.assertError(IllegalStateException::class.java)
+        subject.firstOrError().flatMap { Single.just(Unit) }.concatWith(Single.error(IllegalStateException())).test()
+            .also {
+                subject.onNext(Unit)
+            }.assertError(IllegalStateException::class.java)
 
-        subject.singleOrError().flatMap { Single.just(Unit) }.concatWith(Single.error(IllegalStateException())).test().also {
-            subject.onNext(Unit)
-            subject.onComplete()
-        }.assertError(IllegalStateException::class.java)
+        subject.singleOrError().flatMap { Single.just(Unit) }.concatWith(Single.error(IllegalStateException())).test()
+            .also {
+                subject.onNext(Unit)
+                subject.onComplete()
+            }.assertError(IllegalStateException::class.java)
     }
 
     @Test
     fun observable_onExceptionResumeNext_passing_the_exception() {
-        Observable.error<Throwable>(IllegalStateException()).onExceptionResumeNext { Observable.error<Throwable>(IllegalStateException()) }.test().assertNoErrors() //Lambda not subscribed inside onExceptionResumeNext
+        Observable.error<Throwable>(IllegalStateException())
+            .onExceptionResumeNext { Observable.error<Throwable>(IllegalStateException()) }.test()
+            .assertNoErrors() //Lambda not subscribed inside onExceptionResumeNext
 
-        Observable.error<Throwable>(IllegalStateException()).onExceptionResumeNext(Observable.error<Throwable>(IllegalStateException())).test().assertError(IllegalStateException::class.java)
+        Observable.error<Throwable>(IllegalStateException())
+            .onExceptionResumeNext(Observable.error<Throwable>(IllegalStateException())).test()
+            .assertError(IllegalStateException::class.java)
     }
 
     @Test
     fun observable_onErrorResumeNext_passes_the_exception() {
-        Observable.error<Throwable>(IllegalStateException()).onErrorResumeNext(Observable.error(IllegalStateException())).test().assertError(IllegalStateException::class.java)
+        Observable.error<Throwable>(IllegalStateException())
+            .onErrorResumeNext(Observable.error(IllegalStateException())).test()
+            .assertError(IllegalStateException::class.java)
 
         //Don't use it this way though, subscribing within the `onErrorResumeNext`
-        Observable.error<Throwable>(IllegalStateException()).onErrorResumeNext(ObservableSource { observer -> Observable.error<Throwable>(IllegalStateException()).subscribe(observer) }).test().assertError(IllegalStateException::class.java)
+        Observable.error<Throwable>(IllegalStateException()).onErrorResumeNext(ObservableSource { observer ->
+            Observable.error<Throwable>(IllegalStateException()).subscribe(observer)
+        }).test().assertError(IllegalStateException::class.java)
+    }
+
+    @Test
+    fun timeout_with_fallback_has_the_same_effect_as_observable_empty_in_a_flatmap() {
+        subject.flatMap {
+            Observable.interval(100, TimeUnit.MILLISECONDS).timeout(1, TimeUnit.MILLISECONDS, Observable.empty())
+        }.concatWith(Observable.error(IllegalStateException()))
+            .test()
+            .also { subject.onNext(Unit) }
+            .assertNoValues()
+            .assertNotComplete()
+            .assertNoErrors()
     }
 }
