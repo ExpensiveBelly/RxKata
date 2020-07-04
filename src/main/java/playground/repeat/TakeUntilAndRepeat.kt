@@ -47,5 +47,4 @@ fun main() {
         observableTakeUntilFun(Schedulers.trampoline()).subscribe { println("Subscribe onComplete") }
         Thread.sleep(600)
     }
-
 }

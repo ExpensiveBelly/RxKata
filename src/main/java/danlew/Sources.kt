@@ -78,21 +78,21 @@ class Sources {
         emitter.onNext(disk)
         emitter.onComplete()
     }
-            .doOnNext { memory = it }
-            .compose(logSource("DISK"))
+        .doOnNext { memory = it }
+        .compose(logSource("DISK"))
 
 
-    fun network(): Observable<Optional<Data>> = Observable.create<Optional<Data>> {
-        it.onNext(Optional.of(Data("Server Response #${requestNumber.incrementAndGet()}")))
-        it.onComplete()
+    fun network(): Observable<Optional<Data>> = Observable.create<Optional<Data>> { emitter ->
+        emitter.onNext(Optional.of(Data("Server Response #${requestNumber.incrementAndGet()}")))
+        emitter.onComplete()
     }
 //            .delay(500, TimeUnit.MILLISECONDS)
-            .share()
-            .doOnNext {
-                memory = it
-                disk = it
-            }
-            .compose(logSource("NETWORK"))
+        .share()
+        .doOnNext {
+            memory = it
+            disk = it
+        }
+        .compose(logSource("NETWORK"))
 
 
     // Simple logging to let us know what each source is returning
@@ -109,6 +109,4 @@ class Sources {
             }
         }
     }
-
-
 }
