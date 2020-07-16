@@ -1,6 +1,5 @@
 package playground
 
-import io.reactivex.Flowable
 import io.reactivex.Single
 import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.schedulers.Schedulers
@@ -18,11 +17,10 @@ class ShowErrorAfterThreeRetries {
             Single.error<Throwable>(IllegalStateException())
                     .retryWhen { errors ->
                         val counter = AtomicInteger(0)
-                        errors.takeWhile { counter.getAndIncrement() != 3 }
+                        errors.takeWhile { counter.getAndIncrement() != 3 /*&& it is IOException*/ }
                             .observeOn(mainScheduler)
                                 .doOnNext { println("Retrying... $counter ${Thread.currentThread().name}") }
                                 .observeOn(Schedulers.computation())
-                                .flatMap { Flowable.just(counter) }
                     }
 }
 
@@ -30,11 +28,11 @@ fun main() {
     val countDownLatch = CountDownLatch(1)
     ShowErrorAfterThreeRetries().single
             .subscribeBy(
-                    onSuccess = { "Success!" },
-                    onError = {
-                        println("Displaying error!!")
-                        countDownLatch.countDown()
-                    })
+                onSuccess = { println("Success!") },
+                onError = {
+                    println("Displaying error!!")
+                    countDownLatch.countDown()
+                })
 
     countDownLatch.await()
 }

@@ -107,9 +107,6 @@ class Exercise5 {
     }
 }
 
-/** * Merges the emissions of an Observable<Observable<T>>. Same as calling `flatMap { it }`.
- */
-
 private fun <T : Any> Observable<Observable<T>>.mergeAll(): Observable<T> = flatMap { it }
 private fun <T : Any> Observable<Observable<T>>.concatAll(): Observable<T> = concatMap { it }
 private fun <T : Any> Observable<Observable<T>>.switchLatest(): Observable<T> = switchMap { it }
@@ -118,6 +115,7 @@ fun main() {
     Exercise1().run()
     Exercise3().run()
     Exercise4().run()
+
 
     Thread.sleep(1000)
 }
