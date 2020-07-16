@@ -81,14 +81,38 @@ class Exercise4 {
 
     fun run() {
         combined.doOnNext { println("onNext: $it") }
-                .doOnError { println("onError: $it") }
-                .doOnComplete { println("onComplete") }
-                .test().assertNoValues()
+            .doOnError { println("onError: $it") }
+            .doOnComplete { println("onComplete") }
+            .test().assertNoValues()
 
         // TODO: What's the output? What will it print?
         subject.onNext(1)
     }
 }
+
+class Exercise5 {
+
+    init {
+        println("Exercise 5")
+
+        val observable: Observable<Observable<Int>> = Observable.just(1).map { Observable.just(it) }
+
+        //Transform `Observable<Observable<Int>>` to `Observable<Int>`
+        fun run() {
+            val flattened: Observable<Int> = observable.flatMap { it }
+            val flattened4: Observable<Int> = observable.mergeAll()
+            val flattened2: Observable<Int> = observable.concatAll()
+            val flattened3: Observable<Int> = observable.switchLatest()
+        }
+    }
+}
+
+/** * Merges the emissions of an Observable<Observable<T>>. Same as calling `flatMap { it }`.
+ */
+
+private fun <T : Any> Observable<Observable<T>>.mergeAll(): Observable<T> = flatMap { it }
+private fun <T : Any> Observable<Observable<T>>.concatAll(): Observable<T> = concatMap { it }
+private fun <T : Any> Observable<Observable<T>>.switchLatest(): Observable<T> = switchMap { it }
 
 fun main() {
     Exercise1().run()
