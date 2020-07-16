@@ -9,6 +9,9 @@ import io.reactivex.rxjava3.kotlin.Observables
 
 fun <T : Any> Observable<T>.distinctUntilChanged2() =
     Observables.zip(this, skip(1))
-        .filter { (a: T, b: T) -> a != b }
+        .filter { (a: T, b: T) ->
+            println("$a to $b")
+            a != b
+        }
         .map { (_: T, b: T) -> b }
         .startWith(firstOrError())
