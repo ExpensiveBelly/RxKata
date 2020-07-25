@@ -61,10 +61,7 @@ fun main() {
         }
         .subscribe(
             { println(it) },
-            {
-                if (it is CompositeException) println(it.exceptions)
-                else println(it)
-            })
+            { println(if (it is CompositeException) it.exceptions else it) })
 
     countDownLatch.await()
 }
