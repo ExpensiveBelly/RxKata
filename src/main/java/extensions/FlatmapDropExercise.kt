@@ -1,6 +1,7 @@
 package extensions
 
 import hu.akarnokd.rxjava2.operators.ObservableTransformers
+import io.reactivex.BackpressureStrategy
 import io.reactivex.Observable
 import io.reactivex.Scheduler
 import io.reactivex.Single
@@ -18,8 +19,11 @@ class FlatmapDropExercise(scheduler: Scheduler = Schedulers.computation()) {
     }.toObservable().replay(1).refCount().firstOrError()
 
     fun Observable<Unit>.multipleClicksDoesNotTriggerNewRequestWithoutFlatmapDrop() =
-            flatMapSingle { fakeNetworkRequest }.firstOrError()
+        flatMapSingle { fakeNetworkRequest }.firstOrError()
 
     fun Observable<Unit>.multipleClicksDoesNotTriggerNewRequestWithFlatmapDrop() =
-            compose(ObservableTransformers.flatMapDrop<Unit, Int> { fakeNetworkRequest.toObservable() })
+        compose(ObservableTransformers.flatMapDrop<Unit, Int> { fakeNetworkRequest.toObservable() })
+
+    fun Observable<Unit>.multipleClicksDoesNotTriggerNewRequestWithFlowable() =
+        toFlowable(BackpressureStrategy.DROP).flatMap({ fakeNetworkRequest.toFlowable() }, 1)
 }
