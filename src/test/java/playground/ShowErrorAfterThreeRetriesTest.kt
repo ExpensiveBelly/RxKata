@@ -100,6 +100,7 @@ class ShowErrorAfterThreeRetriesTest {
                 observer.assertNoErrors()
             }
             subject.onNext(Result.success("1"))
+            retryCallbacks.compareAndSet(3, 1)
         }
     }
 }
