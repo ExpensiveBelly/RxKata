@@ -44,7 +44,13 @@ RxJava
 
 [Another introduction to reactive programming](https://www.oneagency.se/an-introduction-to-reactive-programming-with-rxjava-part-2-the-framework/)
 
-[Tips and tricks with reactive systems and dataflows](https://github.com/reactor/reactive-streams-commons/issues/21)   
+[Tips and tricks with reactive systems and dataflows](https://github.com/reactor/reactive-streams-commons/issues/21)
+
+[Reactive Puzzlers](https://github.com/reactor/reactive-streams-commons/issues/22)
+
+[Upstream/Downstream](https://github.com/ReactiveX/RxJava/issues/5022)
+
+[When `subscribeOn` doesn't work](https://medium.com/@wasyl/rxjava-threading-when-subscribeon-doesnt-work-ee467a21935b)   
 
 Kotlin  
 

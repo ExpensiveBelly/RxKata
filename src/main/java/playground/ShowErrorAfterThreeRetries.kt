@@ -19,7 +19,7 @@ class ShowErrorAfterThreeRetries {
                         val counter = AtomicInteger(0)
                         /*
                         This is wrong because the `takeWhile` will complete and then the error will display: "Displaying error!! java.util.NoSuchElementException"
-                        To fix this, we need to use a `flatMap` instead (please check the test for this) or catch the completion event with a `reepatWhen`
+                        To fix this, we need to use a `flatMap` instead (please check the test for this) or catch the completion event with a `repeatWhen`
                          */
                         errors.takeWhile { counter.getAndIncrement() != 3 /*&& it is IOException*/ }
 //                            .repeatWhen { it.flatMapSingle { Single.error<Throwable>(IllegalStateException()) } }
