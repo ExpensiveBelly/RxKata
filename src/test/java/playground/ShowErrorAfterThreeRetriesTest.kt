@@ -1,5 +1,7 @@
 package playground
 
+import io.reactivex.rxjava3.core.Observable
+import io.reactivex.rxjava3.core.ObservableSource
 import io.reactivex.rxjava3.core.Single
 import io.reactivex.rxjava3.schedulers.TestScheduler
 import io.reactivex.rxjava3.subjects.PublishSubject
@@ -22,16 +24,31 @@ class ShowErrorAfterThreeRetriesTest {
     }
 
     private val observableWithRetry = observable
-        .retryWhen { errors ->
-            val counter = AtomicInteger(0)
-            errors.flatMapSingle {
-                if (counter.getAndIncrement() < 3 && it is IOException) Single.just(0)
-                else Single.error(it)
+        .retryReset(3) { it is IOException }
+
+    fun <T> Observable<T>.retryReset(count: Int, predicate: (Throwable) -> Boolean) =
+        Single.fromCallable { AtomicInteger(0) }
+            .flatMapObservable { counter ->
+                retryWhen { errors ->
+                    errors.flatMapSingle {
+                        if (counter.getAndIncrement() < count && predicate(it)) Single.just(0)
+                        else Single.error(it)
+                    }.observeOn(mainScheduler)
+                        .doOnNext { retryingCallback("Retrying... $counter ${Thread.currentThread().name}") }
+                        .observeOn(retryScheduler)
+                }.doOnNext { counter.set(0) }
             }
-                .observeOn(mainScheduler)
-                .doOnNext { retryingCallback("Retrying... $counter ${Thread.currentThread().name}") }
-                .observeOn(retryScheduler)
-        }
+
+    fun <T> Observable<T>.retryReset(handler: (Observable<Throwable>) -> ObservableSource<*>): Observable<T> =
+        Single.fromCallable { PublishSubject.create<Unit>() }
+            .flatMapObservable { signal ->
+                this.doOnNext { signal.onNext(Unit) }
+                    .retryWhen {
+                        Observable.defer { handler(it) }
+                            .takeUntil(signal)
+                            .repeat()
+                    }
+            }
 
 //	private val displayErrorTransformation = with(AtomicInteger(0)) {
 //		{ error: Throwable ->
@@ -100,7 +117,7 @@ class ShowErrorAfterThreeRetriesTest {
                 observer.assertNoErrors()
             }
             subject.onNext(Result.success("1"))
-            retryCallbacks.compareAndSet(3, 1)
+            retryCallbacks.compareAndSet(3, 0)
         }
     }
 }
