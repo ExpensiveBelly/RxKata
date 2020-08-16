@@ -9,6 +9,8 @@ import java.util.concurrent.atomic.AtomicInteger
 
 /**
  * Display a retry message for every retry and then after 3 retries display an error message
+ *
+ * https://stackoverflow.com/questions/48874623/rxjava-retry-reset-retry-counter-on-successful-resume
  */
 
 class ShowErrorAfterThreeRetries {

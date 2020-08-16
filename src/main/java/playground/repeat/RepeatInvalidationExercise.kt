@@ -15,7 +15,7 @@ class RepeatInvalidationExercise {
         return Maybe.defer { Maybe.just(list.first()) }
             .doOnSuccess { list = list.drop(1) }
             .filter { !completeMaybe }
-            .repeat() //This only triggers if the item doesn't pass the filter, otherwise it carries on downstream and it's converted to a Single, invalidating the `repeat`
+            .repeat() //This only triggers if the item doesn't pass the filter, otherwise it carries on downstream and `firstOrError` disposes upstream, invalidating the `repeat`
             .firstOrError()
     }
 }

@@ -50,22 +50,6 @@ class ShowErrorAfterThreeRetriesTest {
                     }
             }
 
-//	private val displayErrorTransformation = with(AtomicInteger(0)) {
-//		{ error: Throwable ->
-//			Completable.fromAction { retryingCallback("Retrying... ${getAndIncrement()} ${Thread.currentThread().name}") }
-//					.subscribeOn(mainScheduler)
-//					.observeOn(retryScheduler)
-//					.toSingleDefault(error)
-//		}
-//	}
-//
-//	private val observableWithRetry = observable
-//			.retryWith(combine(
-//					predicateErrorTransformation { it !is IOException },
-//					countErrorTransformation(3),
-//					displayErrorTransformation
-//			))
-
     @Test
     fun behavior1() {
         val error = IllegalStateException()
