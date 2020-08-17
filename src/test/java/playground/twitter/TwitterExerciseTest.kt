@@ -1,8 +1,13 @@
 package playground.twitter
 
+import it.droidcon.testingdaggerrxjava.rx3.TestSchedulerRule
+import org.junit.Rule
 import org.junit.Test
 
 class TwitterExerciseTest {
+
+    @get:Rule
+    val rule = TestSchedulerRule()
 
     private val twitter = TwitterExercise()
 
@@ -72,5 +77,21 @@ class TwitterExerciseTest {
 
         test1.assertValues(listOf(5), listOf(6, 5), listOf(5))
         test2.assertValues(listOf(5), listOf(6, 5), listOf(6))
+    }
+
+    @Test
+    fun `should limit the news feed to 10 tweets`() {
+        for (i in 0 until 11) {
+            twitter.postTweet(1, i)
+        }
+
+        val test = twitter.getNewsFeed(1).test()
+        val firstList = (10 downTo 1).map { it }.toList()
+        test.assertValue(firstList)
+
+        twitter.postTweet(1, 11)
+
+        test.assertValueCount(2)
+        test.assertValues(firstList, (11 downTo 2).map { it }.toList())
     }
 }

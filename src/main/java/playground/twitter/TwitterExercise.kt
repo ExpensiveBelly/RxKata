@@ -3,6 +3,7 @@ package playground.twitter
 import io.reactivex.rxjava3.core.Maybe
 import io.reactivex.rxjava3.core.Observable
 import io.reactivex.rxjava3.kotlin.Observables
+import io.reactivex.rxjava3.schedulers.Schedulers
 import io.reactivex.rxjava3.subjects.BehaviorSubject
 import java.time.Instant
 
@@ -43,23 +44,33 @@ class TwitterExercise : ITwitterExercise {
 
     override fun postTweet(userId: UserId, tweetId: TweetId) {
         synchronized(tweets) {
-            tweets.onNext(listOf(TweetInfo(userId, tweetId, Instant.now())) + tweets.value.orEmpty())
+            tweets.onNext(
+                listOf(
+                    TweetInfo(
+                        userId,
+                        tweetId,
+                        Instant.now()
+                    )
+                ) + tweets.value.orEmpty()
+            )
         }
     }
 
     override fun getNewsFeed(userId: UserId): Observable<List<TweetId>> =
-        Observables.combineLatest(
-            tweets,
-            userId.followees()
-        ) { tweets: List<TweetInfo>, followeeis: Set<FolloweeId> ->
-            tweets.filter { it.userId == userId || followeeis.contains(it.userId) }
-        }.map { filteredTweets: List<TweetInfo> ->
-            filteredTweets.asSequence()
-                .sortedByDescending { it.instant }
-                .map { it.tweetId }
-                .take(10)
-                .toList()
-        }.distinctUntilChanged()
+        Observables.combineLatest(tweets, userId.followees())
+            .switchMapSingle { (tweetList, followeeis) ->
+                Observable.fromIterable(tweetList)
+                    .groupBy { it.userId }
+                    .flatMap { groupedObservable ->
+                        groupedObservable.filter { it.userId == userId || followeeis.contains(it.userId) }
+                            .subscribeOn(Schedulers.io())
+                            .observeOn(Schedulers.computation())
+                    }
+                    .sorted { o1, o2 -> o2.instant.compareTo(o1.instant) }
+                    .take(10)
+                    .map { it.tweetId }
+                    .toList()
+            }.distinctUntilChanged()
 
     private fun UserId.followees(): Observable<Set<FolloweeId>> =
         followers.flatMapMaybe { it[this]?.let { Maybe.just(it) } ?: Maybe.empty() }
