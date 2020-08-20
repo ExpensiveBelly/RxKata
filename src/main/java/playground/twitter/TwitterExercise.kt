@@ -1,8 +1,7 @@
 package playground.twitter
 
-import io.reactivex.rxjava3.core.Maybe
 import io.reactivex.rxjava3.core.Observable
-import io.reactivex.rxjava3.kotlin.Observables
+import io.reactivex.rxjava3.kotlin.combineLatest
 import io.reactivex.rxjava3.schedulers.Schedulers
 import io.reactivex.rxjava3.subjects.BehaviorSubject
 import java.time.Instant
@@ -35,62 +34,50 @@ interface ITwitterExercise {
 }
 
 class TwitterExercise : ITwitterExercise {
+    private data class TweetDetails(val time: Instant, val id: TweetId)
 
-    data class TweetInfo(val userId: UserId, val tweetId: TweetId, val instant: Instant)
+    private val tweets: MutableMap<UserId, BehaviorSubject<List<TweetDetails>>> = mutableMapOf()
+    private val followees: MutableMap<UserId, BehaviorSubject<Set<FolloweeId>>> = mutableMapOf()
 
-    private val tweets: BehaviorSubject<List<TweetInfo>> = BehaviorSubject.create()
-    private val followers: BehaviorSubject<Map<FollowerId, Set<FolloweeId>>> =
-        BehaviorSubject.create()
+    private fun tweets(userId: UserId) =
+        synchronized(tweets) {
+            tweets.getOrPut(userId) { BehaviorSubject.createDefault(emptyList()) }
+        }
+
+    private fun followees(followerId: UserId) =
+        synchronized(followees) {
+            followees.getOrPut(followerId) { BehaviorSubject.createDefault(emptySet()) }
+        }
 
     override fun postTweet(userId: UserId, tweetId: TweetId) {
-        synchronized(tweets) {
-            tweets.onNext(
-                listOf(
-                    TweetInfo(
-                        userId,
-                        tweetId,
-                        Instant.now()
-                    )
-                ) + tweets.value.orEmpty()
-            )
-        }
+        val userTweets = tweets(userId)
+        userTweets.onNext(userTweets.value!! + TweetDetails(Instant.now(), tweetId))
     }
 
     override fun getNewsFeed(userId: UserId): Observable<List<TweetId>> =
-        Observables.combineLatest(tweets, userId.followees())
-            .switchMapSingle { (tweetList, followeeis) ->
-                Observable.fromIterable(tweetList)
-                    .groupBy { it.userId }
-                    .flatMap { groupedObservable ->
-                        groupedObservable.filter { it.userId == userId || followeeis.contains(it.userId) }
-                            .subscribeOn(Schedulers.io())
-                            .observeOn(Schedulers.computation())
-                    }
-                    .sorted { o1, o2 -> o2.instant.compareTo(o1.instant) }
-                    .take(10)
-                    .map { it.tweetId }
-                    .toList()
-            }.distinctUntilChanged()
-
-    private fun UserId.followees(): Observable<Set<FolloweeId>> =
-        followers.flatMapMaybe { it[this]?.let { Maybe.just(it) } ?: Maybe.empty() }
-            .startWithItem(emptySet())
+        followees(userId)
+            .observeOn(Schedulers.computation())
+            .switchMap { userFollowees ->
+                (userFollowees + userId).takeTenSortedTweetIds()
+            }
             .distinctUntilChanged()
 
-    override fun follow(followerId: FollowerId, followeeId: FolloweeId) {
-        synchronized(followers) {
-            val map = followers.value.orEmpty()
-            val existingFolloweeList = map[followerId].orEmpty()
-            followers.onNext(map + (followerId to existingFolloweeList + followeeId))
-        }
+    private fun Iterable<UserId>.takeTenSortedTweetIds() =
+        map { tweets(it).observeOn(Schedulers.computation()) }
+            .combineLatest { it.flatten() }
+            .map { tweets ->
+                tweets.sortedByDescending { it.time }
+                    .take(10)
+                    .map { it.id }
+            }
+
+    override fun follow(followeeId: FolloweeId, followerId: FollowerId) {
+        val userFollowees = followees(followerId)
+        userFollowees.onNext(userFollowees.value!! + followeeId)
     }
 
-    override fun unfollow(followerId: FollowerId, followeeId: FolloweeId) {
-        synchronized(followers) {
-            val map = followers.value ?: emptyMap()
-            map[followerId]?.let { existingFolloweeList ->
-                followers.onNext(map + (followerId to existingFolloweeList - followeeId))
-            }
-        }
+    override fun unfollow(followerId: UserId, followeeId: UserId) {
+        val userFollowees = followees(followerId)
+        userFollowees.onNext(userFollowees.value!! - followeeId)
     }
 }

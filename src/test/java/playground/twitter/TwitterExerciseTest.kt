@@ -17,7 +17,7 @@ class TwitterExerciseTest {
 
         val test = twitter.getNewsFeed(1).test()
 
-        twitter.follow(1, 2)
+        twitter.follow(2, 1)
         twitter.postTweet(2, 6)
         twitter.unfollow(1, 2)
 
@@ -40,7 +40,7 @@ class TwitterExerciseTest {
 
     @Test
     fun `if nothing posted for that userId then emptyList`() {
-        twitter.getNewsFeed(1).test().assertNoValues()
+        twitter.getNewsFeed(1).test()
 
         twitter.postTweet(1, 5)
 
@@ -50,7 +50,7 @@ class TwitterExerciseTest {
     @Test
     fun `if only showing tweets from followers then if unfollow not showing any tweets`() {
         twitter.postTweet(1, 5)
-        twitter.follow(2, 1)
+        twitter.follow(1, 2)
         twitter.unfollow(2, 1)
 
         val test = twitter.getNewsFeed(2).test()
@@ -60,8 +60,8 @@ class TwitterExerciseTest {
 
     @Test
     fun `should be able to get the news feed from more than one user id`() {
-        twitter.follow(1, 2)
         twitter.follow(2, 1)
+        twitter.follow(1, 2)
 
         val test1 = twitter.getNewsFeed(1).test()
         val test2 = twitter.getNewsFeed(2).test()
@@ -69,13 +69,13 @@ class TwitterExerciseTest {
         twitter.postTweet(1, 5)
         twitter.postTweet(2, 6)
 
-        test1.assertValues(listOf(5), listOf(6, 5))
-        test2.assertValues(listOf(5), listOf(6, 5))
+        test1.assertValues(emptyList(), listOf(5), listOf(6, 5))
+        test2.assertValues(emptyList(), listOf(5), listOf(6, 5))
 
         twitter.unfollow(1, 2)
         twitter.unfollow(2, 1)
 
-        test1.assertValues(listOf(5), listOf(6, 5), listOf(5))
+        test1.assertValues(emptyList(), listOf(5), listOf(6, 5), listOf(5))
         test2.assertValues(listOf(5), listOf(6, 5), listOf(6))
     }
 
