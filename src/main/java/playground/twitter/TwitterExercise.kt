@@ -29,7 +29,8 @@ typealias FolloweeId = Int
 interface ITwitterExercise {
     fun postTweet(userId: UserId, tweetId: TweetId)
     fun getNewsFeed(userId: UserId): Observable<List<TweetId>>
-    fun follow(followerId: FollowerId, followeeId: FolloweeId)
+    fun getFollowees(followerId: FollowerId): Observable<Set<FolloweeId>>
+    fun follow(followeeId: FolloweeId, followerId: FollowerId)
     fun unfollow(followerId: FollowerId, followeeId: FolloweeId)
 }
 
@@ -37,7 +38,7 @@ class TwitterExercise : ITwitterExercise {
     private data class TweetDetails(val time: Instant, val id: TweetId)
 
     private val tweets: MutableMap<UserId, BehaviorSubject<List<TweetDetails>>> = mutableMapOf()
-    private val followees: MutableMap<UserId, BehaviorSubject<Set<FolloweeId>>> = mutableMapOf()
+    val followees: MutableMap<UserId, BehaviorSubject<Set<FolloweeId>>> = mutableMapOf()
 
     private fun tweets(userId: UserId) =
         synchronized(tweets) {
@@ -61,6 +62,16 @@ class TwitterExercise : ITwitterExercise {
                 (userFollowees + userId).takeTenSortedTweetIds()
             }
             .distinctUntilChanged()
+
+    override fun getFollowees(followerId: FollowerId) = followees(followerId)
+        .switchMap { userFollowees ->
+            userFollowees.map { followeeId ->
+                followees(followeeId)
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(Schedulers.computation())
+            }.combineLatest { it.flatten().toSet() }
+                .map { it + userFollowees }
+        }.distinctUntilChanged()
 
     private fun Iterable<UserId>.takeTenSortedTweetIds() =
         map { tweets(it).observeOn(Schedulers.computation()) }

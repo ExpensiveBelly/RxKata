@@ -1,6 +1,10 @@
 package playground.twitter
 
-import it.droidcon.testingdaggerrxjava.rx3.TestSchedulerRule
+import it.droidcon.testingdaggerrxjava.rules.CoroutineTestRule
+import it.droidcon.testingdaggerrxjava.rules.TestSchedulerRule
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.runBlocking
 import org.junit.Rule
 import org.junit.Test
 
@@ -8,6 +12,10 @@ class TwitterExerciseTest {
 
     @get:Rule
     val rule = TestSchedulerRule()
+
+    @ExperimentalCoroutinesApi
+    @get:Rule
+    var coroutinesTestRule = CoroutineTestRule()
 
     private val twitter = TwitterExercise()
 
@@ -26,16 +34,21 @@ class TwitterExerciseTest {
 
     @Test
     fun `post tweets posted by the user`() {
-        twitter.postTweet(1, 5)
-        twitter.postTweet(1, 6)
-        twitter.postTweet(1, 7)
+        runBlocking {
+            twitter.postTweet(1, 5)
+            delay(10)
+            twitter.postTweet(1, 6)
+            delay(10)
+            twitter.postTweet(1, 7)
+            delay(10)
 
-        val test = twitter.getNewsFeed(1).test()
-        test.assertValue(listOf(7, 6, 5))
+            val test = twitter.getNewsFeed(1).test()
+            test.assertValue(listOf(7, 6, 5))
 
-        twitter.postTweet(1, 8)
+            twitter.postTweet(1, 8)
 
-        test.assertValues(listOf(7, 6, 5), listOf(8, 7, 6, 5))
+            test.assertValues(listOf(7, 6, 5), listOf(8, 7, 6, 5))
+        }
     }
 
     @Test
@@ -66,32 +79,65 @@ class TwitterExerciseTest {
         val test1 = twitter.getNewsFeed(1).test()
         val test2 = twitter.getNewsFeed(2).test()
 
-        twitter.postTweet(1, 5)
-        twitter.postTweet(2, 6)
+        runBlocking {
+            twitter.postTweet(1, 5)
+            delay(10)
+            twitter.postTweet(2, 6)
 
-        test1.assertValues(emptyList(), listOf(5), listOf(6, 5))
-        test2.assertValues(emptyList(), listOf(5), listOf(6, 5))
+            test1.assertValues(emptyList(), listOf(5), listOf(6, 5))
+            test2.assertValues(emptyList(), listOf(5), listOf(6, 5))
+        }
 
         twitter.unfollow(1, 2)
         twitter.unfollow(2, 1)
 
         test1.assertValues(emptyList(), listOf(5), listOf(6, 5), listOf(5))
-        test2.assertValues(listOf(5), listOf(6, 5), listOf(6))
+        test2.assertValues(emptyList(), listOf(5), listOf(6, 5), listOf(6))
     }
 
     @Test
     fun `should limit the news feed to 10 tweets`() {
-        for (i in 0 until 11) {
-            twitter.postTweet(1, i)
+        runBlocking {
+            for (i in 0 until 11) {
+                twitter.postTweet(1, i)
+                delay(5)
+            }
+
+            val test = twitter.getNewsFeed(1).test()
+            val firstList = (10 downTo 1).map { it }.toList()
+            test.assertValue(firstList)
+
+            twitter.postTweet(1, 11)
+            delay(5)
+
+            test.assertValueCount(2)
+            test.assertValues(firstList, (11 downTo 2).map { it }.toList())
         }
+    }
 
-        val test = twitter.getNewsFeed(1).test()
-        val firstList = (10 downTo 1).map { it }.toList()
-        test.assertValue(firstList)
+    @Test
+    fun `should get all the followees of the followees`() {
+        runBlocking {
+            twitter.apply {
+                follow(2, 1)
+                delay(10)
+                follow(3, 1)
+                delay(10)
+                follow(4, 1)
+                delay(10)
+                follow(3, 2)
+                delay(10)
+                follow(4, 2)
+                delay(10)
+                follow(5, 3)
+                delay(10)
+                follow(6, 5)
+                delay(10)
+                follow(7, 4)
+                delay(10)
+            }
 
-        twitter.postTweet(1, 11)
-
-        test.assertValueCount(2)
-        test.assertValues(firstList, (11 downTo 2).map { it }.toList())
+            twitter.getFollowees(1).test().assertValue(setOf(2, 3, 4, 5, 7))
+        }
     }
 }
