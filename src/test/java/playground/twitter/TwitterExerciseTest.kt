@@ -115,6 +115,10 @@ class TwitterExerciseTest {
         }
     }
 
+    /*
+    One level down: equivalent to get all the friends of your friends in Facebook
+     */
+
     @Test
     fun `should get all the followees of the followees`() {
         runBlocking {
