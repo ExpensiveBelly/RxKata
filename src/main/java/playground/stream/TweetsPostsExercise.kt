@@ -1,7 +1,8 @@
 package playground.stream
 
-import io.reactivex.Observable
-import io.reactivex.Single
+import io.reactivex.rxjava3.core.Observable
+import io.reactivex.rxjava3.core.Single
+
 
 /**
  * Given the following classes, implement a way for the `InfoView` to `displayItems`.
@@ -51,9 +52,9 @@ interface InfoView {
 }
 
 data class InfoItem(
-        val id: String,
-        val title: String,
-        val date: String
+    val id: String,
+    val title: String,
+    val date: String
 )
 
 enum class InfoType {

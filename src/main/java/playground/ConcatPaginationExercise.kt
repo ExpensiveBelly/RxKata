@@ -1,11 +1,11 @@
 package playground
 
-import io.reactivex.Observable
-import io.reactivex.Single
-import io.reactivex.exceptions.CompositeException
-import io.reactivex.schedulers.Schedulers
-import utils.exponentialBackoffTransformation
-import utils.retryWith
+import exponentialBackoffTransformation
+import io.reactivex.rxjava3.core.Observable
+import io.reactivex.rxjava3.core.Single
+import io.reactivex.rxjava3.exceptions.CompositeException
+import io.reactivex.rxjava3.schedulers.Schedulers
+import retryWith
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit
 import kotlin.random.Random

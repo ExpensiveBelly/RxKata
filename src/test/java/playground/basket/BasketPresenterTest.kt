@@ -1,26 +1,25 @@
 package playground.basket
 
-import com.nhaarman.mockito_kotlin.any
-import com.nhaarman.mockito_kotlin.doReturn
-import com.nhaarman.mockito_kotlin.mock
-import com.nhaarman.mockito_kotlin.verify
-import io.reactivex.subjects.SingleSubject
-import it.droidcon.testingdaggerrxjava.TrampolineSchedulerRule
+import io.mockk.every
+import io.mockk.mockk
+import io.mockk.verify
+import io.reactivex.rxjava3.subjects.SingleSubject
 import org.junit.After
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
+import rules.TestSchedulerRule
 
 class BasketPresenterTest {
 
     @get:Rule
-    val schedulerRule = TrampolineSchedulerRule()
+    val schedulerRule = TestSchedulerRule()
 
     private val secretKey = "1234"
 
     private val sessionApiSubject = SingleSubject.create<SessionTO>()
-    private val sessionApi = mock<SessionApi> {
-        on { login(any(), any()) } doReturn sessionApiSubject
+    private val sessionApi = mockk<SessionApi> {
+        every { login(any(), any()) } returns sessionApiSubject
     }
 
     private val productId1 = "productId1"
@@ -28,8 +27,8 @@ class BasketPresenterTest {
     private val productId3 = "productId3"
     private val basketId = "1"
     private val getBasketSubject = SingleSubject.create<List<BasketTO>>()
-    private val basketApi = mock<BasketApi> {
-        on { getBaskets(secretKey) } doReturn getBasketSubject
+    private val basketApi = mockk<BasketApi> {
+        every { getBaskets(secretKey) } returns getBasketSubject
     }
 
     private val productTO3 = ProductTO(productId1, "Lettuce", "VEGETABLES")
@@ -38,20 +37,22 @@ class BasketPresenterTest {
     private val product1ApiSubject = SingleSubject.create<ProductTO>()
     private val product2ApiSubject = SingleSubject.create<ProductTO>()
     private val product3ApiSubject = SingleSubject.create<ProductTO>()
-    private val productsApi = mock<ProductsApi> {
-        on { getProducts(secretKey, productId1) } doReturn product1ApiSubject
-        on { getProducts(secretKey, productId2) } doReturn product2ApiSubject
-        on { getProducts(secretKey, productId3) } doReturn product3ApiSubject
+    private val productsApi = mockk<ProductsApi> {
+        every { getProducts(secretKey, productId1) } returns product1ApiSubject
+        every { getProducts(secretKey, productId2) } returns product2ApiSubject
+        every { getProducts(secretKey, productId3) } returns product3ApiSubject
     }
 
-    private val view = mock<ShoppingBasketView> {}
+    private val view = mockk<ShoppingBasketView> {}
 
     private val sessionRepository = SessionRepository(sessionApi, "username", "password")
 
     private val presenter: BasketPresenter = BasketPresenter(
-            BasketRepository(
-                    sessionRepository,
-                    basketApi, productsApi), view)
+        BasketRepository(
+            sessionRepository,
+            basketApi, productsApi
+        ), view
+    )
 
     @Before
     fun setUp() {
@@ -63,10 +64,20 @@ class BasketPresenterTest {
         sessionApiSubject.onSuccess((SessionTO(true, secretKey)))
         getBasketSubject.onSuccess(myBasket())
 
-        verify(view).displayBaskets(listOf(BasketItem(basketId, "My shopping list",
-                listOf(productTO1.toProduct(),
-                        productTO2.toProduct(),
-                        productTO3.toProduct()))))
+        verify(exactly = 1) {
+            view.displayBaskets(
+                listOf(
+                    BasketItem(
+                        basketId, "My shopping list",
+                        listOf(
+                            productTO1.toProduct(),
+                            productTO2.toProduct(),
+                            productTO3.toProduct()
+                        )
+                    )
+                )
+            )
+        }
     }
 
     @Test
@@ -74,7 +85,9 @@ class BasketPresenterTest {
         sessionApiSubject.onError(ConnectionError(ConnectionErrorType.NETWORK))
         getBasketSubject.onSuccess((myBasket()))
 
-        verify(view).displayError(ErrorType.Network(true))
+        verify(exactly = 1) {
+            view.displayError(ErrorType.Network(true))
+        }
     }
 
     @Test
@@ -85,7 +98,9 @@ class BasketPresenterTest {
         product2ApiSubject.onSuccess(productTO2)
         product3ApiSubject.onSuccess(productTO3)
 
-        verify(view).displayError(ErrorType.Network(true))
+        verify {
+            view.displayError(ErrorType.Network(true))
+        }
     }
 
     @Test
@@ -95,15 +110,21 @@ class BasketPresenterTest {
 
         sessionRepository.reportSessionInvalid()
 
-        verify(view).displayError(ErrorType.Other)
+        verify {
+            view.displayError(ErrorType.Other)
+        }
     }
 
     private fun myBasket(): List<BasketTO> {
         product1ApiSubject.onSuccess(productTO1)
         product2ApiSubject.onSuccess(productTO2)
         product3ApiSubject.onSuccess(productTO3)
-        return listOf(BasketTO(basketId, "My shopping list",
-                listOf(productId1, productId2, productId3)))
+        return listOf(
+            BasketTO(
+                basketId, "My shopping list",
+                listOf(productId1, productId2, productId3)
+            )
+        )
     }
 
     @After

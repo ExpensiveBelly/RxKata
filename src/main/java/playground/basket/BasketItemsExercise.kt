@@ -1,6 +1,6 @@
 package playground.basket
 
-import io.reactivex.Single
+import io.reactivex.rxjava3.core.Single
 
 /**
  * Given the following classes, implement a way for the `ShoppingBasketView` to `displayBaskets`.

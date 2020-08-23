@@ -2,10 +2,10 @@ package playground.subjects
 
 import io.reactivex.rxjava3.exceptions.MissingBackpressureException
 import io.reactivex.rxjava3.schedulers.TestScheduler
+import junit.framework.TestCase.assertFalse
+import junit.framework.TestCase.assertTrue
 import org.junit.Test
 import java.util.concurrent.TimeUnit
-import kotlin.test.assertFalse
-import kotlin.test.assertTrue
 
 class ConcatMapWithSubjectTest {
 
@@ -16,13 +16,13 @@ class ConcatMapWithSubjectTest {
         with(concatMapWithSubject) {
             val testObserver = observable.test()
 
-            assertTrue { initialSubject.hasObservers() }
-            assertFalse { secondSubject.hasObservers() }
+            assertTrue(initialSubject.hasObservers())
+            assertFalse(secondSubject.hasObservers())
 
             initialSubject.onNext(1)
             testObserver.assertNoValues()
-            assertTrue { initialSubject.hasObservers() }
-            assertTrue { secondSubject.hasObservers() }
+            assertTrue(initialSubject.hasObservers())
+            assertTrue(secondSubject.hasObservers())
 
             secondSubject.onNext(2)
             testObserver.assertValue(2)

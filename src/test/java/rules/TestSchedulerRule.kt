@@ -1,4 +1,4 @@
-package it.droidcon.testingdaggerrxjava.rules
+package rules
 
 import io.reactivex.rxjava3.core.Scheduler
 import io.reactivex.rxjava3.plugins.RxJavaPlugins

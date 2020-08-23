@@ -3,10 +3,9 @@ package playground.threading
 import io.reactivex.Observable
 import io.reactivex.disposables.Disposables
 import io.reactivex.schedulers.TestScheduler
+import junit.framework.TestCase.assertTrue
 import org.junit.Test
 import java.util.concurrent.TimeUnit
-import kotlin.test.assertTrue
-
 
 class CancelableVsDisposableTest {
 
@@ -25,7 +24,7 @@ class CancelableVsDisposableTest {
         testObserver.assertValues(0, 1)
         testObserver.dispose()
 
-        assertTrue { innerDisposable.isDisposed }
+        assertTrue(innerDisposable.isDisposed)
     }
 
     @Test
@@ -43,6 +42,6 @@ class CancelableVsDisposableTest {
         testObserver.assertValues(0, 1)
         testObserver.dispose()
 
-        assertTrue { innerDisposable.isDisposed }
+        assertTrue(innerDisposable.isDisposed)
     }
 }

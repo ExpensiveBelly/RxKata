@@ -3,14 +3,14 @@ package playground.threading
 import com.jakewharton.rxrelay2.PublishRelay
 import io.reactivex.Observable
 import io.reactivex.subjects.PublishSubject
+import junit.framework.TestCase.assertFalse
+import junit.framework.TestCase.assertTrue
 import org.amshove.kluent.shouldEqual
 import org.assertj.core.api.AssertionsForClassTypes.assertThat
 import org.junit.Test
 import java.io.IOException
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.atomic.AtomicInteger
-import kotlin.test.assertFalse
-import kotlin.test.assertTrue
 
 class RelaysVsSubjectsTest {
 

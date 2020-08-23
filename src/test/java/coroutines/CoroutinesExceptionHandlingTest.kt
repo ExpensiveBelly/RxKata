@@ -1,8 +1,7 @@
-package it.droidcon.testingdaggerrxjava.coroutines
+package coroutines
 
-
-import com.nhaarman.mockito_kotlin.mock
-import com.nhaarman.mockito_kotlin.verify
+import io.mockk.mockk
+import io.mockk.verifyOrder
 import junit.framework.TestCase.assertEquals
 import junit.framework.TestCase.assertTrue
 import kotlinx.coroutines.*
@@ -234,7 +233,7 @@ class ExceptionHandlingForLaunchTest {
     fun `When async throws an Exception by calling await() it cancels the scope unless it is wrapped in a supervisorScope`() {
         runBlocking {
             supervisorScope {
-                val verifier = mock<Verifier>()
+                val verifier = mockk<Verifier>(relaxed = true)
                 try {
                     val x = async {
                         throw Exception()
@@ -248,9 +247,11 @@ class ExceptionHandlingForLaunchTest {
                     verifier.catchAfterDelay()
                 }
 
-                verify(verifier).awaiting()
-                verify(verifier).catch()
-                verify(verifier).catchAfterDelay()
+                verifyOrder {
+                    verifier.awaiting()
+                    verifier.catch()
+                    verifier.catchAfterDelay()
+                }
             }
         }
     }

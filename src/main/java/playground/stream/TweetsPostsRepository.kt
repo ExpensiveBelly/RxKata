@@ -1,14 +1,17 @@
 package playground.stream
 
+import cacheValues
 import com.dropbox.android.external.cache4.Cache
-import com.github.davidmoten.rx2.RetryWhen
-import io.reactivex.Observable
-import io.reactivex.Scheduler
-import io.reactivex.Single
-import io.reactivex.schedulers.Schedulers
-import utils.cacheAtomicReference
-import utils.concatScanEager
-import utils.zip
+import combine
+import concatScanEager
+import countErrorTransformation
+import io.reactivex.rxjava3.core.Observable
+import io.reactivex.rxjava3.core.Scheduler
+import io.reactivex.rxjava3.core.Single
+import io.reactivex.rxjava3.schedulers.Schedulers
+import predicateErrorTransformation
+import retryWith
+import zip
 import java.util.concurrent.TimeUnit
 
 class TweetsPostsRepository(
@@ -43,13 +46,12 @@ class TweetsPostsRepository(
             .subscribeOn(Schedulers.io())
             .observeOn(Schedulers.computation())
             .map { InfoItem(id, it.title, it.date) }
-            .retryWhen(RetryWhen
-                .maxRetries(3)
-                .retryIf { throwable ->
-                    throwable is ConnectionError && throwable.errorType == ConnectionErrorType.UNKNOWN
-                }
-                .build())
-            .cacheAtomicReference()
+            .retryWith(
+                combine(
+                    countErrorTransformation(3),
+                    predicateErrorTransformation { throwable -> throwable is ConnectionError && throwable.errorType == ConnectionErrorType.UNKNOWN }
+                )
+            ).cacheValues()
     }
 
     /*
@@ -89,7 +91,7 @@ class TweetsPostsRepository(
         .flatMap { itemsTo ->
             zip(itemsTo.map { infoItemTo ->
                 infoItemTo.toInfoItem()
-            })
+            }, defaultWhenEmpty = emptyList())
         }
 
     val aggregatedFacebookPostsObservableEager: Observable<List<InfoItem>> = concatScanEager(

@@ -1,13 +1,12 @@
 package playground.basket
 
-import io.reactivex.disposables.Disposable
-import io.reactivex.disposables.Disposables
+import io.reactivex.rxjava3.disposables.Disposable
 import utils.mainScheduler
 
 class BasketPresenter(private val basketRepository: BasketRepository,
                       private val view: ShoppingBasketView) {
 
-    private var disposable: Disposable = Disposables.empty()
+    private var disposable: Disposable = Disposable.empty()
 
     fun attach() {
         disposable = basketRepository.basketObservable

@@ -1,12 +1,12 @@
 package playground.twitter
 
 import it.droidcon.testingdaggerrxjava.rules.CoroutineTestRule
-import it.droidcon.testingdaggerrxjava.rules.TestSchedulerRule
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
 import org.junit.Rule
 import org.junit.Test
+import rules.TestSchedulerRule
 
 class TwitterExerciseTest {
 

@@ -1,14 +1,14 @@
 package playground
 
-import it.droidcon.testingdaggerrxjava.TrampolineSchedulerRule
 import org.junit.Rule
 import org.junit.Test
+import rules.TestSchedulerRule
 import utils.Result
 
 class FlatmapResultSelectorTest {
 
     @get:Rule
-    val schedulerRule = TrampolineSchedulerRule()
+    val schedulerRule = TestSchedulerRule()
 
     private val flatmapResultSelector = FlatmapResultSelector()
 

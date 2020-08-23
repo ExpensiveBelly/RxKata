@@ -129,6 +129,5 @@ class ShowErrorAfterThreeRetriesTest {
             .assertValues(0, 0, 0)
             .assertNoErrors()
             .assertComplete()
-
     }
 }

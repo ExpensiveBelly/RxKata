@@ -1,12 +1,12 @@
 package playground.stream
 
-import io.reactivex.Observable
-import io.reactivex.disposables.CompositeDisposable
-import io.reactivex.functions.Function
-import io.reactivex.rxkotlin.plusAssign
-import io.reactivex.rxkotlin.subscribeBy
-import io.reactivex.schedulers.Schedulers
-import playground.extensions.mainScheduler
+import io.reactivex.rxjava3.core.Observable
+import io.reactivex.rxjava3.disposables.CompositeDisposable
+import io.reactivex.rxjava3.kotlin.plusAssign
+import io.reactivex.rxjava3.kotlin.subscribeBy
+import io.reactivex.rxjava3.schedulers.Schedulers
+import onErrorResume
+import utils.mainScheduler
 
 class TweetsPostsPresenter(private val repository: TweetsPostsRepository) {
 
@@ -32,13 +32,12 @@ class TweetsPostsPresenter(private val repository: TweetsPostsRepository) {
                 }
             }
             .observeOn(mainScheduler)
-            .onErrorResumeNext(Function { throwable ->
+            .onErrorResume { throwable ->
                 if (throwable is ConnectionError && throwable.errorType == ConnectionErrorType.INVALID_DATA) {
                     view.displayConnectionError(throwable.errorType) //We display an error but we continue the execution
                     Observable.just(emptyList())
                 } else throw throwable
-            })
-            .subscribeBy { view.displayItems(it) }
+            }.subscribeBy { view.displayItems(it) }
     }
 
     fun detach() {
