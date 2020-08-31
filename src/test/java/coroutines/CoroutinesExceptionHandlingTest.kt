@@ -1,6 +1,7 @@
 package coroutines
 
 import io.mockk.mockk
+import io.mockk.verify
 import io.mockk.verifyOrder
 import junit.framework.TestCase.assertEquals
 import junit.framework.TestCase.assertTrue
@@ -25,6 +26,8 @@ private object ThrownException : Throwable("ThrownException")
 
 /**
  * https://github.com/Kotlin/kotlinx.coroutines/issues/1157
+ *
+ * https://www.lukaslechner.com/why-exception-handling-with-kotlin-coroutines-is-so-hard-and-how-to-successfully-master-it/
  */
 
 @ExperimentalCoroutinesApi
@@ -58,6 +61,21 @@ class ExceptionHandlingForLaunchTest {
 
             dispatcher.advanceTimeBy(1000)
             assertTrue(uncaughtException is ThrownException)
+        }
+    }
+
+    @Test
+    fun `exception is caught because it is a top coroutine`() {
+        CoroutineScope(dispatcher).run {
+            val verifier = mockk<Verifier>(relaxed = true)
+            launch {
+                try {
+                    throw RuntimeException("RuntimeException in coroutine")
+                } catch (exception: Exception) {
+                    verifier.catch()
+                }
+            }
+            verify { verifier.catch() }
         }
     }
 
@@ -135,6 +153,25 @@ class ExceptionHandlingForLaunchTest {
             launch(xHandlerOverride) {
                 launch(xHandlerChildScope) { //launch(xHandlerChildScope) really only matters for coroutines without parent.
                     delay(1000)
+                    //CoroutineExceptionHandler on child coroutines doesn’t have any effect.
+                    throw ThrownException
+                }
+            }
+
+            dispatcher.advanceTimeBy(1000)
+
+            assertThat(uncaughtException, nullValue())
+            assertEquals(listOf<Throwable>(ThrownException), xHandlerOverride.uncaughtExceptions)
+            assertEquals(emptyList<Throwable>(), xHandlerChildScope.uncaughtExceptions)
+        }
+    }
+
+    @Test
+    fun `coroutineExceptionHandler on child coroutines does not have any effect`() {
+        CoroutineScope(dispatcher).run {
+            launch(xHandlerOverride) {
+                launch {
+                    delay(1000)
                     throw ThrownException
                 }
             }
@@ -183,7 +220,7 @@ class ExceptionHandlingForLaunchTest {
     }
 
     @Test
-    fun `When top-scope CoroutineExceptionHandler is installed, added or overridden, exception is always handled by top-scope`() {
+    fun `When top-scope CoroutineExceptionHandler is installed and not overriden by a parent coroutine then exception is handled by top scope`() {
         CoroutineScope(xHandlerTopScope + dispatcher).run {
             launch {
                 launch(xHandlerChildScope) {
