@@ -1,9 +1,9 @@
 package playground.twitter
 
+import BehaviorSubjectWithDefault
 import io.reactivex.rxjava3.core.Observable
 import io.reactivex.rxjava3.kotlin.combineLatest
 import io.reactivex.rxjava3.schedulers.Schedulers
-import io.reactivex.rxjava3.subjects.BehaviorSubject
 import java.time.Instant
 
 /**
@@ -37,22 +37,22 @@ interface ITwitterExercise {
 class TwitterExercise : ITwitterExercise {
     private data class TweetDetails(val time: Instant, val id: TweetId)
 
-    private val tweets: MutableMap<UserId, BehaviorSubject<List<TweetDetails>>> = mutableMapOf()
-    val followees: MutableMap<UserId, BehaviorSubject<Set<FolloweeId>>> = mutableMapOf()
+    private val tweets: MutableMap<UserId, BehaviorSubjectWithDefault<List<TweetDetails>>> = mutableMapOf()
+    private val followees: MutableMap<UserId, BehaviorSubjectWithDefault<Set<FolloweeId>>> = mutableMapOf()
 
     private fun tweets(userId: UserId) =
         synchronized(tweets) {
-            tweets.getOrPut(userId) { BehaviorSubject.createDefault(emptyList()) }
+            tweets.getOrPut(userId) { BehaviorSubjectWithDefault.create(emptyList()) }
         }
 
     private fun followees(followerId: UserId) =
         synchronized(followees) {
-            followees.getOrPut(followerId) { BehaviorSubject.createDefault(emptySet()) }
+            followees.getOrPut(followerId) { BehaviorSubjectWithDefault.create(emptySet()) }
         }
 
     override fun postTweet(userId: UserId, tweetId: TweetId) {
         val userTweets = tweets(userId)
-        userTweets.onNext(userTweets.value!! + TweetDetails(Instant.now(), tweetId))
+        userTweets.onNext(userTweets.value + TweetDetails(Instant.now(), tweetId))
     }
 
     override fun getNewsFeed(userId: UserId): Observable<List<TweetId>> =
@@ -84,11 +84,11 @@ class TwitterExercise : ITwitterExercise {
 
     override fun follow(followeeId: FolloweeId, followerId: FollowerId) {
         val userFollowees = followees(followerId)
-        userFollowees.onNext(userFollowees.value!! + followeeId)
+        userFollowees.onNext(userFollowees.value + followeeId)
     }
 
     override fun unfollow(followerId: UserId, followeeId: UserId) {
         val userFollowees = followees(followerId)
-        userFollowees.onNext(userFollowees.value!! - followeeId)
+        userFollowees.onNext(userFollowees.value - followeeId)
     }
 }
