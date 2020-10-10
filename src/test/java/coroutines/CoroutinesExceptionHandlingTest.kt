@@ -126,7 +126,7 @@ class ExceptionHandlingForLaunchTest {
     }
 
     /*
-    withContext  never invokes its uncaught exception handler.
+    withContext never invokes its uncaught exception handler.
      */
 
     @Test
@@ -144,6 +144,26 @@ class ExceptionHandlingForLaunchTest {
             assertThat(uncaughtException, nullValue())
             assertEquals(listOf<Throwable>(ThrownException), xHandlerTopScope.uncaughtExceptions)
             assertEquals(emptyList<Throwable>(), xHandlerChildScope.uncaughtExceptions)
+        }
+    }
+
+    @Test
+    fun `when coroutineexceptionhandler`() {
+        val verifier = mockk<Verifier>(relaxed = true)
+        suspend fun loadData() = withContext(Dispatchers.IO) {
+            try {
+                println("about to throw ThrownException")
+                throw ThrownException
+            } catch (e: Throwable) {
+               verifier.catch()
+            }
+        }
+
+        runBlocking {
+            println("loadData")
+            loadData()
+            println("after loadData")
+            verify(exactly = 1) { verifier.catch() }
         }
     }
 

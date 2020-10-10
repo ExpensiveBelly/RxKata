@@ -55,12 +55,22 @@ RxJava
 Kotlin  
 
 [Kotlin Koans Solutions](https://github.com/efung/kotlin-koans-solutions)  
+
 [Kotlin Puzzlers](https://github.com/angryziber/kotlin-puzzlers)  
+
 [Marcin Moskala Advanced Kotlin workshop](https://github.com/MarcinMoskala/advanced-kotlin-workshop-tasks)  
+
 [Kotlin Academy](https://blog.kotlin-academy.com/)  
+
 [KotlinNotesForProfessionals](http://books.goalkicker.com/KotlinBook/)  
 
+Coroutines
 
+[Kotlin Async Exception Handler](https://stackoverflow.com/questions/53303358/kotlin-async-exception-handling)
+
+[Kotlin Coroutines patterns & anti-patterns](https://proandroiddev.com/kotlin-coroutines-patterns-anti-patterns-f9d12984c68e)
+
+[Exceptions in coroutines](https://medium.com/androiddevelopers/exceptions-in-coroutines-ce8da1ec060c)
 ---
 
 ##### What's next?
