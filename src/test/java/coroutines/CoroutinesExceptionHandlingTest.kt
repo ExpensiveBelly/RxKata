@@ -148,22 +148,31 @@ class ExceptionHandlingForLaunchTest {
     }
 
     @Test
-    fun `when coroutineexceptionhandler`() {
+    fun `withContext needs to catch its own exception or be caught outside`() {
         val verifier = mockk<Verifier>(relaxed = true)
         suspend fun loadData() = withContext(Dispatchers.IO) {
             try {
                 println("about to throw ThrownException")
                 throw ThrownException
             } catch (e: Throwable) {
-               verifier.catch()
+                verifier.catch()
             }
         }
 
+        suspend fun loadMoreData(): Unit = withContext(Dispatchers.IO) {
+            throw ThrownException
+        }
+
         runBlocking {
-            println("loadData")
             loadData()
-            println("after loadData")
-            verify(exactly = 1) { verifier.catch() }
+
+            try {
+                loadMoreData()
+            } catch (e: Throwable) {
+                verifier.catch()
+            }
+
+            verify(exactly = 2) { verifier.catch() }
         }
     }
 
