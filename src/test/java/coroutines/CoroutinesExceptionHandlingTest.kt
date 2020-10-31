@@ -16,6 +16,7 @@ import org.junit.Test
 import kotlin.coroutines.AbstractCoroutineContextElement
 import kotlin.coroutines.CoroutineContext
 
+@ExperimentalCoroutinesApi
 val xHandlerTopScope = TestCoroutineExceptionHandler()
 
 val xHandlerOverride = TestCoroutineExceptionHandler()
@@ -338,6 +339,25 @@ class ExceptionHandlingForLaunchTest {
         dispatcher.advanceTimeBy(1000)
 
         assertEquals(listOf<Throwable>(ThrownException), xHandlerTopScope.uncaughtExceptions)
+    }
+
+    @Test
+    fun `the scoping function coroutineScope re-throws uncaught exceptions of its child Coroutines and so we can handle them with try-catch`() {
+        val verifier = mockk<Verifier>(relaxed = true)
+        CoroutineScope(dispatcher).run {
+            launch {
+                try {
+                    coroutineScope {
+                        launch {
+                            throw ThrownException
+                        }
+                    }
+                } catch (th: Throwable) {
+                    verifier.catch()
+                }
+            }
+        }
+        verify { verifier.catch() }
     }
 }
 
