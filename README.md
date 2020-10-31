@@ -71,6 +71,8 @@ Coroutines
 [Kotlin Coroutines patterns & anti-patterns](https://proandroiddev.com/kotlin-coroutines-patterns-anti-patterns-f9d12984c68e)
 
 [Exceptions in coroutines](https://medium.com/androiddevelopers/exceptions-in-coroutines-ce8da1ec060c)
+
+[Coroutines Exception Handling Cheat Sheet](https://www.lukaslechner.com/coroutines-exception-handling-cheat-sheet/)
 ---
 
 ##### What's next?
