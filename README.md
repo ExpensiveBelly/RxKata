@@ -73,6 +73,12 @@ Coroutines
 [Exceptions in coroutines](https://medium.com/androiddevelopers/exceptions-in-coroutines-ce8da1ec060c)
 
 [Coroutines Exception Handling Cheat Sheet](https://www.lukaslechner.com/coroutines-exception-handling-cheat-sheet/)
+
+Stackoverflow
+
+[withContext vs launch](https://stackoverflow.com/questions/58794816/why-withcontext-does-not-switch-coroutines-under-runblocking)
+
+[launch vs async](https://stackoverflow.com/questions/46226518/what-is-the-difference-between-launch-join-and-async-await-in-kotlin-coroutines)
 ---
 
 ##### What's next?

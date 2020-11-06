@@ -19,8 +19,10 @@ import kotlin.coroutines.CoroutineContext
 @ExperimentalCoroutinesApi
 val xHandlerTopScope = TestCoroutineExceptionHandler()
 
+@ExperimentalCoroutinesApi
 val xHandlerOverride = TestCoroutineExceptionHandler()
 
+@ExperimentalCoroutinesApi
 val xHandlerChildScope = TestCoroutineExceptionHandler()
 
 private object ThrownException : Throwable("ThrownException")
