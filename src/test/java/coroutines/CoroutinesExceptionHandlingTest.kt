@@ -290,6 +290,25 @@ class ExceptionHandlingForLaunchTest {
         }
     }
 
+    @Test(expected = Exception::class) //Exception bubbles up b
+    fun `When async throws an Exception by calling await() it cancels the scope and a suspend function can be called if NonCancellable`() {
+        runBlocking {
+            try {
+                val x = async {
+                    throw Exception()
+                    10
+                }
+                println("Awaiting...")
+                x.await()
+            } catch (e: Exception) {
+                println("Catch Exception")
+                println("Is this coroutine active? " + this.isActive)
+                withContext(NonCancellable) {} //This is a suspend function, with NonCancellable, so it will go through
+                println("This is printed")
+            }
+        }
+    }
+
     private interface Verifier {
         fun awaiting()
         fun catch()
