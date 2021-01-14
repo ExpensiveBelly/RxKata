@@ -12,33 +12,33 @@ import org.junit.Test
 
 class EmptyListSituation {
 
-    @Test
-    fun `should complete straight away if list is empty`() {
-        Completable.merge(emptyList()).test().assertComplete()
-    }
+	@Test
+	fun `should complete straight away if list is empty`() {
+		Completable.merge(emptyList()).test().assertComplete()
+	}
 
-    private interface Verifier {
-        fun insideMerge()
-        fun insideAndThen()
-        fun insidedoOnComplete()
-    }
+	private interface Verifier {
+		fun insideMerge()
+		fun insideAndThen()
+		fun insidedoOnComplete()
+	}
 
-    @Test
-    fun `should not invoke the function inside the Completable merge because the list is empty`() {
-        val verifier = mock<Verifier> {}
+	@Test
+	fun `should not invoke the function inside the Completable merge because the list is empty`() {
+		val verifier = mock<Verifier> {}
 
-        Completable.merge(listOf(1, 2, 3).filter { it > 3 }.map {
-            verifier.insideMerge()
-            Single.just(it).ignoreElement()
-        }).andThen(Single.just("h").doOnSuccess { verifier.insideAndThen() })
-            .ignoreElement()
-            .doOnComplete { verifier.insidedoOnComplete() }
-            .blockingAwait()
+		Completable.merge(listOf(1, 2, 3).filter { it > 3 }.map {
+			verifier.insideMerge()
+			Single.just(it).ignoreElement()
+		}).andThen(Single.just("h").doOnSuccess { verifier.insideAndThen() })
+			.ignoreElement()
+			.doOnComplete { verifier.insidedoOnComplete() }
+			.blockingAwait()
 
-        verify(verifier, never()).insideMerge()
-        inOrder(verifier) {
-            verify(verifier).insideAndThen()
-            verify(verifier).insidedoOnComplete()
-        }
-    }
+		verify(verifier, never()).insideMerge()
+		inOrder(verifier) {
+			verify(verifier).insideAndThen()
+			verify(verifier).insidedoOnComplete()
+		}
+	}
 }
