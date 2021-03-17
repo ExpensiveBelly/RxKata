@@ -1,7 +1,8 @@
 package playground.stream
 
 import cacheValues
-import com.dropbox.android.external.cache4.Cache
+import com.dropbox.android.external.cache3.Cache
+import com.dropbox.android.external.cache3.CacheBuilder
 import combine
 import concatScanEager
 import countErrorTransformation
@@ -35,11 +36,11 @@ class TweetsPostsRepository(
     private val tweetsObservable =
         tweetsAndPostsStream.filter { it.type == InfoType.TWEETS.name }.toInfoItemToObservable()
 
-    private val infoDetailsCache: Cache<Id, Single<InfoItem>> = Cache.Builder.newBuilder()
-        .maximumCacheSize(200)
+    private val infoDetailsCache: Cache<Id, Single<InfoItem>> = CacheBuilder.newBuilder()
+        .maximumSize(200)
         .expireAfterAccess(1, TimeUnit.MINUTES).build()
 
-    private fun Observable<InfoItemTO>.toInfoItemToObservable() = concatMapSingle { infoDetailsCache.get(it.id) }
+    private fun Observable<InfoItemTO>.toInfoItemToObservable() = concatMapSingle { infoDetailsCache.getIfPresent(it.id) }
 
     private val infoDetailsCacheLoaderFun = { id: Id ->
         infoApi.getDetails(id)
@@ -84,7 +85,7 @@ class TweetsPostsRepository(
         }
 
     private fun InfoItemTO.toInfoItem() =
-        infoDetailsCache.get(id, loader = { infoDetailsCacheLoaderFun(id) })
+        infoDetailsCache.get(id) { infoDetailsCacheLoaderFun(id) }
 
     private val currentTweetsObservableZip: Single<List<InfoItem>> = infoApi.currentTweets
         .map { it.items }
@@ -125,7 +126,7 @@ class TweetsPostsRepository(
             .map { infoTO -> infoTO.items.map { it.id } }
             .flattenAsObservable { it }
             .concatWith(getInfoTypeIdsObservable(type))
-            .concatMapSingle { infoDetailsCache.get(it, loader = { infoDetailsCacheLoaderFun(it) }) }
+            .concatMapSingle { infoDetailsCache.get(it) { infoDetailsCacheLoaderFun(it) } }
             .scan(emptyList(), { t1: List<InfoItem>, t2: InfoItem -> t1 + t2 })
 
     private fun getInfoTypeIdsObservable(type: InfoType): Observable<Id> =

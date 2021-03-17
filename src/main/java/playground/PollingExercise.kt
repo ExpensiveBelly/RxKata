@@ -1,7 +1,8 @@
 package playground
 
 import cacheValues
-import com.dropbox.android.external.cache4.Cache
+import com.dropbox.android.external.cache3.Cache
+import com.dropbox.android.external.cache3.CacheBuilder
 import combine
 import countErrorTransformation
 import exponentialBackoffTransformation
@@ -36,8 +37,8 @@ class PollingExercise {
      * LoadingCache allows `invalidate(Key.INSTANCE)` which resets the value
      */
 
-    private val tokenCache: Cache<Key, Single<Token>> = Cache.Builder.newBuilder()
-        .maximumCacheSize(1)
+    private val tokenCache: Cache<Key, Single<Token>> = CacheBuilder.newBuilder()
+        .maximumSize(1)
         .expireAfterWrite(2, TimeUnit.SECONDS)
         .build()
 
