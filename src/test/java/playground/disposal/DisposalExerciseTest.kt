@@ -1,10 +1,10 @@
 package playground.disposal
 
 import com.nhaarman.mockitokotlin2.inOrder
+import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.never
 import com.nhaarman.mockitokotlin2.verify
 import io.reactivex.rxjava3.core.Observable
-import org.amshove.kluent.mock
 import org.junit.Test
 
 class DisposalExerciseTest {
