@@ -3,6 +3,7 @@ version '1.0-SNAPSHOT'
 
 apply plugin: 'java'
 apply plugin: 'kotlin'
+apply plugin: "com.github.ben-manes.versions"
 
 allprojects {
     repositories {
@@ -60,9 +61,11 @@ buildscript {
     ext.kotlin_version = '1.4.31'
     repositories {
         mavenCentral()
+        gradlePluginPortal()
     }
     dependencies {
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+        classpath "com.github.ben-manes:gradle-versions-plugin:0.36.0"
     }
 }
 compileKotlin {
