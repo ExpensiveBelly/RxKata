@@ -2,7 +2,9 @@ package workshop
 
 import io.reactivex.rxjava3.core.Observable
 import io.reactivex.rxjava3.kotlin.toObservable
+import io.reactivex.rxjava3.schedulers.Schedulers
 import org.junit.Test
+import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
 
 class WorkshopTest {
@@ -58,10 +60,20 @@ class WorkshopTest {
 			producingUnits(2).toToggle().withHistory().toList().test()
 				.assertValue((listOf(listOf(), listOf(true), listOf(true, false))))
 
-			val observable: Observable<String> =
-				Observable.just("A")
+			Observable.create<Any> { emitter ->
+				emitter.onNext("A")
+				val executor = Executors.newSingleThreadExecutor()
+				Schedulers.from(executor).scheduleDirect({
+					emitter.onNext(10)
+					emitter.onNext("C")
+					emitter.onComplete()
+				}, 100, TimeUnit.MILLISECONDS)
+			}
+
+			val observable: Observable<Any> =
+				Observable.just<Any>("A")
 					.delay(100, TimeUnit.MILLISECONDS)
-					.concatWith(Observable.just("10", "C"))
+					.concatWith(Observable.just<Any>(10, "C"))
 
 			observable.withHistory().toList().test()
 				.assertValue(listOf(listOf(), listOf("A"), listOf("A", "10"), listOf("A", "10", "C")))
