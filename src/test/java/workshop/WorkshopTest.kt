@@ -3,6 +3,7 @@ package workshop
 import io.reactivex.rxjava3.core.Observable
 import io.reactivex.rxjava3.kotlin.toObservable
 import io.reactivex.rxjava3.schedulers.Schedulers
+import io.reactivex.rxjava3.schedulers.TestScheduler
 import org.junit.Test
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
@@ -12,7 +13,7 @@ class WorkshopTest {
 	@Test()
 	fun producingUnitsTests() {
 		Workshop().run {
-			producingUnits(0).test().assertEmpty()
+			producingUnits(0).test().assertNoValues()
 			producingUnits(1).test().assertValueCount(1).assertValue(Unit)
 			producingUnits(2).toList().test().assertValue(listOf(Unit, Unit))
 			producingUnits(3).toList().test().assertValue(listOf(Unit, Unit, Unit))
@@ -25,7 +26,7 @@ class WorkshopTest {
 	@Test()
 	fun toToggleTests() {
 		Workshop().run {
-			producingUnits(0).toToggle().toList().test().assertEmpty()
+			producingUnits(0).toToggle().test().assertNoValues()
 			producingUnits(1).toToggle().toList().test().assertValueCount(1).assertValue(listOf(true))
 			producingUnits(2).toToggle().toList().test().assertValue(listOf(true, false))
 			producingUnits(3).toToggle().toList().test().assertValue(listOf(true, false, true))
@@ -60,6 +61,8 @@ class WorkshopTest {
 			producingUnits(2).toToggle().withHistory().toList().test()
 				.assertValue((listOf(listOf(), listOf(true), listOf(true, false))))
 
+			val testScheduler = TestScheduler()
+
 			Observable.create<Any> { emitter ->
 				emitter.onNext("A")
 				val executor = Executors.newSingleThreadExecutor()
@@ -72,11 +75,13 @@ class WorkshopTest {
 
 			val observable: Observable<Any> =
 				Observable.just<Any>("A")
-					.delay(100, TimeUnit.MILLISECONDS)
+					.delay(100, TimeUnit.MILLISECONDS, testScheduler)
 					.concatWith(Observable.just<Any>(10, "C"))
 
-			observable.withHistory().toList().test()
-				.assertValue(listOf(listOf(), listOf("A"), listOf("A", "10"), listOf("A", "10", "C")))
+			val testObserver = observable.withHistory().test()
+			testObserver.assertValue(listOf())
+			testScheduler.advanceTimeBy(100, TimeUnit.MILLISECONDS)
+			testObserver.assertValues(listOf(), listOf("A"), listOf("A", 10), listOf("A", 10, "C"))
 		}
 	}
 }
