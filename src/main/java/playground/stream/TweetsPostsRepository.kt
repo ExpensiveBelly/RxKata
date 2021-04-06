@@ -65,9 +65,9 @@ class TweetsPostsRepository(
         .flatMapIterable { it }
         .concatMapEager { itemTo ->
             itemTo.toInfoItem().toObservable()
-        }.reduce(emptyList(), { t1: List<InfoItem>, t2: InfoItem ->
+        }.reduce(emptyList()) { t1: List<InfoItem>, t2: InfoItem ->
             t1 + t2
-        })
+        }
 
     private val currentFacebookPostsFromIterable: Single<List<InfoItem>> = infoApi.currentFacebookPosts
         .map { it.items }

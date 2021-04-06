@@ -1,6 +1,5 @@
 package playground.stream.flow
 
-import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.flow.Flow
 import playground.stream.InfoItem
 import playground.stream.InfoType
@@ -15,13 +14,13 @@ typealias ContentId = String
 class TweetsPostsFlowExercise {
 
     interface InfoFlowApi {
-        val currentTweets: Deferred<InfoTO>
+        suspend fun currentTweets(): InfoTO
 
-        val currentFacebookPosts: Deferred<InfoTO>
+        suspend fun currentFacebookPosts(): InfoTO
 
         val stream: Flow<InfoItemTO>
 
-        suspend fun getDetails(id: ContentId): Deferred<InfoItemDetailsTO>
+        suspend fun getDetails(id: ContentId): InfoItemDetailsTO
     }
 
     data class InfoTO(val items: List<InfoItemTO>)
