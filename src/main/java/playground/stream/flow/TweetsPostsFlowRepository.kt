@@ -12,10 +12,11 @@ import java.util.concurrent.TimeUnit
 
 @FlowPreview
 @ExperimentalCoroutinesApi
-class TweetsPostsFlowRepository(private val infoApi: TweetsPostsFlowExercise.InfoFlowApi) {
+class TweetsPostsFlowRepository(
+	private val infoApi: TweetsPostsFlowExercise.InfoFlowApi,
+) {
 
 	private val tweetsAndPostsStream = infoApi.stream
-		.flowOn(Dispatchers.IO)
 		.retryWhen { cause, attempt -> cause is IOException || attempt < 3 }
 
 	private val facebookPostsFlow =
@@ -72,26 +73,21 @@ class TweetsPostsFlowRepository(private val infoApi: TweetsPostsFlowExercise.Inf
 		tweetsFlow.scan(currentTweetsObservable.await()) { t1, t2 -> t1 + t2 }
 	}
 
-	suspend fun getContentItemsObservable(type: InfoType): Flow<List<InfoItem>> =
-		flowOf(
-			when (type) {
-				InfoType.TWEETS -> infoApi.currentTweets()
-				InfoType.FACEBOOK_POSTS -> infoApi.currentFacebookPosts()
-			}
-		).flowOn(Dispatchers.IO)
-			.map { infoTO -> infoTO.items.map { it.id } }
-			.flatMapConcat { it -> it.asFlow() }
-			.flowOn(Dispatchers.Default)
-			.onCompletion { emitAll(getInfoTypeIdsObservable(type)) }
-			.flatMapConcat { id -> flowOf(infoApi.getDetails(id)).map { InfoItem(id, it.title, it.date) } }
-			.scan(emptyList()) { t1: List<InfoItem>, t2: InfoItem -> t1 + t2 }
+	fun getContentItemsObservable(type: InfoType) = flow {
+		when (type) {
+			InfoType.TWEETS -> emit(infoApi.currentTweets())
+			InfoType.FACEBOOK_POSTS -> emit(infoApi.currentFacebookPosts())
+		}
+	}
+		.map { infoTO -> infoTO.items.map { it.id } }
+		.flatMapConcat { it -> it.asFlow() }
+		.onCompletion { emitAll(getInfoTypeIdsObservable(type)) }
+		.flatMapConcat { id -> flowOf(infoApi.getDetails(id)).map { InfoItem(id, it.title, it.date) } }
+		.scan(emptyList()) { t1: List<InfoItem>, t2: InfoItem -> t1 + t2 }
 
-	private fun getInfoTypeIdsObservable(type: InfoType): Flow<ContentId> =
-		infoApi.stream
-			.flowOn(Dispatchers.IO)
-			.filter { it.type.toContentType() == type }
-			.map { it.id }
-			.flowOn(Dispatchers.Default)
+	private fun getInfoTypeIdsObservable(type: InfoType): Flow<ContentId> = infoApi.stream
+		.filter { it.type.toContentType() == type }
+		.map { it.id }
 
 	private fun String.toContentType() = when (this) {
 		InfoType.TWEETS.name -> InfoType.TWEETS
