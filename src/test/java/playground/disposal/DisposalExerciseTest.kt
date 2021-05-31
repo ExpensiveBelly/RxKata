@@ -4,7 +4,9 @@ import com.nhaarman.mockitokotlin2.inOrder
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.never
 import com.nhaarman.mockitokotlin2.verify
+import io.reactivex.rxjava3.core.Completable
 import io.reactivex.rxjava3.core.Observable
+import io.reactivex.rxjava3.schedulers.Schedulers
 import org.junit.Test
 
 class DisposalExerciseTest {
@@ -13,6 +15,8 @@ class DisposalExerciseTest {
         fun doFinally()
         fun doOnDispose()
         fun doOnSubscribe()
+        fun doOnComplete()
+        fun unsubscribeOn()
     }
 
     /*
@@ -48,6 +52,27 @@ class DisposalExerciseTest {
         inOrder(verifier) {
             verify(verifier).doOnSubscribe()
             verify(verifier).doFinally()
+        }
+    }
+
+    @Test
+    fun dofinally_thread() {
+        val verifier = mock<RxLifecycle>()
+
+        Observable.just(1)
+            .flatMapCompletable { Completable.complete() }
+            .doFinally { verifier.doFinally() }
+            .doOnComplete { verifier.doOnComplete() }
+            .unsubscribeOn(Schedulers.from {
+                verifier.unsubscribeOn()
+                it.run()
+            })
+            .subscribe()
+
+        inOrder(verifier) {
+            verifier.doOnComplete()
+            verifier.unsubscribeOn()
+            verifier.doFinally()
         }
     }
 }
