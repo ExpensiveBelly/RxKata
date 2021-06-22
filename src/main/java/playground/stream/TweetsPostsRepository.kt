@@ -127,7 +127,7 @@ class TweetsPostsRepository(
             .flattenAsObservable { it }
             .concatWith(getInfoTypeIdsObservable(type))
             .concatMapSingle { infoDetailsCache.get(it) { infoDetailsCacheLoaderFun(it) } }
-            .scan(emptyList(), { t1: List<InfoItem>, t2: InfoItem -> t1 + t2 })
+            .scan(emptyList()) { t1: List<InfoItem>, t2: InfoItem -> t1 + t2 }
 
     private fun getInfoTypeIdsObservable(type: InfoType): Observable<Id> =
         infoApi.stream

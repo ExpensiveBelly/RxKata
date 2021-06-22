@@ -6,9 +6,9 @@ class SharedPreferences<K, V> {
 
     var listeners = emptyList<OnSharedPreferenceChangeListener>()
 
-    var map by Delegates.observable(emptyMap<K, V>(), { _, _, _ ->
+    var map by Delegates.observable(emptyMap<K, V>()) { _, _, _ ->
         listeners.forEach { it.onSharedPreferenceChanged() }
-    })
+    }
 
     fun registerOnSharedPreferenceChangeListener(listener: OnSharedPreferenceChangeListener) {
         synchronized(listeners) {

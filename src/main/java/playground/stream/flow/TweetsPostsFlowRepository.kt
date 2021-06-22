@@ -2,6 +2,7 @@ package playground.stream.flow
 
 import com.dropbox.android.external.cache3.Cache
 import com.dropbox.android.external.cache3.CacheBuilder
+import hu.akarnokd.kotlin.flow.concatWith
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
 import playground.stream.InfoItem
@@ -81,13 +82,15 @@ class TweetsPostsFlowRepository(
 	}
 		.map { infoTO -> infoTO.items.map { it.id } }
 		.flatMapConcat { it -> it.asFlow() }
-		.onCompletion { emitAll(getInfoTypeIdsObservable(type)) }
+		.concatWith(getInfoTypeIdsObservable(type))
 		.flatMapConcat { id -> flowOf(infoApi.getDetails(id)).map { InfoItem(id, it.title, it.date) } }
 		.scan(emptyList()) { t1: List<InfoItem>, t2: InfoItem -> t1 + t2 }
 
 	private fun getInfoTypeIdsObservable(type: InfoType): Flow<ContentId> = infoApi.stream
+		.flowOn(Dispatchers.IO)
 		.filter { it.type.toContentType() == type }
 		.map { it.id }
+		.flowOn(Dispatchers.Default)
 
 	private fun String.toContentType() = when (this) {
 		InfoType.TWEETS.name -> InfoType.TWEETS

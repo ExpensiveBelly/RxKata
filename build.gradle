@@ -23,6 +23,7 @@ dependencies {
     implementation 'com.google.code.gson:gson:2.8.6'
     implementation 'com.jakewharton.rxrelay2:rxrelay:2.1.1'
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.4.3'
+    implementation "com.github.akarnokd:kotlin-flow-extensions:0.0.8"
     implementation 'com.github.davidmoten:rxjava2-extras:0.1.35'
     implementation 'com.dropbox.mobile.store:cache4:4.0.0'
     implementation 'com.github.akarnokd:rxjava2-extensions:0.20.10'

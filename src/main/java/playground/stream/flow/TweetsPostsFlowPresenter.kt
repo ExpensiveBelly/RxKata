@@ -10,7 +10,6 @@ class TweetsPostsFlowPresenter(private val repository: TweetsPostsFlowRepository
 
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Main)
 
-
     fun attach(view: TweetsPostsFlowExercise.InfoView) {
 //        scope.launch {
 //            view.type.flatMapLatest { infoType ->
